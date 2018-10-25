@@ -1,0 +1,129 @@
+EMPLOYEE DEPARTMENTS  PROJECTS
+
+#SELECT EMPLOYEES FROM DEPARTMENT WHERE SALARY IS GREATER THAN 40K
+	select concat(employees.first_name,' ',employees.last_name) as employee_name 
+		from employees,departments 
+		where employees.id=departments.id 
+		group by employees.id,employees.salary 
+		having employees.salary > 40000;
+	
+	#using Sub query
+	select concat(first_name,' ',last_name) as employee_name 
+	from employees 
+	where employees.id in 
+		(select employees.id 
+			from employees,departments 
+			where employees.id =departments.id 
+			group by employees.id,employees.salary 
+			having employees.salary =40000);
+
+
+#SELECT EMPLOYEES FROM DEPARTMENT WHERE SALARY IS 40K	
+	select concat(employees.first_name,' ',employees.last_name) as employee_name 
+		from employees,departments 
+		where employees.id=departments.id 
+		group by employees.id,employees.salary 
+		having employees.salary = 40000;
+	
+	#using Sub query
+	select concat(first_name,' ',last_name) as employee_name 
+	from employees 
+	where employees.id in 
+		(select employees.id 
+			from employees,departments 
+			where employees.id =departments.id 
+			group by employees.id,employees.salary 
+			having employees.salary >40000);
+	#using group by
+	select id,first_name,department_id,salary 
+		from employees 
+		group by department_id ,salary,id,first_name 
+		having max(salary) > 40000;
+		+----+------------+---------------+--------+
+		| id | first_name | department_id | salary |
+		+----+------------+---------------+--------+
+		|  5 | Ian        |             2 |  80000 |
+		|  6 | John       |             3 |  50000 |
+		+----+------------+---------------+--------+
+	#using multiple group by condition
+		select id,first_name,department_id,salary 
+			from employees 
+			group by department_id ,salary,id,first_name 
+			having max(salary) > 40000 and max(salary)< 70000;
+		+----+------------+---------------+--------+
+		| id | first_name | department_id | salary |
+		+----+------------+---------------+--------+
+		|  6 | John       |             3 |  50000 |
+		+----+------------+---------------+--------+
+
+# SELECT EMPLOYEE WHO HAS MAX SALARY 
+	select  salary,id,first_name 
+		from employees 
+		group by salary ,id,first_name 
+		order by salary desc limit 1;
+	
+	#without using limit
+	select id,salary 
+	from employees 
+	where salary in(select max(salary) 
+					from employees) 
+	group by id,salary ;
+	
+
+# SELECT THE SECOND HIGHT SALARY
+	# Here we have multiple sub query trying to filter max salary to the outer query
+	# Here we also create table based on queries
+	select id,salary 
+		from employees 
+		where salary in (select max(t.salary) as max_salary 
+							from (select max(salary) as salary 
+										from employees 
+										where salary not in(select max(salary) 
+												from employees) group by id,salary)as t);
+
+# SELECT EMPLOYEES ASSIGNED TO PROJECTS
+	select e.id,p.id,e.first_name 
+		from employees e left outer join projects 
+			p on e.id=p.id 
+		where p.id is null;
+		
+
+		
+#EXPLANTION OF HOW THE GROUPING WORKS		
+mysql> select max(salary) 
+		from employees group by department_id;+-------------+
+			| max(salary) |
+			+-------------+
+			|       20000 |
+			|       80000 |
+			|       50000 |
+			|       10000 |
+			+-------------+
+mysql> select max(salary) from employees group by salary;
+			+-------------+
+			| max(salary) |
+			+-------------+
+			|       20000 |
+			|       10000 |
+			|       30000 |
+			|       80000 |
+			|       50000 |
+			+-------------+
+# SELECT MAX SALARY FOR EACH DEPARTMENT FOR EACH EMPLOYEE
+		select t.department_id,e.id,e.salary 
+			from employees e 
+			join (select max(salary) as max_salary,department_id 
+					from employees 
+					group by department_id)as t 
+						on e.salary=t.max_salary and e.department_id=t.department_id;
+			+---------------+----+--------+
+			| department_id | id | salary |
+			+---------------+----+--------+
+			|             1 |  1 |  20000 |
+			|             5 |  2 |  10000 |
+			|             2 |  5 |  80000 |
+			|             3 |  6 |  50000 |
+			+---------------+----+--------+
+		
+		
+		
