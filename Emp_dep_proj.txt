@@ -1,76 +1,150 @@
-EMPLOYEE DEPARTMENTS  PROJECTS
+EMPLOYEE DEPARTMENTS  PROJECTS and EMPLOYEE PROJECTS
+
+		employees                             projects
+		+---------------+---------+           +---------------+---------+
+		| id            | int     |<----+  +->| id            | int     |
+		| first_name    | varchar |     |  |  | title         | varchar |
+		| last_name     | varchar |     |  |  | start_date    | date    |
+		| salary        | int     |     |  |  | end_date      | date    |
+		| department_id | int     |--+  |  |  | budget        | int     |
+		+---------------+---------+  |  |  |  +---------------+---------+
+									 |  |  |
+		departments                  |  |  |  employees_projects
+		+---------------+---------+  |  |  |  +---------------+---------+
+		| id            | int     |<-+  |  +--| project_id    | int     |
+		| name          | varchar |     +-----| employee_id   | int     |
+		+---------------+---------+           +---------------+---------+
 
 #SELECT EMPLOYEES FROM DEPARTMENT WHERE SALARY IS GREATER THAN 40K
-	select concat(employees.first_name,' ',employees.last_name) as employee_name 
+# 
+	select concat(employees.first_name,' ',employees.last_name) as employee_name,names 
 		from employees,departments 
-		where employees.id=departments.id 
+		where employees.department_id=departments.id 
 		group by employees.id,employees.salary 
 		having employees.salary > 40000;
-	
-	#using Sub query
-	select concat(first_name,' ',last_name) as employee_name 
-	from employees 
-	where employees.id in 
-		(select employees.id 
-			from employees,departments 
-			where employees.id =departments.id 
-			group by employees.id,employees.salary 
-			having employees.salary =40000);
+		+----+---------------+-------------+--------+
+		| id | employee_name | name        | salary |
+		+----+---------------+-------------+--------+
+		|  5 | Ian Peterson  | Engineering |  80000 |
+		|  6 | John Mills    | Marketing   |  50000 |
+		+----+---------------+-------------+--------+
 
+	#using join
+	select e.id,concat(e.first_name," ",e.last_name) as employee_name, d.name,e.salary 
+		from employees e 
+		join departments d 
+		on e.department_id = d.id 
+		group by salary,e.id,employee_name,e.salary,d.name 
+		having salary >40000;
+		+----+---------------+-------------+--------+
+		| id | employee_name | name        | salary |
+		+----+---------------+-------------+--------+
+		|  5 | Ian Peterson  | Engineering |  80000 |
+		|  6 | John Mills    | Marketing   |  50000 |
+		+----+---------------+-------------+--------+
 
 #SELECT EMPLOYEES FROM DEPARTMENT WHERE SALARY IS 40K	
-	select concat(employees.first_name,' ',employees.last_name) as employee_name 
-		from employees,departments 
-		where employees.id=departments.id 
-		group by employees.id,employees.salary 
-		having employees.salary = 40000;
+	select e.id,concat(e.first_name," ",e.last_name) as employee_name, d.name,e.salary 
+		from employees e 
+		join departments d 
+		on e.department_id = d.id 
+		group by salary,e.id,employee_name,e.salary,d.name 
+		having salary = 40000;
 	
-	#using Sub query
-	select concat(first_name,' ',last_name) as employee_name 
-	from employees 
-	where employees.id in 
-		(select employees.id 
-			from employees,departments 
-			where employees.id =departments.id 
-			group by employees.id,employees.salary 
-			having employees.salary >40000);
-	#using group by
-	select id,first_name,department_id,salary 
-		from employees 
-		group by department_id ,salary,id,first_name 
-		having max(salary) > 40000;
-		+----+------------+---------------+--------+
-		| id | first_name | department_id | salary |
-		+----+------------+---------------+--------+
-		|  5 | Ian        |             2 |  80000 |
-		|  6 | John       |             3 |  50000 |
-		+----+------------+---------------+--------+
+	
 	#using multiple group by condition
-		select id,first_name,department_id,salary 
-			from employees 
-			group by department_id ,salary,id,first_name 
-			having max(salary) > 40000 and max(salary)< 70000;
-		+----+------------+---------------+--------+
-		| id | first_name | department_id | salary |
-		+----+------------+---------------+--------+
-		|  6 | John       |             3 |  50000 |
-		+----+------------+---------------+--------+
+		select e.id,concat(e.first_name," ",e.last_name) as employee_name, d.name,e.salary 
+			from employees e 
+			join departments d 
+			on e.department_id = d.id 
+			group by salary,e.id,employee_name,e.salary,d.name 
+			having salary >40000 and salary < 70000;
+			+----+---------------+-----------+--------+
+			| id | employee_name | name      | salary |
+			+----+---------------+-----------+--------+
+			|  6 | John Mills    | Marketing |  50000 |
+			+----+---------------+-----------+--------+
 
 # SELECT EMPLOYEE WHO HAS MAX SALARY 
-	select  salary,id,first_name 
+	select id,max(salary) 
 		from employees 
-		group by salary ,id,first_name 
-		order by salary desc limit 1;
+		group by salary,id 
+		order by salary 
+		desc limit 1;
+			+----+-------------+
+			| id | max(salary) |
+			+----+-------------+
+			|  5 |       80000 |
+			+----+-------------+
 	
 	#without using limit
-	select id,salary 
+	select id, salary 
 	from employees 
-	where salary in(select max(salary) 
-					from employees) 
-	group by id,salary ;
+	where salary in 
+		(select max(salary) from employees);
+			+----+--------+
+			| id | salary |
+			+----+--------+
+			+----+--------+
+	#using CTE
+	with result as (select id,first_name,salary, DENSE_RANK() 
+						over (order by salary desc) as rnk  
+						from employees)  
+						select * from result where rnk=1;
+			+----+------------+--------+-----+
+			| id | first_name | salary | rnk |
+			+----+------------+--------+-----+
+			|  5 | Ian        |  80000 |   1 |
+			+----+------------+--------+-----+
 	
-
 # SELECT THE SECOND HIGHEST SALARY
+		#logic using less than
+		select max(salary) 
+			from employees 
+				where salary < 
+					(select max(salary) from employees);
+			+-------------+
+			| max(salary) |
+			+-------------+
+			|       50000 |
+			+-------------+
+		select id,max(salary) 
+			from employees 
+			where salary 
+				not in (select max(salary) from employees) 
+					group by id 
+					order by salary desc 
+					limit 1;
+			+----+-------------+
+			| id | max(salary) |
+			+----+-------------+
+			|  6 |       50000 |
+			+----+-------------+
+			
+		with result as (select id,first_name,salary, DENSE_RANK() 
+						over (order by salary desc) as rnk  
+						from employees)  
+						select * from result where rnk=2;
+			+----+------------+--------+-----+
+			| id | first_name | salary | rnk |
+			+----+------------+--------+-----+
+			|  6 | John       |  50000 |   2 |
+			+----+------------+--------+-----+
+		
+	# second highest salary without using order by and limit
+	select id,salary 
+		from employees 
+		where salary in 
+			(select max(salary) 
+				from employees 
+					where salary not in 
+						(select max(salary) 
+							from employees));
+			+----+--------+
+			| id | salary |
+			+----+--------+
+			|  6 |  50000 |
+			+----+--------+
 	# Here we have multiple sub query trying to filter max salary to the outer query
 	# Here we also create table based on queries
 	select id,salary 
@@ -82,13 +156,19 @@ EMPLOYEE DEPARTMENTS  PROJECTS
 												from employees) group by id,salary)as t);
 
 # SELECT EMPLOYEES ASSIGNED TO PROJECTS
-	select e.id,p.id,e.first_name 
-		from employees e left outer join projects 
-			p on e.id=p.id 
-		where p.id is null;
-		
-
-		
+	select e.id, first_name,title 
+		from employees e 
+			left outer join projects p 
+			on e.id=p.id 
+			where p.id is null;
+			+----+------------+-------+
+			| id | first_name | title |
+			+----+------------+-------+
+			|  4 | Mike       | NULL  |
+			|  5 | Ian        | NULL  |
+			|  6 | John       | NULL  |
+			+----+------------+-------+
+	
 #EXPLANTION OF HOW THE GROUPING WORKS		
 mysql> select max(salary) 
 		from employees group by department_id;+-------------+
@@ -125,5 +205,23 @@ mysql> select max(salary) from employees group by salary;
 			|             3 |  6 |  50000 |
 			+---------------+----+--------+
 		
-		
+# CREATE A CTE table
+		with 
+			result 
+				as (select id,first_name,salary, DENSE_RANK() 
+						over (order by salary desc) as rnk  
+						from employees
+				    )
+        select * from result;
+		+----+------------+--------+-----+
+		| id | first_name | salary | rnk |
+		+----+------------+--------+-----+
+		|  5 | Ian        |  80000 |   1 |
+		|  6 | John       |  50000 |   2 |
+		|  3 | Cailin     |  30000 |   3 |
+		|  1 | John       |  20000 |   4 |
+		|  4 | Mike       |  20000 |   4 |
+		|  2 | Ava        |  10000 |   5 |
+		+----+------------+--------+-----+
+
 		
