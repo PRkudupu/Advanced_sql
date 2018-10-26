@@ -1,0 +1,46 @@
+#EMPLOYEE TABLE
+	
+
+	create table employee(employee_id integer,department_id integer,boss_id integer,name varchar(50),salary integer);
+	
+	insert into employee values(1,1,2,'John Smith',20000);
+	insert into employee values(2,5,2,'Ava Muffinson',10000);
+	insert into employee values(3,2,5,'Cailin Ninson',30000);
+	insert into employee values(4,2,5,'Mike Peterson',20000);
+	insert into employee values(5,2,1,'Ian Peterson',80000);
+	insert into employee values(6,3,null,'John Mills',50000);
+
++----+------------+-----------+--------+---------------+
+| id | first_name | last_name | salary | department_id |
++----+------------+-----------+--------+---------------+
+|  1 | John       | Smith     |  20000 |             1 |
+|  2 | Ava        | Muffinson |  10000 |             5 |
+|  3 | Cailin     | Ninson    |  30000 |             2 |
+|  4 | Mike       | Peterson  |  20000 |             2 |
+|  5 | Ian        | Peterson  |  80000 |             2 |
+|  6 | John       | Mills     |  50000 |             3 |
++----+------------+-----------+--------+---------------+
+	
+#DEPARTMENT TABLE
+	create table department(department_id integer, name varchar(50));
+	insert into department values(1,'rate');
+	insert into department values(2,'refund');
+	insert into department values(3,'electric');
+	insert into department values(5,'innovation');
+
+#SELECT EMPLOYEES WHO DO NOT HAVE A BOSS
+	select e.employee_id,e.name 
+		from employee e 
+		left outer join employee b 
+		on e.employee_id=b.boss_id 
+		where e.boss_id is null;
+	+-------------+------------+
+	| employee_id | name       |
+	+-------------+------------+
+	|           6 | John Mills |
+	+-------------+------------+
+
+#LIST EMPLOYEES WHO HAVE BIGGER SALARIES FROM THIER BOSSES.
+
+
+	

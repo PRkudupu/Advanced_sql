@@ -70,7 +70,7 @@ EMPLOYEE DEPARTMENTS  PROJECTS
 	group by id,salary ;
 	
 
-# SELECT THE SECOND HIGHT SALARY
+# SELECT THE SECOND HIGHEST SALARY
 	# Here we have multiple sub query trying to filter max salary to the outer query
 	# Here we also create table based on queries
 	select id,salary 
