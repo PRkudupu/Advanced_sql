@@ -1,0 +1,16 @@
+Calculate the average comments for the users with >= 2 posts, and each post has comments greater or equal to 40
+
+# CALCULATE THE AVERAGE COMMENTS FOR THE USERS WITH >= 2 POSTS, AND EACH POST HAS COMMENTS GREATER OR EAUAL TO 40
+	select a.name, round(avg(a.comments),2) as avg_comment 
+		from comments a 
+		join (select name 
+					from comments 
+					where comments >=40 
+					group by name having count(posts) >=2) b 
+		on a.name=b.name group by a.name;
+	+------+-------------+
+	| name | avg_comment |
+	+------+-------------+
+	| u1   |       60.00 |
+	| u2   |       50.00 |
+	+------+-------------+

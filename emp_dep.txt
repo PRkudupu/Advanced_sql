@@ -1,6 +1,5 @@
 #EMPLOYEE TABLE
 	
-
 	create table employee(employee_id integer,department_id integer,boss_id integer,name varchar(50),salary integer);
 	
 	insert into employee values(1,1,2,'John Smith',20000);
