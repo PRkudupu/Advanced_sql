@@ -1,4 +1,31 @@
 Calculate the average comments for the users with >= 2 posts, and each post has comments greater or equal to 40
+#DDL SCRIPTS
+Comments I
+name	posts	comments
+u1	page1	90
+u1	page2	50
+u1	page3	40
+u2	page2	55
+u2	page4	45
+u4	page4	30
+u4	page3	40
+u3	page2	100
+
+CREATE TABLE comments (
+    name            varchar(80),
+    posts           varchar(80),
+    comments         int
+);
+
+INSERT INTO comments VALUES ('u1', 'page1', '90');
+INSERT INTO comments VALUES ('u1', 'page2', '50');
+INSERT INTO comments VALUES ('u1', 'page3', '40');
+INSERT INTO comments VALUES ('u2', 'page2', '55');
+INSERT INTO comments VALUES ('u2', 'page4', '45');
+INSERT INTO comments VALUES ('u4', 'page4', '30');
+INSERT INTO comments VALUES ('u4', 'page3', '40');
+INSERT INTO comments VALUES ('u3', 'page2', '100');
+
 
 # CALCULATE THE AVERAGE COMMENTS FOR THE USERS WITH >= 2 POSTS, AND EACH POST HAS COMMENTS GREATER OR EAUAL TO 40
 	select a.name, round(avg(a.comments),2) as avg_comment 
@@ -14,3 +41,21 @@ Calculate the average comments for the users with >= 2 posts, and each post has 
 	| u1   |       60.00 |
 	| u2   |       50.00 |
 	+------+-------------+
+
+#Comments II
+ What is the distribution of comments?
+ Now what if content_type becomes {comment, video, photo, article}，what is the comment distribution for each content type?	
+ 
+ table: content_id | content_type (comment/ post) | target_id
+ If it is comment，target_id is the userid who posts it.
+ If it is post, then target_id is NULL.
+ 
+ CREATE TABLE contents(
+	content_id int,
+	content_type varchar(80),
+	target_id int);
+
+INSERT INTO contents VALUES (1,'comment','u1');
+INSERT INTO contents VALUES (2,'post',NULL);
+INSERT INTO contents VALUES (3,'comment','u2');
+INSERT INTO contents VALUES (4,'post',NULL);
