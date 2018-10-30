@@ -10,16 +10,16 @@
 	insert into employee values(5,2,1,'Ian Peterson',80000);
 	insert into employee values(6,3,null,'John Mills',50000);
 
-+----+------------+-----------+--------+---------------+
-| id | first_name | last_name | salary | department_id |
-+----+------------+-----------+--------+---------------+
-|  1 | John       | Smith     |  20000 |             1 |
-|  2 | Ava        | Muffinson |  10000 |             5 |
-|  3 | Cailin     | Ninson    |  30000 |             2 |
-|  4 | Mike       | Peterson  |  20000 |             2 |
-|  5 | Ian        | Peterson  |  80000 |             2 |
-|  6 | John       | Mills     |  50000 |             3 |
-+----+------------+-----------+--------+---------------+
+	+----+------------+-----------+--------+---------------+
+	| id | first_name | last_name | salary | department_id |
+	+----+------------+-----------+--------+---------------+
+	|  1 | John       | Smith     |  20000 |             1 |
+	|  2 | Ava        | Muffinson |  10000 |             5 |
+	|  3 | Cailin     | Ninson    |  30000 |             2 |
+	|  4 | Mike       | Peterson  |  20000 |             2 |
+	|  5 | Ian        | Peterson  |  80000 |             2 |
+	|  6 | John       | Mills     |  50000 |             3 |
+	+----+------------+-----------+--------+---------------+
 	
 #DEPARTMENT TABLE
 	create table department(department_id integer, name varchar(50));
@@ -41,6 +41,41 @@
 	+-------------+------------+
 
 #LIST EMPLOYEES WHO HAVE BIGGER SALARIES FROM THIER BOSSES.
-
-
+	select e.employee_id,e.boss_id,e.salary as emp_salary,b.salary as boss_salary 
+		from employee e join employee b 
+			on e.boss_id = b.employee_id 
+		where e.salary > b.salary;
+	+-------------+---------+------------+-------------+
+	| employee_id | boss_id | emp_salary | boss_salary |
+	+-------------+---------+------------+-------------+
+	|           5 |       1 |      80000 |       20000 |
+	|           1 |       2 |      20000 |       10000 |
+	+-------------+---------+------------+-------------+
 	
+-- List employees who have the biggest salary in their departments
+   select e.employee_id,e.department_id,b.max_salary 
+		from employee e 
+			join (select department_id,max(salary) as max_salary 
+					from employee group by department_id) as b 
+						on e.department_id =b.department_id and e.salary=b.max_salary;
+	+-------------+---------------+------------+
+	| employee_id | department_id | max_salary |
+	+-------------+---------------+------------+
+	|           1 |             1 |      20000 |
+	|           2 |             5 |      10000 |
+	|           5 |             2 |      80000 |
+	|           6 |             3 |      50000 |
+	+-------------+---------------+------------+
+	
+-- List departments that have less than 3 people in it
+    select department_id,count(*) as count 
+		from employee 
+			group by department_id 
+			having count(*) <3;
+	+---------------+-------+
+	| department_id | count |
+	+---------------+-------+
+	|             1 |     1 |
+	|             5 |     1 |
+	|             3 |     1 |
+	+---------------+-------+
