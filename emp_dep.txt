@@ -56,10 +56,10 @@
 #LIST EMPLOYEES WHO HAVE BIGGEST SALARY IN THIER DEPARTMENTS
    select e.employee_id,e.department_id,b.max_salary 
 		from employee e 
-			join (select department_id,max(salary) as max_salary 
+		join (select department_id,max(salary) as max_salary 
 					from employee group by department_id) as b 
-						on e.department_id =b.department_id 
-							and e.salary=b.max_salary;
+					on e.department_id =b.department_id 
+					and e.salary=b.max_salary;
 	+-------------+---------------+------------+
 	| employee_id | department_id | max_salary |
 	+-------------+---------------+------------+
@@ -72,8 +72,8 @@
 #LIST DEPARTMENTS THAT HAVE LESS THAN 3 PEOPLE IN IT.
     select department_id,count(*) as count 
 		from employee 
-			group by department_id 
-			having count(*) <3;
+		group by department_id 
+		having count(*) <3;
 	+---------------+-------+
 	| department_id | count |
 	+---------------+-------+
@@ -84,9 +84,26 @@
 #LIST ALL DEPARTMENTS ALONG WITH THE NUMBER OF PEOPLE
 	select d.department_id, d.name, count(e.department_id) as count 
 		from department d 
-			left outer join employees e 
-				on d.department_id=e.department_id 
-					group by department_id,d.name;
+		left outer join employees e 
+			on d.department_id=e.department_id 
+		group by department_id,d.name;
+	+---------------+------------+-------+
+	| department_id | name       | count |
+	+---------------+------------+-------+
+	|             1 | rate       |     1 |
+	|             2 | refund     |     3 |
+	|             3 | electric   |     1 |
+	|             5 | innovation |     1 |
+	|             4 | UI         |     0 |
+	+---------------+------------+-------+
+
+#LIST ALL DEPARTMENTS ALONG WITH THE TOTAL SALARY
+
+	select d.department_id, d.name, count(e.department_id) as count 
+		from department d 
+		left outer join employees e 
+		on d.department_id=e.department_id 
+		group by department_id,d.name;
 	+---------------+------------+-------+
 	| department_id | name       | count |
 	+---------------+------------+-------+
