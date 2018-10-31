@@ -28,6 +28,7 @@ INSERT INTO comments VALUES ('u3', 'page2', '100');
 
 
 # CALCULATE THE AVERAGE COMMENTS FOR THE USERS WITH >= 2 POSTS, AND EACH POST HAS COMMENTS GREATER OR EAUAL TO 40
+	# Using join
 	select a.name, round(avg(a.comments),2) as avg_comment 
 		from comments a 
 		join (select name 
@@ -42,6 +43,20 @@ INSERT INTO comments VALUES ('u3', 'page2', '100');
 	| u2   |       50.00 |
 	+------+-------------+
 
+	#Without using join
+	select name,
+		avg(comments) as avg_count, 
+		count(posts) as cnt_posts 
+		from comments 
+		where comments >= 40  
+		group by name having count(posts) >=2;
+	+------+-----------+-----------+
+	| name | avg_count | cnt_posts |
+	+------+-----------+-----------+
+	| u1   |   60.0000 |         3 |
+	| u2   |   50.0000 |         2 |
+	+------+-----------+-----------+
+
 #Comments II
  What is the distribution of comments?
  Now what if content_type becomes {comment, video, photo, article}，what is the comment distribution for each content type?	
@@ -53,7 +68,7 @@ INSERT INTO comments VALUES ('u3', 'page2', '100');
  CREATE TABLE contents(
 	content_id int,
 	content_type varchar(80),
-	target_id int);
+	target_id varchar(80));
 
 INSERT INTO contents VALUES (1,'comment','u1');
 INSERT INTO contents VALUES (2,'post',NULL);
