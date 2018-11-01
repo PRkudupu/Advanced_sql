@@ -179,7 +179,21 @@ INSERT INTO comments VALUES ('u3', 'page2', '100');
 		|             1 |    2 |
 		|             2 |    1 |
 		+---------------+------+
-	    
+	 4) SUM OF ALL THE MESSAGES SENT BY A USER TO OTHER USERS
+		select u1,u2, sum(n_msg) as sum_msg 
+			from messages 
+			group by u1,u2;
+		+-------+-------+---------+
+		| u1    | u2    | sum_msg |
+		+-------+-------+---------+
+		| user1 | user2 |      20 |
+		| user2 | user1 |       5 |
+		| user1 | user4 |       2 |
+		| user3 | user4 |      10 |
+		| user3 | user2 |      14 |
+		| user4 | user1 |       4 |
+		| user4 | user5 |      25 |
+		+-------+-------+---------+
 	
 	
  
