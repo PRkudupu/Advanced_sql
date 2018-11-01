@@ -75,6 +75,14 @@ INSERT INTO comments VALUES ('u3', 'page2', '100');
 		INSERT INTO contents VALUES (6,'comment','u1');
 	    INSERT INTO contents VALUES (7,'comment','u3');
 		INSERT INTO contents VALUES (8,'post',NULL);
+		INSERT INTO contents VALUES (9,'video','u1');
+	    INSERT INTO contents VALUES (10,'video','u3');
+		INSERT INTO contents VALUES (11,'post',NULL);
+		INSERT INTO contents VALUES (12,'photo','u1');
+	    INSERT INTO contents VALUES (13,'photo','u3');
+		INSERT INTO contents VALUES (14,'photo','u1');
+	    INSERT INTO contents VALUES (15,'article','u3');
+		
 	
 	
 	#WHAT IS THE DISTRIBUTION OF COMMENTS?
@@ -90,6 +98,21 @@ INSERT INTO comments VALUES ('u3', 'page2', '100');
 		|   1 |    5 |
 		+-----+------+
 	
-	Now what if content_type becomes {comment, video, photo, article}，what is the comment distribution for each content type?	
+	#DISTRIBUTION LIST OF EACH CONTENT TYPE
+	#Now what if content_type becomes {comment, video, photo, article}，what is the comment distribution for each content type?	
+	select a.cnt,a.content_type,count(a.cnt) freq 
+		from (select content_id,content_type,count(target_id) as cnt 
+					from contents 
+					group by content_id,content_type) a 
+		group by a.cnt,a.content_type;
+		+-----+--------------+------+
+		| cnt | content_type | freq |
+		+-----+--------------+------+
+		|   1 | comment      |    5 |
+		|   0 | post         |    4 |
+		|   1 | video        |    2 |
+		|   1 | photo        |    3 |
+	    |   1 | article      |    1 |
+	    +-----+--------------+------+
  
  
