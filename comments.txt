@@ -58,19 +58,38 @@ INSERT INTO comments VALUES ('u3', 'page2', '100');
 	+------+-----------+-----------+
 
 #Comments II
- What is the distribution of comments?
- Now what if content_type becomes {comment, video, photo, article}，what is the comment distribution for each content type?	
+  table: content_id | content_type (comment/ post) | target_id
+  If it is comment，target_id is the userid who posts it.
+  If it is post, then target_id is NULL.
  
- table: content_id | content_type (comment/ post) | target_id
- If it is comment，target_id is the userid who posts it.
- If it is post, then target_id is NULL.
- 
- CREATE TABLE contents(
-	content_id int,
-	content_type varchar(80),
-	target_id varchar(80));
+	 CREATE TABLE contents(
+		content_id int,
+		content_type varchar(80),
+		target_id varchar(80));
 
-INSERT INTO contents VALUES (1,'comment','u1');
-INSERT INTO contents VALUES (2,'post',NULL);
-INSERT INTO contents VALUES (3,'comment','u2');
-INSERT INTO contents VALUES (4,'post',NULL);
+		INSERT INTO contents VALUES (1,'comment','u1');
+		INSERT INTO contents VALUES (2,'post',NULL);
+		INSERT INTO contents VALUES (3,'comment','u2');
+		INSERT INTO contents VALUES (4,'post',NULL);
+		INSERT INTO contents VALUES (5,'comment','u1');
+		INSERT INTO contents VALUES (6,'comment','u1');
+	    INSERT INTO contents VALUES (7,'comment','u3');
+		INSERT INTO contents VALUES (8,'post',NULL);
+	
+	
+	#WHAT IS THE DISTRIBUTION OF COMMENTS?
+	select a.cnt,count(a.cnt) as freq 
+		from (select content_id, count(target_id) as cnt 
+				from contents 
+				where content_type='comment' 
+				group by content_id) a 
+				group by a.cnt;
+		+-----+------+
+		| cnt | freq |
+		+-----+------+
+		|   1 |    5 |
+		+-----+------+
+	
+	Now what if content_type becomes {comment, video, photo, article}，what is the comment distribution for each content type?	
+ 
+ 
