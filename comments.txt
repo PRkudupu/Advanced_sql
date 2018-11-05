@@ -243,7 +243,7 @@ INSERT INTO comments VALUES ('u3', 'page2', '100');
 		|   0.8000 |
 		+----------+
 	
-	  7) Article Views
+	    ARTICLE VIEWS
 	    date	    viewer_id	article_id	author_id
 		2017-08-01	123			456			789
 		2017-08-02	432			543			654
@@ -251,6 +251,7 @@ INSERT INTO comments VALUES ('u3', 'page2', '100');
 		2017-08-03	567			780			432
 		2017-08-01	789			457			789
 		
+		ARTICLE VIEWS 
 		CREATE TABLE article_views (
 			date            timestamp,
 			viewer_id       int,
@@ -264,6 +265,7 @@ INSERT INTO comments VALUES ('u3', 'page2', '100');
 		INSERT INTO article_views VALUES ('2017-08-03',567,	780,	432);
 		INSERT INTO article_views VALUES ('2017-08-01',789, 457    ,789);
 		
+	   7)HOW MANY ARTICLES AUTHORS HAVE NEVER VIEWED THIER OWN ARTICLE?
 		select vw.viewer_id,au.author_id 
 			from article_views vw left 
 			outer join article_views au 
@@ -276,4 +278,77 @@ INSERT INTO comments VALUES ('u3', 'page2', '100');
 			|       432 |      NULL |
 			|       567 |      NULL |
 			+-----------+-----------+
- 
+		
+		8)HOW MANY MEMBERS VIEWED MORE THAN ONE ARTICLES ON 2017-08-01 
+		select viewer_id 
+			from article_views 
+			where date =TIMESTAMP('2017-08-01') 
+			group by viewer_id 
+			having count(viewer_id) > 1;
+			+-----------+
+			| viewer_id |
+			+-----------+
+			|       789 |
+			+-----------+
+		COMPANIES
+		
+		CREATE TABLE companies (
+			member_id            int,
+			company_name       varchar(80),
+			year_start      int
+		);
+
+		INSERT INTO companies VALUES (1,'Google', 1990);
+		INSERT INTO companies VALUES (1,'Microsoft', 2000);
+		INSERT INTO companies VALUES (2,'Microsoft', 2000);
+		INSERT INTO companies VALUES (2,'Google', 2001);
+		INSERT INTO companies VALUES (3,'Microsoft', 1997);
+		INSERT INTO companies VALUES (3,'Google', 1998);
+		INSERT INTO companies VALUES (4,'Microsoft', 1997);
+		INSERT INTO companies VALUES (4,'LinkedIn', 1998);
+		INSERT INTO companies VALUES (4,'Google', 2000);
+		
+		8) COUNT MEMBERS WHO EVER MOVED FROM MICROSOFT TO GOOGLE
+		select distinct(a.member_id) 
+			from (select member_id,company_name,
+					dense_rank() over (partition by member_id order by year_start asc) as rnk 
+					from companies ) a 
+					join 
+				(select member_id,company_name, dense_rank() over (partition by member_id order by year_start asc) as rnk 
+					from companies) b 
+					on a.member_id=b.member_id 
+					where a.company_name='microsoft' and b.company_name='google' and a.rnk=1 
+						and b.rnk >=2;
+			+-----------+
+			| member_id |
+			+-----------+
+			|         2 |
+			|         3 |
+			|         4 |
+			+-----------+
+		
+		select a.member_id,a.company_name,b.company_name 
+			from companies a, companies b 
+				where a.member_id=b.member_id 
+				and a.year_start < b.year_start 
+				and a.company_name='microsoft' 
+				and b.company_name='google';
+			+-----------+--------------+--------------+
+			| member_id | company_name | company_name |
+			+-----------+--------------+--------------+
+			|         2 | Microsoft    | Google       |
+			|         3 | Microsoft    | Google       |
+			|         4 | Microsoft    | Google       |
+			+-----------+--------------+--------------+
+		
+		COUNT MEMBERS WHO DIRECTLY MOVED FROM MICROSOFT TO GOOGLE? (MICRSOFT --LINKEDIN -- GOOGLE DOESN'T COUNT)
+		select distinct(a.member_id) 
+			from (select member_id,company_name,
+					dense_rank() over (partition by member_id order by year_start asc) as rnk 
+					from companies ) a 
+					join 
+				(select member_id,company_name, dense_rank() over (partition by member_id order by year_start asc) as rnk 
+					from companies) b 
+					on a.member_id=b.member_id 
+					where a.company_name='microsoft' and b.company_name='google' and a.rnk=1 
+						and b.rnk =2;
