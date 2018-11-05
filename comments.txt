@@ -84,8 +84,11 @@ INSERT INTO comments VALUES ('u3', 'page2', '100');
 	    INSERT INTO contents VALUES (15,'article','u3');
 		
 	
-	
+	table: content_id | content_type (comment/ post) | target_id
+	If it is comment，target_id is the userid who posts it.
+		If it is post, then target_id is NULL.
 	#WHAT IS THE DISTRIBUTION OF COMMENTS?
+	
 	select a.cnt,count(a.cnt) as freq 
 		from (select content_id, count(target_id) as cnt 
 				from contents 
@@ -165,6 +168,17 @@ INSERT INTO comments VALUES ('u3', 'page2', '100');
 		| user2 |             1 |
 		| user3 |             2 |
 		+-------+---------------+
+	select u1,count(distinct(u2)) as conversations 
+		from messages  
+		where date ='10/02/2018' 
+		group by u1;
+		+-------+---------------+
+		| u1    | conversations |
+		+-------+---------------+
+		| user1 |             1 |
+		| user2 |             1 |
+		| user3 |             2 |
+		+-------+---------------+
 	3) DISTRIBUTIONS OF CONVERSATIONS 
 		select a.conversations,count(a.u1) freq 
 			from (select u1,count(distinct u2) conversations 
@@ -194,6 +208,72 @@ INSERT INTO comments VALUES ('u3', 'page2', '100');
 		| user4 | user1 |       4 |
 		| user4 | user5 |      25 |
 		+-------+-------+---------+
+	5) TOP PARTNERS WHO SENDS THE MOST NUMBER OF MESSAGES TO EACH OTHER. 
+	    select u1, max(sum_n_msg) sum_top 
+			from (select u1, u2, sum(n_msg) sum_n_msg 
+						from table1 
+						group by u1, u2) tmp 
+			group by u1
+		+-------+-------------+
+		| u1    | top_partner |
+		+-------+-------------+
+		| user1 |          20 |
+		| user2 |           5 |
+		| user3 |          14 |
+		| user4 |          25 |
+		+-------+-------------+	
+	 6) Write a query that we can find the top partner who sends the most number 
+	    of messages to each user. 
+		And then add a outer query to calculate the following ratio:
+	    FROM THE ABOVE QUERY CALCULATE THE FOLLOWING QUERY:
+		sum(n_msg_with_top_partners) / sum(n_msg_with_all_contacts)
+	    
+		select sum(tmp.sum_top)/(select sum(n_msg) 
+									from messages) as fraction 
+			from (select a.u1,max(a.sum_msg) as sum_top 
+						from (select u1,u2,sum(n_msg) as sum_msg 
+								from messages 
+								group by u1,u2 
+								order by sum_msg desc) a 
+								group by a.u1) 
+					tmp;
+		+----------+
+		| fraction |
+		+----------+
+		|   0.8000 |
+		+----------+
 	
-	
+	  7) Article Views
+	    date	    viewer_id	article_id	author_id
+		2017-08-01	123			456			789
+		2017-08-02	432			543			654
+		2017-08-01	789			456			789
+		2017-08-03	567			780			432
+		2017-08-01	789			457			789
+		
+		CREATE TABLE article_views (
+			date            timestamp,
+			viewer_id       int,
+			article_id      int,
+			author_id       int
+		);
+		
+		INSERT INTO article_views VALUES ('2017-08-01',123,	456	,789);
+		INSERT INTO article_views VALUES ('2017-08-02',432	,543,	654);
+		INSERT INTO article_views VALUES ('2017-08-01',789,	456	,789);
+		INSERT INTO article_views VALUES ('2017-08-03',567,	780,	432);
+		INSERT INTO article_views VALUES ('2017-08-01',789, 457    ,789);
+		
+		select vw.viewer_id,au.author_id 
+			from article_views vw left 
+			outer join article_views au 
+				on vw.viewer_id=vw.author_id 
+			where au.author_id isnull;
+			+-----------+-----------+
+			| viewer_id | author_id |
+			+-----------+-----------+
+			|       123 |      NULL |
+			|       432 |      NULL |
+			|       567 |      NULL |
+			+-----------+-----------+
  
