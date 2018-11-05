@@ -1,30 +1,35 @@
-Calculate the average comments for the users with >= 2 posts, and each post has comments greater or equal to 40
-#DDL SCRIPTS
-Comments I
-name	posts	comments
-u1	page1	90
-u1	page2	50
-u1	page3	40
-u2	page2	55
-u2	page4	45
-u4	page4	30
-u4	page3	40
-u3	page2	100
+	
+	******************************************************************************
+	COMMENTS
+	******************************************************************************
+	Calculate the average comments for the users with >= 2 posts, and each post has comments greater or equal to 40
+	#DDL SCRIPTS
+	Comments I
+	name	posts	comments
+	u1	page1	90
+	u1	page2	50
+	u1	page3	40
+	u2	page2	55
+	u2	page4	45
+	u4	page4	30
+	u4	page3	40
+	u3	page2	100
+	
 
-CREATE TABLE comments (
-    name            varchar(80),
-    posts           varchar(80),
-    comments         int
-);
+	CREATE TABLE comments (
+		name            varchar(80),
+		posts           varchar(80),
+		comments         int
+	);
 
-INSERT INTO comments VALUES ('u1', 'page1', '90');
-INSERT INTO comments VALUES ('u1', 'page2', '50');
-INSERT INTO comments VALUES ('u1', 'page3', '40');
-INSERT INTO comments VALUES ('u2', 'page2', '55');
-INSERT INTO comments VALUES ('u2', 'page4', '45');
-INSERT INTO comments VALUES ('u4', 'page4', '30');
-INSERT INTO comments VALUES ('u4', 'page3', '40');
-INSERT INTO comments VALUES ('u3', 'page2', '100');
+	INSERT INTO comments VALUES ('u1', 'page1', '90');
+	INSERT INTO comments VALUES ('u1', 'page2', '50');
+	INSERT INTO comments VALUES ('u1', 'page3', '40');
+	INSERT INTO comments VALUES ('u2', 'page2', '55');
+	INSERT INTO comments VALUES ('u2', 'page4', '45');
+	INSERT INTO comments VALUES ('u4', 'page4', '30');
+	INSERT INTO comments VALUES ('u4', 'page3', '40');
+	INSERT INTO comments VALUES ('u3', 'page2', '100');
 
 
 # CALCULATE THE AVERAGE COMMENTS FOR THE USERS WITH >= 2 POSTS, AND EACH POST HAS COMMENTS GREATER OR EAUAL TO 40
@@ -57,7 +62,9 @@ INSERT INTO comments VALUES ('u3', 'page2', '100');
 	| u2   |   50.0000 |         2 |
 	+------+-----------+-----------+
 
-#Comments II
+   ***************************************************************
+   CONTENTS
+   ***************************************************************
   table: content_id | content_type (comment/ post) | target_id
   If it is comment，target_id is the userid who posts it.
   If it is post, then target_id is NULL.
@@ -117,7 +124,9 @@ INSERT INTO comments VALUES ('u3', 'page2', '100');
 		|   1 | photo        |    3 |
 	    |   1 | article      |    1 |
 	    +-----+--------------+------+
-	#MESSAGES
+	**************************************************************
+	MESSAGES
+	**************************************************************
 	table: date | u1 | u2 | n_msg
 	n_msg: the number of messsages between one unique user pair at someday.
 	What can we get some insights from this table?
@@ -243,7 +252,9 @@ INSERT INTO comments VALUES ('u3', 'page2', '100');
 		|   0.8000 |
 		+----------+
 	
-	    ARTICLE VIEWS
+		****************************************************************
+	     ARTICLE VIEWS
+		****************************************************************
 	    date	    viewer_id	article_id	author_id
 		2017-08-01	123			456			789
 		2017-08-02	432			543			654
@@ -251,7 +262,6 @@ INSERT INTO comments VALUES ('u3', 'page2', '100');
 		2017-08-03	567			780			432
 		2017-08-01	789			457			789
 		
-		ARTICLE VIEWS 
 		CREATE TABLE article_views (
 			date            timestamp,
 			viewer_id       int,
@@ -290,7 +300,9 @@ INSERT INTO comments VALUES ('u3', 'page2', '100');
 			+-----------+
 			|       789 |
 			+-----------+
+		************************************************************************
 		COMPANIES
+		************************************************************************
 		
 		CREATE TABLE companies (
 			member_id            int,
@@ -308,7 +320,7 @@ INSERT INTO comments VALUES ('u3', 'page2', '100');
 		INSERT INTO companies VALUES (4,'LinkedIn', 1998);
 		INSERT INTO companies VALUES (4,'Google', 2000);
 		
-		8) COUNT MEMBERS WHO EVER MOVED FROM MICROSOFT TO GOOGLE
+		9) COUNT MEMBERS WHO EVER MOVED FROM MICROSOFT TO GOOGLE
 		select distinct(a.member_id) 
 			from (select member_id,company_name,
 					dense_rank() over (partition by member_id order by year_start asc) as rnk 
@@ -341,7 +353,7 @@ INSERT INTO comments VALUES ('u3', 'page2', '100');
 			|         4 | Microsoft    | Google       |
 			+-----------+--------------+--------------+
 		
-		COUNT MEMBERS WHO DIRECTLY MOVED FROM MICROSOFT TO GOOGLE? (MICRSOFT --LINKEDIN -- GOOGLE DOESN'T COUNT)
+		10) COUNT MEMBERS WHO DIRECTLY MOVED FROM MICROSOFT TO GOOGLE? (MICRSOFT --LINKEDIN -- GOOGLE DOESN'T COUNT)
 		select distinct(a.member_id) 
 			from (select member_id,company_name,
 					dense_rank() over (partition by member_id order by year_start asc) as rnk 
@@ -352,3 +364,56 @@ INSERT INTO comments VALUES ('u3', 'page2', '100');
 					on a.member_id=b.member_id 
 					where a.company_name='microsoft' and b.company_name='google' and a.rnk=1 
 						and b.rnk =2;
+		
+		a table with: continent, country, population
+
+		find the country with largest population in each continent, with strictly output: continent, country, population.
+		Consider corner case that two country have same largest population in the same continent
+		
+		************************************************************************
+		CONTINENTS
+		***********************************************************************
+		CREATE TABLE continents (
+			continent          varchar(80),
+			country            varchar(80),
+			population         int
+		);
+
+		INSERT INTO continents VALUES ('Asia','China', 100);
+		INSERT INTO continents VALUES ('Asia','India', 100);
+		INSERT INTO continents VALUES ('Africa','South Africa', 50);
+		INSERT INTO continents VALUES ('Africa','Egypt', 20);
+		INSERT INTO continents VALUES ('North America','USA', 50);
+		INSERT INTO continents VALUES ('North America','Canada', 50);
+		
+		select a.continent,a.country,a.population 
+			from (select continent,country,population,
+					dense_rank() over (partition by continent order by population desc) 
+					as rnk from continents
+				 ) a 
+				where rnk=1;
+			+---------------+--------------+------------+
+			| continent     | country      | population |
+			+---------------+--------------+------------+
+			| Africa        | South Africa |         50 |
+			| Asia          | China        |        100 |
+			| Asia          | India        |        100 |
+			| North America | USA          |         50 |
+			| North America | Canada       |         50 |
+			+---------------+--------------+------------+
+		select a.continent,b.country,a.max_pop 
+			from (select continent,max(population) as max_pop 
+					from continents group by continent
+				  ) a 
+			join continents b 
+					on a.continent=b.continent 
+					and a.max_pop=b.population;
+			+---------------+--------------+---------+
+			| continent     | country      | max_pop |
+			+---------------+--------------+---------+
+			| Asia          | China        |     100 |
+			| Asia          | India        |     100 |
+			| Africa        | South Africa |      50 |
+			| North America | USA          |      50 |
+			| North America | Canada       |      50 |
+			+---------------+--------------+---------+
