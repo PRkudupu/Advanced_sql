@@ -133,6 +133,29 @@ CONTACTS
 			| 13 |  7 | susan.nelson@comcast.net |
 			| 14 |  9 | roland.keitel@yahoo.com  |
 			+----+----+--------------------------+
+	  6)DELETE DUPLICATE ROWS USING DELETE JOIN STATEMENT
+	 	delete c 
+			from contacts c 
+			join contacts d 
+			on c.email=d.email 
+			wherec.id > d.id;
+		
+		select id,email 
+			from contacts;
+			+----+---------------------------------+
+			| id | email                           |
+			+----+---------------------------------+
+			|  1 | carine.schmitt@verizon.net      |
+			|  2 | jean.king@me.com                |
+			|  3 | peter.ferguson@google.com       |
+			|  4 | janine.labrune@aol.com          |
+			|  5 | jonas.bergulfsen@mac.com        |
+			|  7 | susan.nelson@comcast.net        |
+			|  8 | zbyszek.piestrzeniewicz@att.net |
+			|  9 | roland.keitel@yahoo.com         |
+			| 10 | julie.murphy@yahoo.com          |
+			| 11 | kwai.lee@google.com             |
+			+----+---------------------------------+
 			
 	   
 	
