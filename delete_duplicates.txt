@@ -106,6 +106,19 @@ CONTACTS
 			   ('Susan','Nelson','susan.nelson@comcast.net'),
 			   ('Roland','Keitel','roland.keitel@yahoo.com');
 	
+	 5) FIND THE DUPLICATE ROWS
+		select email,count(email) as dup_count 
+			from contacts 
+			group by email 
+			having count(email) >1;
+			+--------------------------+-----------+
+			| email                    | dup_count |
+			+--------------------------+-----------+
+			| jean.king@me.com         |         2 |
+			| janine.labrune@aol.com   |         2 |
+			| susan.nelson@comcast.net |         2 |
+			| roland.keitel@yahoo.com  |         2 |
+			+--------------------------+-----------+
 	   
 	
 	
