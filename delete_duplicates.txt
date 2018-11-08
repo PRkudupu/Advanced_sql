@@ -119,6 +119,21 @@ CONTACTS
 			| susan.nelson@comcast.net |         2 |
 			| roland.keitel@yahoo.com  |         2 |
 			+--------------------------+-----------+
+		* self join based on the common data
+		  Note: First id would be always smaller. we need to just keep the first id
+		select c.id,d.id,c.email 
+			from contacts c join contacts d 
+			on c.email=d.email 
+			where c.id > d.id;
+			+----+----+--------------------------+
+			| id | id | email                    |
+			+----+----+--------------------------+
+			|  6 |  4 | janine.labrune@aol.com   |
+			| 12 |  2 | jean.king@me.com         |
+			| 13 |  7 | susan.nelson@comcast.net |
+			| 14 |  9 | roland.keitel@yahoo.com  |
+			+----+----+--------------------------+
+			
 	   
 	
 	
