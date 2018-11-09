@@ -138,7 +138,7 @@ CONTACTS
 			from contacts c 
 			join contacts d 
 			on c.email=d.email 
-			wherec.id > d.id;
+			where c.id > d.id;
 		
 		select id,email 
 			from contacts;
@@ -156,6 +156,13 @@ CONTACTS
 			| 10 | julie.murphy@yahoo.com          |
 			| 11 | kwai.lee@google.com             |
 			+----+---------------------------------+
+		7) DELETE DUPLICATE RECORDS USING WINDOW FUNCTIONS
+		    delete from contacts 
+				where id in (select id 
+								from (select a.id,a.email from 
+										(select id,email,row_number() over (partition by email order byid)as rnk from contacts) a 
+											where a.rnk > 1) 
+							temp);
 			
 	   
 	
