@@ -1,0 +1,17 @@
+
+CREATE TABLE products_p (
+    date          varchar(50),
+    qty_prod_a    int,
+    qty_prod_b    int,
+    qty_prod_c    int
+);
+
+INSERT INTO products_p VALUES ('1/1/2013', 100,200,300);
+INSERT INTO products_p VALUES ('1/2/2013', 101,0,301);
+INSERT INTO products_p VALUES ('1/3/2013', 102,202,302);
+
+PIVOT TURNS ROWS INTO COLUMNS
+
+
+UNPIVOT TURNS COLUMNS INTO ROWS
+
