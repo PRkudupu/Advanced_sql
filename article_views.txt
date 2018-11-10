@@ -1,0 +1,49 @@
+		****************************************************************
+	     ARTICLE VIEWS
+		****************************************************************
+	    date	    viewer_id	article_id	author_id
+		2017-08-01	123			456			789
+		2017-08-02	432			543			654
+		2017-08-01	789			456			789
+		2017-08-03	567			780			432
+		2017-08-01	789			457			789
+		
+		CREATE TABLE article_views (
+			date            timestamp,
+			viewer_id       int,
+			article_id      int,
+			author_id       int
+		);
+		
+		INSERT INTO article_views VALUES ('2017-08-01',123,	456	,789);
+		INSERT INTO article_views VALUES ('2017-08-02',432	,543,	654);
+		INSERT INTO article_views VALUES ('2017-08-01',789,	456	,789);
+		INSERT INTO article_views VALUES ('2017-08-03',567,	780,	432);
+		INSERT INTO article_views VALUES ('2017-08-01',789, 457    ,789);
+		
+	   7)HOW MANY ARTICLES AUTHORS HAVE NEVER VIEWED THIER OWN ARTICLE?
+		select vw.viewer_id,au.author_id 
+			from article_views vw left 
+			outer join article_views au 
+				on vw.viewer_id=vw.author_id 
+			where au.author_id isnull;
+			+-----------+-----------+
+			| viewer_id | author_id |
+			+-----------+-----------+
+			|       123 |      NULL |
+			|       432 |      NULL |
+			|       567 |      NULL |
+			+-----------+-----------+
+		
+		8)HOW MANY MEMBERS VIEWED MORE THAN ONE ARTICLES ON 2017-08-01 
+		select viewer_id 
+			from article_views 
+			where date =TIMESTAMP('2017-08-01') 
+			group by viewer_id 
+			having count(viewer_id) > 1;
+			+-----------+
+			| viewer_id |
+			+-----------+
+			|       789 |
+			+-----------+
+		

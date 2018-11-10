@@ -1,0 +1,63 @@
+   ***************************************************************
+   CONTENTS
+   ***************************************************************
+  table: content_id | content_type (comment/ post) | target_id
+  If it is comment，target_id is the userid who posts it.
+  If it is post, then target_id is NULL.
+ 
+	 CREATE TABLE contents(
+		content_id int,
+		content_type varchar(80),
+		target_id varchar(80));
+
+		INSERT INTO contents VALUES (1,'comment','u1');
+		INSERT INTO contents VALUES (2,'post',NULL);
+		INSERT INTO contents VALUES (3,'comment','u2');
+		INSERT INTO contents VALUES (4,'post',NULL);
+		INSERT INTO contents VALUES (5,'comment','u1');
+		INSERT INTO contents VALUES (6,'comment','u1');
+	    INSERT INTO contents VALUES (7,'comment','u3');
+		INSERT INTO contents VALUES (8,'post',NULL);
+		INSERT INTO contents VALUES (9,'video','u1');
+	    INSERT INTO contents VALUES (10,'video','u3');
+		INSERT INTO contents VALUES (11,'post',NULL);
+		INSERT INTO contents VALUES (12,'photo','u1');
+	    INSERT INTO contents VALUES (13,'photo','u3');
+		INSERT INTO contents VALUES (14,'photo','u1');
+	    INSERT INTO contents VALUES (15,'article','u3');
+		
+	
+	table: content_id | content_type (comment/ post) | target_id
+	If it is comment，target_id is the userid who posts it.
+		If it is post, then target_id is NULL.
+	#WHAT IS THE DISTRIBUTION OF COMMENTS?
+	
+	select a.cnt,count(a.cnt) as freq 
+		from (select content_id, count(target_id) as cnt 
+				from contents 
+				where content_type='comment' 
+				group by content_id) a 
+				group by a.cnt;
+		+-----+------+
+		| cnt | freq |
+		+-----+------+
+		|   1 |    5 |
+		+-----+------+
+	
+	#DISTRIBUTION LIST OF EACH CONTENT TYPE
+	#Now what if content_type becomes {comment, video, photo, article}，what is the comment distribution for each content type?	
+	select a.cnt,a.content_type,count(a.cnt) freq 
+		from (select content_id,content_type,count(target_id) as cnt 
+					from contents 
+					group by content_id,content_type) a 
+		group by a.cnt,a.content_type;
+		+-----+--------------+------+
+		| cnt | content_type | freq |
+		+-----+--------------+------+
+		|   1 | comment      |    5 |
+		|   0 | post         |    4 |
+		|   1 | video        |    2 |
+		|   1 | photo        |    3 |
+	    |   1 | article      |    1 |
+	    +-----+--------------+------+
+	

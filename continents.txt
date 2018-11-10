@@ -1,0 +1,52 @@
+		************************************************************************
+		CONTINENTS
+		***********************************************************************
+		a table with: continent, country, population
+
+		find the country with largest population in each continent, with strictly output: continent, country, population.
+		Consider corner case that two country have same largest population in the same continent
+		
+		CREATE TABLE continents (
+			continent          varchar(80),
+			country            varchar(80),
+			population         int
+		);
+
+		INSERT INTO continents VALUES ('Asia','China', 100);
+		INSERT INTO continents VALUES ('Asia','India', 100);
+		INSERT INTO continents VALUES ('Africa','South Africa', 50);
+		INSERT INTO continents VALUES ('Africa','Egypt', 20);
+		INSERT INTO continents VALUES ('North America','USA', 50);
+		INSERT INTO continents VALUES ('North America','Canada', 50);
+		
+		select a.continent,a.country,a.population 
+			from (select continent,country,population,
+					dense_rank() over (partition by continent order by population desc) 
+					as rnk from continents
+				 ) a 
+				where rnk=1;
+			+---------------+--------------+------------+
+			| continent     | country      | population |
+			+---------------+--------------+------------+
+			| Africa        | South Africa |         50 |
+			| Asia          | China        |        100 |
+			| Asia          | India        |        100 |
+			| North America | USA          |         50 |
+			| North America | Canada       |         50 |
+			+---------------+--------------+------------+
+		select a.continent,b.country,a.max_pop 
+			from (select continent,max(population) as max_pop 
+					from continents group by continent
+				  ) a 
+			join continents b 
+					on a.continent=b.continent 
+					and a.max_pop=b.population;
+			+---------------+--------------+---------+
+			| continent     | country      | max_pop |
+			+---------------+--------------+---------+
+			| Asia          | China        |     100 |
+			| Asia          | India        |     100 |
+			| Africa        | South Africa |      50 |
+			| North America | USA          |      50 |
+			| North America | Canada       |      50 |
+			+---------------+--------------+---------+

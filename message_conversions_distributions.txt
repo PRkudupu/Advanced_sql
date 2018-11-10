@@ -1,0 +1,129 @@
+    **************************************************************
+	MESSAGES
+	**************************************************************
+	table: date | u1 | u2 | n_msg
+	n_msg: the number of messsages between one unique user pair at someday.
+	What can we get some insights from this table?
+	user activities, represent closeness.
+	Write a query about the distribution of number of conversations among users on someday. 
+	Before we run any SQL, what is your gut sense that what the distribution will look like? Why?
+	
+	create table messages(
+		date varchar(80),
+		u1 varchar(80),
+		u2 varchar(80),
+		n_msg integer
+	);
+	
+	insert into messages values ('10/01/2018','user1','user2',4);
+	insert into messages values ('10/01/2018','user2','user1',4);
+	insert into messages values ('10/01/2018','user1','user4',2);
+	insert into messages values ('10/02/2018','user1','user2',2);
+	insert into messages values ('10/02/2018','user2','user1',1);
+	insert into messages values ('10/02/2018','user3','user4',10);
+	insert into messages values ('10/02/2018','user3','user2',14);
+	insert into messages values ('10/02/2018','user1','user2',14);
+	insert into messages values ('10/03/2018','user4','user1',4);
+	insert into messages values ('10/03/2018','user4','user5',25);
+	
+	1) GET ALL THE MESSAGES BY ALL USERS ON A PARTICULAR DAY
+	select * 
+		from messages 
+		where date='10/02/2018';
+		+------------+-------+-------+-------+
+		| date       | u1    | u2    | n_msg |
+		+------------+-------+-------+-------+
+		| 10/02/2018 | user1 | user2 |     2 |
+		| 10/02/2018 | user2 | user1 |     1 |
+		| 10/02/2018 | user3 | user4 |    10 |
+		| 10/02/2018 | user3 | user2 |    14 |
+		| 10/02/2018 | user1 | user2 |    14 |
+		+------------+-------+-------+-------+
+	2) SELECT DISTINCT CONVERSATIONS BY ALL USERS ON A PARTICULAR DAY
+	 select u1,count(distinct u2) conversations 
+		from messages 
+		where n_msg >0 and date ='10/02/2018' 
+		group by u1;
+		+-------+---------------+
+		| u1    | conversations |
+		+-------+---------------+
+		| user1 |             1 |
+		| user2 |             1 |
+		| user3 |             2 |
+		+-------+---------------+
+	select u1,count(distinct(u2)) as conversations 
+		from messages  
+		where date ='10/02/2018' 
+		group by u1;
+		+-------+---------------+
+		| u1    | conversations |
+		+-------+---------------+
+		| user1 |             1 |
+		| user2 |             1 |
+		| user3 |             2 |
+		+-------+---------------+
+	3) DISTRIBUTIONS OF CONVERSATIONS 
+		select a.conversations,count(a.u1) freq 
+			from (select u1,count(distinct u2) conversations 
+					 from messages 
+					 where n_msg >0 and date ='10/02/2018' 
+					 group by u1) a 
+			group by a.conversations 
+			order by conversations;
+		+---------------+------+
+		| conversations | freq |
+		+---------------+------+
+		|             1 |    2 |
+		|             2 |    1 |
+		+---------------+------+
+	 4) SUM OF ALL THE MESSAGES SENT BY A USER TO OTHER USERS
+		select u1,u2, sum(n_msg) as sum_msg 
+			from messages 
+			group by u1,u2;
+		+-------+-------+---------+
+		| u1    | u2    | sum_msg |
+		+-------+-------+---------+
+		| user1 | user2 |      20 |
+		| user2 | user1 |       5 |
+		| user1 | user4 |       2 |
+		| user3 | user4 |      10 |
+		| user3 | user2 |      14 |
+		| user4 | user1 |       4 |
+		| user4 | user5 |      25 |
+		+-------+-------+---------+
+	5) TOP PARTNERS WHO SENDS THE MOST NUMBER OF MESSAGES TO EACH OTHER. 
+	    select u1, max(sum_n_msg) sum_top 
+			from (select u1, u2, sum(n_msg) sum_n_msg 
+						from table1 
+						group by u1, u2) tmp 
+			group by u1
+		+-------+-------------+
+		| u1    | top_partner |
+		+-------+-------------+
+		| user1 |          20 |
+		| user2 |           5 |
+		| user3 |          14 |
+		| user4 |          25 |
+		+-------+-------------+	
+	 6) Write a query that we can find the top partner who sends the most number 
+	    of messages to each user. 
+		And then add a outer query to calculate the following ratio:
+	    FROM THE ABOVE QUERY CALCULATE THE FOLLOWING QUERY:
+		sum(n_msg_with_top_partners) / sum(n_msg_with_all_contacts)
+	    
+		select sum(tmp.sum_top)/(select sum(n_msg) 
+									from messages) as fraction 
+			from (select a.u1,max(a.sum_msg) as sum_top 
+						from (select u1,u2,sum(n_msg) as sum_msg 
+								from messages 
+								group by u1,u2 
+								order by sum_msg desc) a 
+								group by a.u1) 
+					tmp;
+		+----------+
+		| fraction |
+		+----------+
+		|   0.8000 |
+		+----------+
+	
+		
