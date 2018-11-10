@@ -1,0 +1,56 @@
+Ads
+	two tables
+
+	adv_info: advertiser_id | ad_id | spend: The Advertiser pay for this ad
+
+	ad_info: ad_id | user_id | price: The user spend through this ad (Assume all prices in this column >0)
+
+	CREATE TABLE adv_info (
+		advertiser_id    int,
+		ad_id    int,
+		spend    float
+	);
+
+	INSERT INTO adv_info VALUES (10, 200,300);
+	INSERT INTO adv_info VALUES (11, 100,1000);
+	INSERT INTO adv_info VALUES (13, 400,3000);
+	INSERT INTO adv_info VALUES (14, 500,5000);
+
+	CREATE TABLE ad_info (
+		ad_id    int,
+		user_id    int,
+		price    float
+	);
+
+	INSERT INTO ad_info VALUES (200, 4,30);
+	INSERT INTO ad_info VALUES (100, 4,100);
+	INSERT INTO ad_info VALUES (400, 4,300);
+	INSERT INTO ad_info VALUES (200, 10,31);
+	INSERT INTO ad_info VALUES (100, 10,110);
+	INSERT INTO ad_info VALUES (400, 10,310);
+
+	select * 
+		from ad_info;
+		+-------+---------+-------+
+		| ad_id | user_id | price |
+		+-------+---------+-------+
+		|   200 |       4 |    30 |
+		|   100 |       4 |   100 |
+		|   400 |       4 |   300 |
+		|   200 |      10 |    31 |
+		|   100 |      10 |   110 |
+		|   400 |      10 |   310 |
+		+-------+---------+-------+
+		
+	select * 
+		from adv_info;
+		+---------------+-------+-------+
+		| advertiser_id | ad_id | spend |
+		+---------------+-------+-------+
+		|            10 |   200 |   300 |
+		|            11 |   100 |  1000 |
+		|            13 |   400 |  3000 |
+		|            14 |   500 |  5000 |
+		+---------------+-------+-------+
+		
+	
