@@ -94,20 +94,16 @@
 	+---------------+
 	
 #LIST ALL DEPARTMENTS ALONG WITH THE NUMBER OF PEOPLE
-	select d.department_id, d.name, count(e.department_id) as count 
-		from department d 
-		left outer join employees e 
-			on d.department_id=e.department_id 
-		group by department_id,d.name;
-	+---------------+------------+-------+
-	| department_id | name       | count |
-	+---------------+------------+-------+
-	|             1 | rate       |     1 |
-	|             2 | refund     |     3 |
-	|             3 | electric   |     1 |
-	|             5 | innovation |     1 |
-	|             4 | UI         |     0 |
-	+---------------+------------+-------+
+	select department_id,count(employee_id) as emp_count  
+		from employee
+	+---------------+-----------+
+	| department_id | emp_count |
+	+---------------+-----------+
+	|             1 |         1 |
+	|             5 |         1 |
+	|             2 |         3 |
+	|             3 |         1 |
+	+---------------+-----------+
 
 #LIST ALL DEPARTMENTS ALONG WITH THE TOTAL SALARY
     select department_id,sum(salary) as total_salary 
