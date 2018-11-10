@@ -41,7 +41,7 @@
 	|          3 |       100 |           4 | 1994-01-02 00:00:00 | san francisco |
 	|          4 |       100 |           4 | 1994-01-02 00:00:00 | san francisco |
 	+------------+-----------+-------------+---------------------+-----------
-	
+	1) WHICH GRADE LEVEL CURRENTLY HAS THE MOST STUDENTS IN THIS SCHOOL DISTRICT?
 	with cte as 
 		(select grade_level,count(distinct student_id) as cnt 
 				from student 
