@@ -1,0 +1,43 @@
+	STUDENT
+	attendance: date | student_id | attendance
+
+	student: student_id | school_id | grade_level | date_of_birth | hometown
+
+	CREATE TABLE attendance (
+		date    timestamp,
+		student_id    int,
+		attendance    int -- 0, 1
+	);
+
+	INSERT INTO attendance VALUES ('2018/01/02', 2,1);
+	INSERT INTO attendance VALUES ('2018/01/02', 1,1);
+	INSERT INTO attendance VALUES ('2018/01/02', 4,1);
+	INSERT INTO attendance VALUES ('2018/02/02', 5,1);
+	INSERT INTO attendance VALUES ('2018/02/22', 1,1);
+	INSERT INTO attendance VALUES ('2018/02/22', 4,1);
+	INSERT INTO attendance VALUES ('2018/02/22', 5,1);
+
+
+	CREATE TABLE student (
+		student_id    int,
+		school_id    int,
+		grade_level int,
+		date_of_birth timestamp,
+		hometown varchar(80)        
+	);
+
+	INSERT INTO student VALUES (1,100, 4 ,'1994/01/02','san francisco');
+	INSERT INTO student VALUES (2,100, 4 ,'1994/01/02','san francisco');
+	INSERT INTO student VALUES (3,100, 4 ,'1994/01/02','san francisco');
+	INSERT INTO student VALUES (4,100, 4 ,'1994/01/02','san francisco');
+	
+	select * 
+		from student;
+	+------------+-----------+-------------+---------------------+---------------+
+	| student_id | school_id | grade_level | date_of_birth       | hometown    |
+	+------------+-----------+-------------+---------------------+---------------+
+	|          1 |       100 |           4 | 1994-01-02 00:00:00 | san francisco |
+	|          2 |       100 |           4 | 1994-01-02 00:00:00 | san francisco |
+	|          3 |       100 |           4 | 1994-01-02 00:00:00 | san francisco |
+	|          4 |       100 |           4 | 1994-01-02 00:00:00 | san francisco |
+	+------------+-----------+-------------+---------------------+-----------
