@@ -47,7 +47,16 @@ DATA
 		| 1/3/2013 | b       |   202 |
 		| 1/3/2013 | c       |   302 |
 		+----------+---------+-------+
-		
+	2) CREATE NEW TABLE FROM THE QUERY ABOVE
+		create table products_unpivot
+			(select * from (
+				select date, 'a' as product, qty_prod_a as quantity_sold from products_p
+				union 
+				select date, 'b' as product, qty_prod_b as quantity_sold from products_p
+				union
+				select date, 'c' as product, qty_prod_c as quantity_sold from products_p
+			) tmp
+		order by date, product;
 
 PIVOT TURNS ROWS INTO COLUMNS
 
