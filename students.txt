@@ -41,3 +41,16 @@
 	|          3 |       100 |           4 | 1994-01-02 00:00:00 | san francisco |
 	|          4 |       100 |           4 | 1994-01-02 00:00:00 | san francisco |
 	+------------+-----------+-------------+---------------------+-----------
+	
+	with cte as 
+		(select grade_level,count(distinct student_id) as cnt 
+				from student 
+				group by grade_level) 
+	select grade_level 
+		from cte 
+		where cnt=(select max(cnt) from cte);
+	+-------------+
+	| grade_level |
+	+-------------+
+	|           4 |
+	+-------------+
