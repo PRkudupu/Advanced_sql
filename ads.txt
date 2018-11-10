@@ -52,5 +52,19 @@ Ads
 		|            13 |   400 |  3000 |
 		|            14 |   500 |  5000 |
 		+---------------+-------+-------+
-		
+	1) THE FRACTION OF ADVERTISER HAS ATLEAST 1 CONVERSION?
 	
+	 select cnt_adv /total coverstion_ratio 
+		from (select count(distinct a.advertiser_id) cnt_adv 
+				from adv_info a 
+				join (select ad_id from ad_info) b 
+				on a.ad_id=b.ad_id) 
+			 temp,
+			 (select count(distinct a.advertiser_id) total 
+				from adv_info a
+			) tmp2;
+		+------------------+
+		| coverstion_ratio |
+		+------------------+
+		|           0.7500 |
+		+------------------+
