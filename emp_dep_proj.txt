@@ -42,6 +42,16 @@ EMPLOYEE DEPARTMENTS  PROJECTS and EMPLOYEE PROJECTS
 		|  5 | Ian Peterson  | Engineering |  80000 |
 		|  6 | John Mills    | Marketing   |  50000 |
 		+----+---------------+-------------+--------+
+	#simple query which displays only id
+	select id 
+		from employees 
+		where salary > 40000;
+		+----+
+		| id |
+		+----+
+		|  5 |
+		|  6 |
+		+----+
 
 #SELECT EMPLOYEES FROM DEPARTMENT WHERE SALARY IS 40K	
 	select e.id,concat(e.first_name," ",e.last_name) as employee_name, d.name,e.salary 
