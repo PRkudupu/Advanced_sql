@@ -96,6 +96,7 @@
 #LIST ALL DEPARTMENTS ALONG WITH THE NUMBER OF PEOPLE
 	select department_id,count(employee_id) as emp_count  
 		from employee
+		group by department_id
 	+---------------+-----------+
 	| department_id | emp_count |
 	+---------------+-----------+
