@@ -89,12 +89,13 @@ EMPLOYEE DEPARTMENTS  PROJECTS and EMPLOYEE PROJECTS
 	
 	#without using limit
 	select id, salary 
-	from employees 
-	where salary in 
-		(select max(salary) from employees);
+		from employees 
+		where salary in 
+		(	select max(salary) from employees);
 			+----+--------+
 			| id | salary |
 			+----+--------+
+			|  5 |  80000 |
 			+----+--------+
 	#using CTE
 	with result as (select id,first_name,salary, DENSE_RANK() 
@@ -164,7 +165,7 @@ EMPLOYEE DEPARTMENTS  PROJECTS and EMPLOYEE PROJECTS
 										from employees 
 										where salary not in(select max(salary) 
 												from employees) group by id,salary)as t);
-
+	
 # SELECT EMPLOYEES ASSIGNED TO PROJECTS
 	select e.id, first_name,title 
 		from employees e 

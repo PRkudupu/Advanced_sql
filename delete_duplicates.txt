@@ -160,7 +160,7 @@ CONTACTS
 		    delete from contacts 
 				where id in (select id 
 								from (select a.id,a.email from 
-										(select id,email,row_number() over (partition by email order byid)as rnk from contacts) a 
+										(select id,email,row_number() over (partition by email order by id)as rnk from contacts) a 
 											where a.rnk > 1) 
 							temp);
 			
