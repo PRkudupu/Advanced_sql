@@ -84,6 +84,8 @@ Ads
 		|   0.7500 |
 		+----------+
 	2) WHAT METRICS WOULD YOU SHOW TO ADVERTISERS (ROI)?
+	   REVENUE / SPENDING
+	
 	select a.advertiser_id,a.ad_id,b.revenue/a.spending roi 
 			from (select advertiser_id,ad_id,sum(spend) spending 
 						from adv_info 
@@ -94,6 +96,50 @@ Ads
 		where a.ad_id=b.ad_id;
 		+---------------+-------+---------------------+
 		| advertiser_id | ad_id | roi                 |
+		+---------------+-------+---------------------+
+		|            10 |   200 | 0.20333333333333334 |
+		|            11 |   100 |                0.21 |
+		|            13 |   400 | 0.20333333333333334 |
+		+---------------+-------+---------------------+
+		
+		#Another query to get the same results
+		select advertiser_id,ad_id,sum(spend) as sum_spend 
+			from adv_info 
+			group by advertiser_id,ad_id;
+		+---------------+-------+-----------+
+		| advertiser_id | ad_id | sum_spend |
+		+---------------+-------+-----------+
+		|            10 |   200 |       300 |
+		|            11 |   100 |      1000 |
+		|            13 |   400 |      3000 |
+		|            14 |   500 |      5000 |
+		+---------------+-------+-----------+
+
+		select u.ad_id,sum(u.price) as sum_rev 
+			from ad_info u 
+			join adv_info a on u.ad_id=a.ad_id 
+			group by u.ad_id;
+		+-------+---------+
+		| ad_id | sum_rev |
+		+-------+---------+
+		|   200 |      61 |
+		|   100 |     210 |
+		|   400 |     610 |
+		+-------+---------+
+
+		select tmp1.advertiser_id,tmp1.ad_id,(tmp2.sum_rev/tmp1.sum_spend)as ROI 
+			from (select advertiser_id,ad_id,sum(spend) as sum_spend 
+					from adv_info 
+					group by advertiser_id,ad_id
+				 ) tmp1 
+			join ( select u.ad_id,sum(u.price) as sum_rev 
+					from ad_info u 
+					join adv_info a on u.ad_id=a.ad_id 
+					group by u.ad_id
+				) tmp2 
+			on tmp1.ad_id=tmp2.ad_id;
+		+---------------+-------+---------------------+
+		| advertiser_id | ad_id | ROI                 |
 		+---------------+-------+---------------------+
 		|            10 |   200 | 0.20333333333333334 |
 		|            11 |   100 |                0.21 |
