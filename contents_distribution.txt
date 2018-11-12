@@ -36,8 +36,9 @@
 		from (select content_id, count(target_id) as cnt 
 				from contents 
 				where content_type='comment' 
-				group by content_id) a 
-				group by a.cnt;
+				group by content_id
+			 ) a 
+		group by a.cnt;
 		+-----+------+
 		| cnt | freq |
 		+-----+------+
@@ -49,7 +50,8 @@
 	select a.cnt,a.content_type,count(a.cnt) freq 
 		from (select content_id,content_type,count(target_id) as cnt 
 					from contents 
-					group by content_id,content_type) a 
+					group by content_id,content_type
+			 ) a 
 		group by a.cnt,a.content_type;
 		+-----+--------------+------+
 		| cnt | content_type | freq |

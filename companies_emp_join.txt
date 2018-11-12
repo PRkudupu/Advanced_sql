@@ -17,18 +17,49 @@
 		INSERT INTO companies VALUES (4,'Microsoft', 1997);
 		INSERT INTO companies VALUES (4,'LinkedIn', 1998);
 		INSERT INTO companies VALUES (4,'Google', 2000);
-		
+		+-----------+--------------+------------+
+		| member_id | company_name | year_start |
+		+-----------+--------------+------------+
+		|         1 | Google       |       1990 |
+		|         1 | Microsoft    |       2000 |
+		|         2 | Microsoft    |       2000 |
+		|         2 | Google       |       2001 |
+		|         3 | Microsoft    |       1997 |
+		|         3 | Google       |       1998 |
+		|         4 | Microsoft    |       1997 |
+		|         4 | LinkedIn     |       1998 |
+		|         4 | Google       |       2000 |
+		+-----------+--------------+------------+
 		1) COUNT MEMBERS WHO EVER MOVED FROM MICROSOFT TO GOOGLE
+		 step 1
+		 select distinct(a.member_id) 
+			from (select member_id,company_name,
+					dense_rank() over (partition by member_id order by year_start asc) as rnk 
+					from companies ) a 
+			join 
+				(select member_id,company_name, dense_rank() over (partition by member_id order by year_start asc) as rnk 
+					from companies) b 
+			on a.member_id=b.member_id 
+			where a.company_name='microsoft' and b.company_name='google' 
+			+-----------+-----+--------------+-----------+-----+--------------+
+			| member_id | rnk | company_name | member_id | rnk | company_name |
+			+-----------+-----+--------------+-----------+-----+--------------+
+			|         1 |   2 | Microsoft    |         1 |   1 | Google       |
+			|         2 |   1 | Microsoft    |         2 |   2 | Google       |
+			|         3 |   1 | Microsoft    |         3 |   2 | Google       |
+			|         4 |   1 | Microsoft    |         4 |   3 | Google       |
+			+-----------+-----+--------------+-----------+-----+--------------+
+        step2 : specify the rank
 		select distinct(a.member_id) 
 			from (select member_id,company_name,
 					dense_rank() over (partition by member_id order by year_start asc) as rnk 
 					from companies ) a 
-					join 
+			join 
 				(select member_id,company_name, dense_rank() over (partition by member_id order by year_start asc) as rnk 
 					from companies) b 
-					on a.member_id=b.member_id 
-					where a.company_name='microsoft' and b.company_name='google' and a.rnk=1 
-						and b.rnk >=2;
+			on a.member_id=b.member_id 
+			where a.company_name='microsoft' and b.company_name='google' 
+			and a.rnk=1 and b.rnk >=2;
 			+-----------+
 			| member_id |
 			+-----------+
@@ -56,12 +87,12 @@
 			from (select member_id,company_name,
 					dense_rank() over (partition by member_id order by year_start asc) as rnk 
 					from companies ) a 
-					join 
+			join 
 				(select member_id,company_name, dense_rank() over (partition by member_id order by year_start asc) as rnk 
 					from companies) b 
-					on a.member_id=b.member_id 
-					where a.company_name='microsoft' and b.company_name='google' and a.rnk=1 
-						and b.rnk =2;
+			on a.member_id=b.member_id 
+			where a.company_name='microsoft' and b.company_name='google' 
+			and a.rnk=1 and b.rnk =2;
 		
 		
 		
