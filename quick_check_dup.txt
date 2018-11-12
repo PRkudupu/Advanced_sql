@@ -1,0 +1,30 @@
+CHECK IF THE RECORDS IN THE TABLE IS DELETED WITHOUT RUNNING ANY COMPLEX QUERY
+
+  CREATE TABLE AND LOAD DATA
+  create table employee(id int,name varchar(20));
+  insert into employee values (1,"Prathap");
+  insert into employee values (3,"Sandeep");
+  
+  select * from employee;
+	+------+---------+
+	| id   | name    |
+	+------+---------+
+	|    1 | Prathap |
+	|    3 | Sandeep |
+	+------+---------+
+	
+   QUERY TO CHECK IF THE RECORDS HAS BEEN DELETED
+   
+   select count(id),max(id), 
+		case when count(id) = max(id) then "NotDeleted" 
+		else "Deleted" end  as del_status 
+   from employee;
+	+-----------+---------+------------+
+	| count(id) | max(id) | del_status |
+	+-----------+---------+------------+
+	|         2 |       3 | Deleted    |
+	+-----------+---------+------------+
+	
+	Note: In this scenario we need to have integer column which is incremented by 1
+   
+   
