@@ -27,6 +27,14 @@
 	insert into department values(4,'UI');
 	insert into department values(3,'electric');
 	insert into department values(5,'innovation');
+	+---------------+------------+
+	| department_id | name       |
+	+---------------+------------+
+	|             1 | rate       |
+	|             2 | refund     |
+	|             3 | electric   |
+	|             5 | innovation |
+	+---------------+------------+
 
 #SELECT EMPLOYEES WHO DO NOT HAVE A BOSS
 	select e.employee_id,e.name  

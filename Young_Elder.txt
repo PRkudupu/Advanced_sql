@@ -1,0 +1,46 @@
+3 taBLES;
+Product [ProductID, ProductName]
+Customer [CustomerID, CustomerName, DOB, Gender]
+Sales [ SalesID, CustomerID, ProductID, Quantity]
+
+FInd the youngest and the oldest customer by gender who purchased atleast 2 items
+
+Find the youngest
+Findt the Oldest
+Find in the Sales table who has row greater than 2
+
+--Youngest
+Select min(DOB) as youngest from Customer
+--Eldest
+Select max(DOB) as eldest from customer
+
+Select * from sales  s
+		 join customer c
+		 on s.id=c.id
+		 group by s.SalesID
+		 having count(s.SalesID) > 2
+
+CREATE TABLES
+create table product(product_id int,product_name varchar(50));
+create table customer (customer_id int, customer_name varchar(50), dob varchar(50), gender varchar(10));
+create table sale(sales_id int,customer_id int,product_id int,quantity int);
+
+insert into product values(1,'cell')
+insert into product values (2,'cover')
+
+insert into customer values (1,'prathap','01/05/1979','M');
+insert into customer values (2,'sandeep','01/05/1981','M');
+insert into customer values (3,'soumya','01/05/1983','F');
+insert into customer values (4,'sandeep','01/05/1984','F');
+
+
+insert into sale values (1,1,1,2);
+insert into sale values (2,2,2,1);
+insert into sale values (3,3,2,3);
+insert into sale values (4,4,2,1);
+
+with cte as (select row_number() over (partition by gender order by dob) as rnk, customer_id,customer_name,dob from customer)  select * from  cte where customer_id in (select customer_id from sale where quantity>=2);
+
+
+
+
