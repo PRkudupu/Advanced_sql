@@ -61,6 +61,9 @@
 	+-------------+---------+------------+-------------+
 	
 #LIST EMPLOYEES WHO HAVE BIGGEST SALARY IN THIER DEPARTMENTS
+   select employee_id, department_id,max(salary) 
+   	from employee group by department_id;
+
    select e.employee_id,e.department_id,b.max_salary 
 		from employee e 
 		join (select department_id,max(salary) as max_salary 
