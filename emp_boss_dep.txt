@@ -37,11 +37,9 @@
 	+---------------+------------+
 
 #SELECT EMPLOYEES WHO DO NOT HAVE A BOSS
-	select e.employee_id,e.name  
+	select employee_id,name  
 		from employee e  
-	left outer join employee b  
-		on e.boss_id=b.employee_id  
-		where e.boss_id is null;
+		where boss_id is null;
 	+-------------+------------+
 	| employee_id | name       |
 	+-------------+------------+
@@ -81,9 +79,9 @@
 	
 #LIST DEPARTMENTS THAT HAVE LESS THAN 3 PEOPLE IN IT.
     select department_id 
-		from employee 
-		group by department_id 
-		having count(department_id) < 3;
+	from employee 
+	group by department_id 
+	having count(department_id) < 3;
 	+---------------+
 	| department_id |
 	+---------------+
@@ -91,19 +89,7 @@
 	|             5 |
 	|             3 |
 	+---------------+
-	Note: we do not have to specify the count column
-	select department_id 
-		from employee 
-		group by department_id 
-		having count(department_id) < 3;
-	+---------------+
-	| department_id |
-	+---------------+
-	|             1 |
-	|             5 |
-	|             3 |
-	+---------------+
-	
+
 #LIST ALL DEPARTMENTS ALONG WITH THE NUMBER OF PEOPLE
 	select department_id,count(employee_id) as emp_count  
 		from employee

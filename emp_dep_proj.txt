@@ -22,12 +22,6 @@ EMPLOYEE DEPARTMENTS  PROJECTS and EMPLOYEE PROJECTS
 		where employees.department_id=departments.id 
 		group by employees.id,employees.salary 
 		having employees.salary > 40000;
-		+----+---------------+-------------+--------+
-		| id | employee_name | name        | salary |
-		+----+---------------+-------------+--------+
-		|  5 | Ian Peterson  | Engineering |  80000 |
-		|  6 | John Mills    | Marketing   |  50000 |
-		+----+---------------+-------------+--------+
 
 	#using join
 	select e.id,concat(e.first_name," ",e.last_name) as employee_name, d.name,e.salary 
@@ -81,27 +75,18 @@ EMPLOYEE DEPARTMENTS  PROJECTS and EMPLOYEE PROJECTS
 		group by salary,id 
 		order by salary 
 		desc limit 1;
-			+----+-------------+
-			| id | max(salary) |
-			+----+-------------+
-			|  5 |       80000 |
-			+----+-------------+
 	
 	#without using limit
 	select id, salary 
 		from employees 
 		where salary in 
 		(	select max(salary) from employees);
-			+----+--------+
-			| id | salary |
-			+----+--------+
-			|  5 |  80000 |
-			+----+--------+
-	#using CTE
+	
+        #using CTE
 	with result as (select id,first_name,salary, DENSE_RANK() 
-						over (order by salary desc) as rnk  
-						from employees)  
-						select * from result where rnk=1;
+			over (order by salary desc) as rnk  
+			from employees)  
+	select * from result where rnk=1;
 			+----+------------+--------+-----+
 			| id | first_name | salary | rnk |
 			+----+------------+--------+-----+
