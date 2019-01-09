@@ -1,5 +1,5 @@
 Ads
-	two tables
+	 Here we have 2 tables
 
 	adv_info: advertiser_id | ad_id | spend: The Advertiser pay for this ad
 
@@ -63,11 +63,6 @@ Ads
 			 (select count(distinct a.advertiser_id) total 
 				from adv_info a
 			) tmp2;
-		+------------------+
-		| coverstion_ratio |
-		+------------------+
-		|           0.7500 |
-		+------------------+
 	 # Another query to get the same results
 	 
 	 select tmp1.cnv_cnt/tmp2.total_adv as fraction 
