@@ -1,12 +1,8 @@
     **************************************************************
 	MESSAGES
 	**************************************************************
-	table: date | u1 | u2 | n_msg
+	Table: date | u1 | u2 | n_msg
 	n_msg: the number of messsages between one unique user pair at someday.
-	What can we get some insights from this table?
-	user activities, represent closeness.
-	Write a query about the distribution of number of conversations among users on someday. 
-	Before we run any SQL, what is your gut sense that what the distribution will look like? Why?
 	
 	create table messages(
 		date varchar(80),
@@ -26,6 +22,12 @@
 	insert into messages values ('10/03/2018','user4','user1',4);
 	insert into messages values ('10/03/2018','user4','user5',25);
 	
+	
+	What can we get some insights from this table?
+	user activities, represent closeness.
+	Write a query about the distribution of number of conversations among users on someday. 
+	Before we run any SQL, what is your gut sense that what the distribution will look like? Why?
+	
 	1) GET ALL THE MESSAGES BY ALL USERS ON A PARTICULAR DAY
 	select * 
 		from messages 
@@ -44,14 +46,7 @@
 		from messages 
 		where n_msg >0 and date ='10/02/2018' 
 		group by u1;
-		+-------+---------------+
-		| u1    | conversations |
-		+-------+---------------+
-		| user1 |             1 |
-		| user2 |             1 |
-		| user3 |             2 |
-		+-------+---------------+
-	select u1,count(distinct(u2)) as conversations 
+	 select u1,count(distinct(u2)) as conversations 
 		from messages  
 		where date ='10/02/2018' 
 		group by u1;
@@ -107,8 +102,9 @@
 		+-------+-------------+	
 	 6) Write a query that we can find the top partner who sends the most number 
 	    of messages to each user. 
-		And then add a outer query to calculate the following ratio:
-	    FROM THE ABOVE QUERY CALCULATE THE FOLLOWING QUERY:
+	   And then add a outer query to calculate the following ratio:
+	    
+            FROM THE ABOVE QUERY CALCULATE THE FOLLOWING QUERY:
 		sum(n_msg_with_top_partners) / sum(n_msg_with_all_contacts)
 	    
 		select sum(tmp.sum_top)/(select sum(n_msg) 

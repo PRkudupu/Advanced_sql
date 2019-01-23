@@ -2,20 +2,8 @@
 	******************************************************************************
 	COMMENTS
 	******************************************************************************
-	Calculate the average comments for the users with >= 2 posts, and each post has comments greater or equal to 40
 	#DDL SCRIPTS
-	Comments I
-	name	posts	comments
-	u1	page1	90
-	u1	page2	50
-	u1	page3	40
-	u2	page2	55
-	u2	page4	45
-	u4	page4	30
-	u4	page3	40
-	u3	page2	100
 	
-
 	CREATE TABLE comments (
 		name            varchar(80),
 		posts           varchar(80),
@@ -31,6 +19,16 @@
 	INSERT INTO comments VALUES ('u4', 'page3', '40');
 	INSERT INTO comments VALUES ('u3', 'page2', '100');
 
+	Comments I
+	name	posts	comments
+	u1	page1	90
+	u1	page2	50
+	u1	page3	40
+	u2	page2	55
+	u2	page4	45
+	u4	page4	30
+	u4	page3	40
+	u3	page2	100
 
 # CALCULATE THE AVERAGE COMMENTS FOR THE USERS WITH >= 2 POSTS, AND EACH POST HAS COMMENTS GREATER OR EAUAL TO 40
 	# Using join
@@ -65,7 +63,7 @@
 	Step by step approach
 		1) AVERAGE COMMENTS FOR THE USERS 
 		2) WITH >= 2 POSTS, 
-		3) AND EACH POST HAS COMMENTS GREATER OR EAUAL TO 40
+		3) AND EACH POST HAS COMMENTS GREATER OR EQUAL TO 40
 		
 		1)
 		select name,round(avg(comments),2) as avg_comments 

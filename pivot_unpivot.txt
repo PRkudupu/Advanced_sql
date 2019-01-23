@@ -10,7 +10,6 @@
 	INSERT INTO products_p VALUES ('1/2/2013', 101,0,301);
 	INSERT INTO products_p VALUES ('1/3/2013', 102,202,302);
 
-DATA
 	select * 
 		from products_p;
 	+----------+------------+------------+------------+
@@ -20,7 +19,8 @@ DATA
 	| 1/2/2013 |        101 |          0 |        301 |
 	| 1/3/2013 |        102 |        202 |        302 |
 	+----------+------------+------------+------------+
-	1) YOU HAVE A TABLE T1 WITH THE QUANTITTY OF PRODUCT A, B, AND C SOLD PER DAY, AS SHOWN ABOVE
+	
+       1) YOU HAVE A TABLE T1 WITH THE QUANTITTY OF PRODUCT A, B, AND C SOLD PER DAY, AS SHOWN ABOVE
 	   THERE ARE ONLY 3 POSSIBLE PRODUCTS OF PRODUCT A, B, AND C solf per day, as shown above
 	   WRITE SQL CODE TO REFORMAT THE DATA AS SHOWN BELOW
 	   THE RESULTING DATA SHOULD BE IN 3 COLUMNS : {DATE,PRODUCT NAME, QUANTITY SOLD}

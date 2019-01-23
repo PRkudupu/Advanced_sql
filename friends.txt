@@ -1,4 +1,5 @@
-	create table table1(time date,user_id int,app varchar(40),event varchar(40));
+	
+       create table table1(time date,user_id int,app varchar(40),event varchar(40));
 
 	insert into table1 values('2018-10-01',1,'facebook','processed');
 	insert into table1 values('2018-10-01',1,'facebook','sent');
@@ -32,7 +33,7 @@
 	2) GET THE NO OF USERS WHO SENT THE MESSAGES IN OCT
 	Month of oct how many users who have sent messages;
                                                                         
-    select user_id 
+       select user_id 
 		from table1 
 		where event='sent' and time between '2018-10-01' and '2018-10-31';
 		+---------+
@@ -53,7 +54,7 @@
 		|        3 |
 		+----------+   
                                                                         
-    4)GET THE DISTINCT COUNT OF USERS PER DAY
+       4)GET THE DISTINCT COUNT OF USERS PER DAY
 	select time,count(distinct user_id) as no_users 
 		from table1 
 		where time between '2018-10-01' and '2018-10-31' 
@@ -65,10 +66,10 @@
 		| 2018-10-02 |        1 |
 		+------------+----------+
 	5)PERCENTAGE OF USER ACCEPTED THE FRIENDS REQUEST IN THE MONTH OF OCT
-
-		Total of sent
-		sum (accepted)/total sent 
-        select a.total/b.sent as ratio 
+	Total of sent
+	sum (accepted)/total sent 
+        
+	select a.total/b.sent as ratio 
 			from (select count(event) as total
 					from table1 
 					where event='accepted'

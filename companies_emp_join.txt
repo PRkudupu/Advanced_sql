@@ -30,8 +30,8 @@
 		|         4 | LinkedIn     |       1998 |
 		|         4 | Google       |       2000 |
 		+-----------+--------------+------------+
-		1) COUNT MEMBERS WHO EVER MOVED FROM MICROSOFT TO GOOGLE
-		 step 1
+	1) COUNT MEMBERS WHO EVER MOVED FROM MICROSOFT TO GOOGLE
+	step 1
 		 select distinct(a.member_id) 
 			from (select member_id,company_name,
 					dense_rank() over (partition by member_id order by year_start asc) as rnk 
@@ -82,7 +82,7 @@
 			|         4 | Microsoft    | Google       |
 			+-----------+--------------+--------------+
 		
-		2)) COUNT MEMBERS WHO DIRECTLY MOVED FROM MICROSOFT TO GOOGLE? (MICRSOFT --LINKEDIN -- GOOGLE DOESN'T COUNT)
+		2) COUNT MEMBERS WHO DIRECTLY MOVED FROM MICROSOFT TO GOOGLE? (MICORSOFT --LINKEDIN -- GOOGLE DOESN'T COUNT)
 		select distinct(a.member_id) 
 			from (select member_id,company_name,
 					dense_rank() over (partition by member_id order by year_start asc) as rnk 
