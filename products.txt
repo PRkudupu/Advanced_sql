@@ -1,0 +1,73 @@
+create table
+order_tbl
+(
+customer_id bigint,
+product_id bigint,
+order_id bigint,
+price decimal,
+order_date date
+);
+
+create table
+product_tbl
+	(
+	product_id bigint,
+	product_name varchar(100),
+	prod_desc varchar(100),
+	default_price decimal(19,4)
+	);
+
+	insert into order_tbl values(1,10,301,121,'2019-01-01');
+	insert into order_tbl values(2,10,302,111,'2019-01-02');
+	insert into order_tbl values(3,10,303,129,'2019-01-01');
+	insert into order_tbl values(2,20,304,110,'2019-01-03');
+	insert into order_tbl values(3,20,305,110,'2019-01-01');
+	insert into order_tbl values(3,20,306,200,'2019-01-02');
+
+	insert into product_tbl values(10,'chair','red',121.00);
+	insert into product_tbl values(20,'high chair','cherry',108.00);
+	insert into product_tbl values(30,'bar stool','black',200.00);
+
+	customer_id  product_id order_id  price  order_date
+	1              10          301    	121		01/01/2019
+	2			   10          302  	121 	01/02/2019
+	3              10          303		121		01/01/2019
+	2              20          304		110		01/03/2019
+	3              20          305		110		01/01/2019
+	3			   30          306		200		01/02/2019
+
+	product_id	 product_name   prod_desc 	default_price
+	10			 chair          red        121    
+	20			 high chair     cherry     110
+	30           bar stool      black      200 
+
+	q1) Get the number of orders for each product_id by day
+		select count(order_id) cnt_order_id,order_date,product_id 
+			from order_tbl 
+			group by order_date,product_id;
+			+--------------+------------+------------+
+			| cnt_order_id | order_date | product_id |
+			+--------------+------------+------------+
+			|            2 | 2019-01-01 |         10 |
+			|            1 | 2019-01-02 |         10 |
+			|            1 | 2019-01-03 |         20 |
+			|            1 | 2019-01-01 |         20 |
+			|            1 | 2019-01-02 |         20 |
+			+--------------+------------+------------+
+
+	q2) Get the list of customers that have orders on 2 consecutive days 
+		select a.rnk,a.customer_id 
+			from
+				(select dense_rank() over (order by order_date) as rnk,customer_id from order_tbl) a
+				where a.rnk > 2
+	 q3) Write a query to calculate each customers total historical spend? 
+		 The order table will only have a price in the cases where they paid a price different than the product price
+		 select sum(price), p.default_price-o.price as product_price 
+			from product_tbl  p join order_tbl o 
+				on p.product_id = o.product_id 
+			group by o.customer_id
+	 q4) For each day, find the number new customers (customers who made their first transaction)  
+		 select a.customer_id 
+			from
+				(select dense_rank() over (order by customer_id) as rnk,customer_id from order_tbl) a
+				where a.rnk = 1

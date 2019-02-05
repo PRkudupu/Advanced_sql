@@ -21,6 +21,9 @@ insert into sale values (1,1,1,2);
 insert into sale values (2,2,2,1);
 insert into sale values (3,3,2,3);
 insert into sale values (4,4,2,1);
+insert into sale values (5,1,2,2);
+insert into sale values (6,2,1,1);
+
 
 PRODUCT
 +------------+--------------------------+---------------------+-----------------+
@@ -51,14 +54,8 @@ SALE
 +----------+-------------+------------+----------+
 Find the youngest and the oldest customer by gender who purchased atleast 2 items
 
-Find the youngest
-Findt the Oldest
-Find in the Sales table who has row greater than 2
 
---Youngest
-Select min(DOB) as youngest from Customer
---Eldest
-Select max(DOB) as eldest from customer
+
 
 Select * from sales  s
 		 join customer c
@@ -66,9 +63,31 @@ Select * from sales  s
 		 group by s.SalesID
 		 having count(s.SalesID) > 2
 
+1) Find the youngest
+--Youngest
+Select max(DOB) as youngest from Customer
+
+2) Find the Oldest
+--Eldest
+Select min(DOB) as eldest from customer
 
 
-with cte as (select row_number() over (partition by gender order by dob) as rnk, customer_id,customer_name,dob from customer)  select * from  cte where customer_id in (select customer_id from sale where quantity>=2);
+3) Find in the Sales table who has row greater than 2
+Select * from sales  s
+		 join customer c
+		 on s.id=c.id
+		 group by s.SalesID
+		 having count(s.SalesID) > 2
+with cte as (select row_number() over (partition by gender order by dob) as rnk, customer_id,customer_name,dob from customer)  
+
+select * from  cte where customer_id in (select customer_id from sale where quantity>=2);
+
+
+Eriscent company :Friday is the interview
+vladamier:
+denys :
+David Callaghan 
+
 
 
 
