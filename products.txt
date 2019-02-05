@@ -56,16 +56,19 @@ product_tbl
 			+--------------+------------+------------+
 
 	q2) Get the list of customers that have orders on 2 consecutive days 
-		select a.rnk,a.customer_id 
-			from
-				(select dense_rank() over (order by order_date) as rnk,customer_id from order_tbl) a
-				where a.rnk > 2
-	 q3) Write a query to calculate each customers total historical spend? 
+		select customer_id from order_tbl 
+			where order_date BETWEEN '2019-01-01' AND  '2019-01-01' 
+			group by customer_id having count(customer_id) >1
+	 
+	q3) Write a query to calculate each customers total historical spend? 
 		 The order table will only have a price in the cases where they paid a price different than the product price
 		 select sum(price), p.default_price-o.price as product_price 
 			from product_tbl  p join order_tbl o 
 				on p.product_id = o.product_id 
 			group by o.customer_id
+			
+			select ord.customer_id from order_tbl ord join order_tbl ord1 on 
+                   ord.customer_id = ord1.customer_id and date_days_add(ord.order_date,1) = ord1.order_date
 	 q4) For each day, find the number new customers (customers who made their first transaction)  
 		 select a.customer_id 
 			from
