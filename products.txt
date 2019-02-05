@@ -59,18 +59,34 @@ product_tbl
 		select customer_id from order_tbl 
 			where order_date BETWEEN '2019-01-01' AND  '2019-01-01' 
 			group by customer_id having count(customer_id) >1
+			+-------------+
+			| customer_id |
+			+-------------+
+			|           1 |
+			|           3 |
+			|           3 |
+			+-------------+
 	 
 	q3) Write a query to calculate each customers total historical spend? 
 		 The order table will only have a price in the cases where they paid a price different than the product price
-		 select sum(price), p.default_price-o.price as product_price 
-			from product_tbl  p join order_tbl o 
-				on p.product_id = o.product_id 
-			group by o.customer_id
+		 
+		select ord.customer_id,sum(coalesce(ord.price,prd.default_price)) as historical_spend 
+			from order_tbl ord
+			join product_tbl prd
+			on ord.product_id=prd.product_id
+			group by ord.customer_id;
+		+-------------+------------------+
+		| customer_id | historical_spend |
+		+-------------+------------------+
+		|           1 |         121.0000 |
+		|           2 |         221.0000 |
+		|           3 |         439.0000 |
+		+-------------+------------------+
 			
-			select ord.customer_id from order_tbl ord join order_tbl ord1 on 
-                   ord.customer_id = ord1.customer_id and date_days_add(ord.order_date,1) = ord1.order_date
+			
 	 q4) For each day, find the number new customers (customers who made their first transaction)  
-		 select a.customer_id 
-			from
-				(select dense_rank() over (order by customer_id) as rnk,customer_id from order_tbl) a
-				where a.rnk = 1
+		  	   
+		   select count(a.customer_id) as cnt,ord.order_date 
+				from order_tbl ord left join (select customer_id,min(order_date) min_date from order_tbl group by customer_id) a 
+				on ord.order_date =a.min_date and a.customer_id=ord.customer_id 
+				group by ord.order_date;
