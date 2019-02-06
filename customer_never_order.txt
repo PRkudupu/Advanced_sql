@@ -1,7 +1,7 @@
 SQL Schema
 Suppose that a website contains two tables, the Customers table and the Orders table. Write a SQL query to find all customers who never order anything.
 
-Table: Customers.
+Table: Customer.
 
 	+----+-------+
 	| Id | Name  |
@@ -30,7 +30,15 @@ Using the above tables as example, return the following:
 	
 	DDL SCRIPTS
 	create table customer (id int,name varchar(100))
+	insert into customer values(1,'Joe');
+	insert into customer values(2,'Henry');
+	insert into customer values(3,'Sam');
+	insert into customer values(4,'Max');
 	
-	select cust.name from customers cust 
+	create table orders(id int,customer_id int);
+	insert into orders values(1,3);
+	insert into orders values(3,1);
+	
+	 select cust.name from customer cust 
 		left join orders ord on cust.id=ord.id
-		where cust.id is null
+		where ord.id is null;
