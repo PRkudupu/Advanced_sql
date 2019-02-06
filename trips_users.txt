@@ -54,13 +54,35 @@ For the above tables, your SQL query should return the following rows with the c
 	insert into trip values ( 8  ,     2     ,    12     ,    12   ,     'completed'      ,'2013-10-03');
 	insert into trip values ( 9  ,     3     ,    10     ,    12   ,     'completed'      ,'2013-10-03');
 	insert into trip values ( 10 ,     4     ,    13     ,    12   , 'cancelled_by_driver','2013-10-03');
+	
+	create table users(Users_Id int ,Banned varchar(20), Role varchar(20));
+	insert into users values (    1     ,   'No'  ,  'client' );
+	insert into users values (    2     ,   'Yes'  , 'client' );
+	insert into users values (    3     ,   'No'   , 'client' );
+	insert into users values (    4     ,   'No'   , 'client' );
+	insert into users values (    10    ,   'No'   , 'driver' );
+	insert into users values (    11    ,   'No'   , 'driver' );
+	insert into users values (    12    ,   'No'   , 'driver' );
+	insert into users values (    13    ,   'No'   , 'driver' );
   
-  1) Get only unbanned users
-  2) Get counts of cancellation for each user
-  3) rate = sum of calculation/ total
+  1) Get count of trips for unbanned users for all rides
+  2) Get count of trips for unbanned users for cancelled rides
+  3) cancellation_rate = count of cancelled trip/ count of all rids
   
-       select a.day, cast(a.cnt/(select count(id) from trip),decimal(4,2)) as cancellation_rate
-         (select day,count(id) cnt from trip tr join user us on tr.id=us.user_id 
-			where us.banned='yes' and us.status='completed' group by day) a
+    select a.request_at as 'Date' ,cast(coalesce((b.cancelled_cnt/a.cnt),0.00) as decimal(4,2)) as 'Cancellation Rate'
+    from  
+          (select Request_at,count(tr.id) cnt
+            from trip tr join users us  
+                on tr.client_id=us.users_id 
+           where us.banned='no' group by request_at) a 
+    left outer join
+         (select request_at,count(tr.id) cancelled_cnt 
+			from trip tr join users us 
+				on  tr.client_id=us.users_id 
+			where banned='no' and status !='completed' 
+          group by request_at) b
+    on a.request_at=b.request_at;
+    
+     
    
    
