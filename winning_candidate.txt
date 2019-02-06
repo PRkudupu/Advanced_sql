@@ -1,0 +1,53 @@
+SQL Schema
+Table: Candidate
+
++-----+---------+
+| id  | Name    |
++-----+---------+
+| 1   | A       |
+| 2   | B       |
+| 3   | C       |
+| 4   | D       |
+| 5   | E       |
++-----+---------+  
+Table: Vote
+
++-----+--------------+
+| id  | candidate_id  |
++-----+--------------+
+| 1   |     2        |
+| 2   |     4        |
+| 3   |     3        |
+| 4   |     2        |
+| 5   |     5        |
++-----+--------------+
+id is the auto-increment primary key,
+candidate_id is the id appeared in Candidate table.
+Write a sql to find the name of the winning candidate, the above example will return the winner B.
+
++------+
+| Name |
++------+
+| B    |
++------+
+	DDL SCRIPTS
+	create table candidate(id int,name varchar(100));
+	insert into candidate values (1,'A');
+	insert into candidate values (1,'B');
+	insert into candidate values (1,'C');
+	insert into candidate values (1,'D');
+	insert into candidate values (1,'E');
+	
+	creat table vote(id int,candidate_id int);
+	insert into vote values(1,2);
+	insert into vote values(2,4);
+	insert into vote values(3,3);
+	insert into vote values(4,2);
+	insert into vote values(5,5);
+	
+	SOLUTION
+	select cand.name from candidate cand 
+		join (select count(id),candidate_id from vote group by candidate_id order by count(id) desc limit 1) a 
+		on cand.id=a.candidate_id;
+		
+		

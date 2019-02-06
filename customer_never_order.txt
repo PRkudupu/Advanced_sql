@@ -39,6 +39,12 @@ Using the above tables as example, return the following:
 	insert into orders values(1,3);
 	insert into orders values(3,1);
 	
-	 select cust.name from customer cust 
+	USING JOIN
+	select cust.name from customer cust 
 		left join orders ord on cust.id=ord.id
 		where ord.id is null;
+	
+	select name as 'Customer'
+		from customer
+		where id not in (select id from orders)
+		
