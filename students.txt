@@ -26,25 +26,35 @@
 		hometown varchar(80)        
 	);
 
-	INSERT INTO student VALUES (1,100, 4 ,'1994/01/02','san francisco');
-	INSERT INTO student VALUES (2,100, 4 ,'1994/01/02','san francisco');
-	INSERT INTO student VALUES (3,100, 4 ,'1994/01/02','san francisco');
-	INSERT INTO student VALUES (4,100, 4 ,'1994/01/02','san francisco');
-	INSERT INTO student VALUES (5,100, 3 ,'1994/01/02','san francisco');
-	INSERT INTO student VALUES (6,100, 3 ,'1994/01/02','san francisco');
-	INSERT INTO student VALUES (7,100, 2 ,'1994/01/02','san francisco');
+	INSERT INTO student VALUES (1,100, 4 ,'1994/01/02','LA');
+	INSERT INTO student VALUES (2,100, 4 ,'1994/01/02','LA');
+	INSERT INTO student VALUES (3,100, 4 ,'1994/01/02','LA');
+	INSERT INTO student VALUES (4,100, 4 ,'1994/01/02','LA');
+	INSERT INTO student VALUES (5,100, 3 ,'1994/01/02','LA');
+	INSERT INTO student VALUES (6,100, 3 ,'1994/01/02','LA');
+	INSERT INTO student VALUES (7,100, 2 ,'1994/01/02','LA');
 	
-	select * 
-		from student;
-	+------------+-----------+-------------+---------------------+---------------+
-	| student_id | school_id | grade_level | date_of_birth       | hometown    |
-	+------------+-----------+-------------+---------------------+---------------+
-	|          1 |       100 |           4 | 1994-01-02 00:00:00 | san francisco |
-	|          2 |       100 |           4 | 1994-01-02 00:00:00 | san francisco |
-	|          3 |       100 |           4 | 1994-01-02 00:00:00 | san francisco |
-	|          4 |       100 |           4 | 1994-01-02 00:00:00 | san francisco |
-	+------------+-----------+-------------+---------------------+-----------
+	+------------+-----------+-------------+---------------------+----------+
+	| student_id | school_id | grade_level | date_of_birth       | hometown |
+	+------------+-----------+-------------+---------------------+----------+
+	|          1 |       100 |           4 | 1994-01-02 00:00:00 | LA       |
+	|          2 |       100 |           4 | 1994-01-02 00:00:00 | LA       |
+	|          3 |       100 |           4 | 1994-01-02 00:00:00 | LA       |
+	|          4 |       100 |           4 | 1994-01-02 00:00:00 | LA       |
+	|          5 |       100 |           3 | 1994-01-02 00:00:00 | LA       |
+	|          6 |       100 |           3 | 1994-01-02 00:00:00 | LA       |
+	|          7 |       100 |           2 | 1994-01-02 00:00:00 | LA       |
+	+------------+-----------+-------------+---------------------+----------+
 	1) WHICH GRADE LEVEL CURRENTLY HAS THE MOST STUDENTS IN THIS SCHOOL DISTRICT?
+	select  max(a.student_cnt) 
+		from (select grade_level ,count(student_id) student_cnt from student group by grade_level) 
+		a group by a.grade_level;
+	+------+-------------+
+	| cnt  | grade_level |
+	+------+-------------+
+	|    4 |           4 |
+	+------+-------------+
+	
 	with cte as 
 		(select grade_level,count(distinct student_id) as cnt 
 				from student 
@@ -52,8 +62,16 @@
 	select grade_level 
 		from cte 
 		where cnt=(select max(cnt) from cte);
+	
 	+-------------+
 	| grade_level |
 	+-------------+
 	|           4 |
 	+-------------+
+	
+	with ranking window function
+	  select b.grade_level 
+		from (select rank() over (order by a.student_cnt desc ) as rnk,a.grade_level 
+					from (select grade_level ,count(student_id) student_cnt from student group by grade_level)
+				a ) b
+     where b.rnk=1;

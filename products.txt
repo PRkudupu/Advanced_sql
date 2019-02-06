@@ -87,6 +87,7 @@ product_tbl
 	 q4) For each day, find the number new customers (customers who made their first transaction)  
 		  	   
 		   select count(a.customer_id) as cnt,ord.order_date 
-				from order_tbl ord left join (select customer_id,min(order_date) min_date from order_tbl group by customer_id) a 
+				from order_tbl ord left join (
+				 select customer_id,min(order_date) min_date from order_tbl group by customer_id) a 
 				on ord.order_date =a.min_date and a.customer_id=ord.customer_id 
 				group by ord.order_date;
