@@ -83,12 +83,6 @@ with cte as (select row_number() over (partition by gender order by dob) as rnk,
 select * from  cte where customer_id in (select customer_id from sale where quantity>=2);
 
 
-Eriscent company :Friday is the interview
-vladamier:
-denys :
-David Callaghan 
-
-
 
 
 
