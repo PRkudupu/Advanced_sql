@@ -56,9 +56,9 @@ product_tbl
 			+--------------+------------+------------+
 
 	q2) Get the list of customers that have orders on 2 consecutive days 
-		select customer_id from order_tbl 
-			where order_date BETWEEN '2019-01-01' AND  '2019-01-01' 
-			group by customer_id having count(customer_id) >1
+		select t1.customer_id from order_tbl t1,order_tbl t2  
+			where t1.customer_id=t2.customer_id-1 
+				and t1.order_date=t2.order_date;
 			+-------------+
 			| customer_id |
 			+-------------+
