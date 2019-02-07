@@ -1,4 +1,4 @@
-SQL Schema
+﻿SQL Schema
 The Trips table holds all taxi trips. 
 Each trip has a unique Id, while Client_Id and Driver_Id are both foreign keys to the Users_Id at the Users table. 
 Status is an ENUM type of (‘completed’, ‘cancelled_by_driver’, ‘cancelled_by_client’).
@@ -69,7 +69,7 @@ For the above tables, your SQL query should return the following rows with the c
   2) Get count of trips for unbanned users for cancelled rides
   3) cancellation_rate = count of cancelled trip/ count of all rids
   
-    select a.request_at as 'Date' ,cast(coalesce((b.cancelled_cnt/a.cnt),0.00) as decimal(4,2)) as 'Cancellation Rate'
+    select a.request_at as 'Date' ,cast(coalesce((b.cancelled_cnt/a.cnt),0.00) as decimal(4,2)) as 'Cancellation_Rate'
     from  
           (select Request_at,count(tr.id) cnt
             from trip tr join users us  
