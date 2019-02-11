@@ -1,15 +1,15 @@
-create table
-order_tbl
-(
-customer_id bigint,
-product_id bigint,
-order_id bigint,
-price decimal,
-order_date date
-);
+	create table
+	order_tbl
+	(
+	customer_id bigint,
+	product_id bigint,
+	order_id bigint,
+	price decimal,
+	order_date date
+	);
 
-create table
-product_tbl
+	create table
+	product_tbl
 	(
 	product_id bigint,
 	product_name varchar(100),
@@ -62,9 +62,7 @@ product_tbl
 			+-------------+
 			| customer_id |
 			+-------------+
-			|           1 |
-			|           3 |
-			|           3 |
+			|           2 |
 			+-------------+
 	 
 	q3) Write a query to calculate each customers total historical spend? 

@@ -26,3 +26,6 @@ Write a SQL query for a report that provides the following information for each 
 select p.FirstName,p.LastName,a.city,state 
     from person p left outer join address a
         on p.personid=a.personid
+		
+		
+		
