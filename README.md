@@ -17,5 +17,5 @@ You can also find these in my blog <a href=http://www.prathapkudupublog.com/sear
 </table>
 
 ### License 
-Algo-python is released under the MIT license:
+Advanced_sql is released under the MIT license:
  <a href="https://opensource.org/licenses/MIT">opensource.org/licenses/MIT</a>.
