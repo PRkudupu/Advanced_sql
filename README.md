@@ -1,5 +1,5 @@
 # Advanced_sql
-![alt text](gospel-of-algorithms.png)
+![alt text](sql.png)
 ## Introduction
 This project has the list of SQL challenges asked in bay area by companies like facebook and google.
 They are written ansi sql in jupyter notebook. Each sql challenge has expected input and output.These collection of sql challenges has been collected from various sourcces like leetcode etc.My aim is to help software engineers to have a common repository, using which they can easily prepare for these interviews and get a successful job offer. 
