@@ -1,0 +1,57 @@
+1.CALCULATE ROLLING REVENUE
+               a. Using analytical function
+               b. Using self join
+               
+          Input
+         User_Id     re	       Revenue
+         10	     1/1/2001	100
+         20	     9/9/2010	150
+         30	     2/1/2002	200
+         40	     5/3/2005	300
+        Output
+    
+	Subscription_Date	Revenue
+        1/1/2001	100
+        2/1/2002	300
+        5/3/2005	600
+        9/9/2010	750
+
+
+CREATE TABLE 
+create table sales (user_id integer,subscription_date varchar(50),revenue integer);
+
+INSERT DATA
+insert into sales values(10,'1/1/2001',100);
+insert into sales values(20,'9/9/2010',150);
+insert into sales values(30,'2/1/2002',200);
+insert into sales values(40,'5/3/2005',300);
+
+1 a)
+select subscription_date,sum(revenue) 
+   over (order by subscription_date asc rows 10 preceding) as rolling_revenue 
+   from sales order by subscription_date;
+
++-------------------+-----------------+
+| subscription_date | rolling_revenue |
++-------------------+-----------------+
+| 1/1/2001          |             100 |
+| 2/1/2002          |             300 |
+| 5/3/2005          |             600 |
+| 9/9/2010          |             750 |
++-------------------+-----------------+
+
+2 b) select sales.subscription_date, sum(past_sales.revenue)
+    ->         from sales
+    ->         join sales as past_sales
+    ->         on past_sales.subscription_date between sales.subscription_date -10 and sales.subscription_date
+    ->         group by 1 order by sales.subscription_date;
+  For each row in our sales table, we join every row that was within the past seven days 
+  and take the sum for the past 10 days 
++-------------------+-------------------------+
+| subscription_date | sum(past_sales.revenue) |
++-------------------+-------------------------+
+| 1/1/2001          |                     100 |
+| 2/1/2002          |                     300 |
+| 5/3/2005          |                     600 |
+| 9/9/2010          |                     750 |
+
