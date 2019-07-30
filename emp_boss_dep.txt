@@ -76,7 +76,7 @@
 	|           5 |             2 |      80000 |
 	|           6 |             3 |      50000 |
 	+-------------+---------------+------------+
-	
+
 #LIST DEPARTMENTS THAT HAVE LESS THAN 3 PEOPLE IN IT.
     select department_id 
 	from employee 
@@ -89,6 +89,18 @@
 	|             5 |
 	|             3 |
 	+---------------+
+
+	# Using sub query
+	select a.department_id,a.cnt from (select department_id,count(department_id) as cnt 
+		from employee group by department_id) a 
+		where a.cnt <3; 
+	+---------------+-----+
+	| department_id | cnt |
+	+---------------+-----+
+	|             1 |   1 |
+	|             5 |   1 |
+	|             3 |   1 |
+	+---------------+-----+
 
 #LIST ALL DEPARTMENTS ALONG WITH THE NUMBER OF PEOPLE
 	select department_id,count(employee_id) as emp_count  

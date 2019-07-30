@@ -42,7 +42,8 @@
 	30           bar stool      black      200 
 
 	q1) Get the number of orders for each product_id by day
-	    Note: When we use aggregate function like sum(price),count(order_id) we need not have to specify this column in the group by clause
+	    
+		Note: When we use aggregate function like sum(price),count(order_id) we need not have to specify this column in the group by clause
 		
 		select count(order_id) cnt_order_id,order_date,product_id 
 			from order_tbl 
@@ -58,13 +59,15 @@
 			+--------------+------------+------------+
 
 	q2) Get the list of customers that have orders on 2 consecutive days 
-		select t1.customer_id from order_tbl t1,order_tbl t2  
-			where t1.customer_id=t2.customer_id-1 
-				and t1.order_date=t2.order_date;
+		select b.customer_id from (select a.customer_id,a.first_day,a.second_day,datediff(second_day,first_day) as diff 
+			from  (select customer_id,order_date as first_day, lead(order_date) over (partition by customer_id order by order_date) second_day 
+			from order_tbl) a)b 
+			where b.diff =1;
 			+-------------+
-			| customer_id |
+			customer_id |
 			+-------------+
 			|           2 |
+			|           3 |
 			+-------------+
 	 
 	q3) Write a query to calculate each customers total historical spend? 
