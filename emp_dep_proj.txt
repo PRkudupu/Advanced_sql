@@ -206,7 +206,9 @@ EMPLOYEE DEPARTMENTS  PROJECTS and EMPLOYEE PROJECTS
 		+----+--------+---------------+-----+
 
 		# using row_number()
-		with cte as (select id,salary,department_id,row_number() over (partition by department_id order by salary desc) as rnk from employees group by salary,department_id,id) select * from cte where rnk <=3;
+		with cte as (select id,salary,department_id, row_number() over (partition by department_id order by salary desc) as rnk from employees) 
+			select * from cte where rnk=1;
+	
 		+----+--------+---------------+-----+
 		| id | salary | department_id | rnk |
 		+----+--------+---------------+-----+
