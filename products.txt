@@ -42,6 +42,8 @@
 	30           bar stool      black      200 
 
 	q1) Get the number of orders for each product_id by day
+	    Note: When we use aggregate function like sum(price),count(order_id) we need not have to specify this column in the group by clause
+		
 		select count(order_id) cnt_order_id,order_date,product_id 
 			from order_tbl 
 			group by order_date,product_id;
