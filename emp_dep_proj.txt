@@ -220,19 +220,27 @@ EMPLOYEE DEPARTMENTS  PROJECTS and EMPLOYEE PROJECTS
 
 	
 # SELECT EMPLOYEES ASSIGNED TO PROJECTS
-	select e.id, first_name,title 
-		from employees e 
-			left outer join projects p 
-			on e.id=p.id 
-			where p.id is null;
-			+----+------------+-------+
-			| id | first_name | title |
-			+----+------------+-------+
-			|  4 | Mike       | NULL  |
-			|  5 | Ian        | NULL  |
-			|  6 | John       | NULL  |
-			+----+------------+-------+
-			
+	 select e.id,p.project_id from employees e left outer join employees_projects p 
+	 	on e.id=p.employee_id 
+		where p.project_id is not null;
+		+----+------------+
+		| id | project_id |
+		+----+------------+
+		|  1 |          2 |
+		|  3 |          1 |
+		|  4 |          1 |
+		|  5 |          1 |
+		|  2 |          3 |
+		+----+------------+
+# SELECT EMPLOYEES WHO ARE NOT ASSIGNED TO PROJECTS
+		select e.id,p.project_id from employees e 
+			left outer join employees_projects p on e.id=p.employee_id where p.project_id is null;
+		+----+------------+
+		| id | project_id |
+		+----+------------+
+		|  6 |       NULL |
+		+----+------------+
+     	
  
 	
 #EXPLANTION OF HOW THE GROUPING WORKS		
