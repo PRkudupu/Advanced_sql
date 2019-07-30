@@ -56,20 +56,27 @@ EMPLOYEE DEPARTMENTS  PROJECTS and EMPLOYEE PROJECTS
 		having salary = 40000;
 
 #SELECT EMPLOYEES FROM DEPARTMENT WHERE SALARY IS 40K and less than 70000	
-	
-	#using multiple group by condition
-		select e.id,concat(e.first_name," ",e.last_name) as employee_name, d.name,e.salary 
-			from employees e 
-			join departments d 
-			on e.department_id = d.id 
-			group by salary,e.id,employee_name,e.salary,d.name 
-			having salary >40000 and salary < 70000;
-			+----+---------------+-----------+--------+
-			| id | employee_name | name      | salary |
-			+----+---------------+-----------+--------+
-			|  6 | John Mills    | Marketing |  50000 |
-			+----+---------------+-----------+--------+
+#using multiple group by condition
+	select e.id,concat(e.first_name," ",e.last_name) as employee_name, d.name,e.salary 
+		from employees e 
+		join departments d 
+		on e.department_id = d.id 
+		group by salary,e.id,employee_name,e.salary,d.name 
+		having salary >40000 and salary < 70000;
+		+----+---------------+-----------+--------+
+		| id | employee_name | name      | salary |
+		+----+---------------+-----------+--------+
+		|  6 | John Mills    | Marketing |  50000 |
+		+----+---------------+-----------+--------+
 
+#SELECT EMPLOYEES FROM DEPARTMENT WHERE SALARY IS 40K and less than 70000 (WITHOUT USING GROUP BY)
+		select id, salary from employees 
+			having salary > 40000 and salary < 70000;
+		+----+--------+
+		| id | salary |
+		+----+--------+
+		|  6 |  50000 |
+		+----+--------+
 # SELECT EMPLOYEE WHO HAS MAX SALARY 
 	select id,max(salary) 
 		from employees 
