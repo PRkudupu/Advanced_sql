@@ -77,6 +77,26 @@ EMPLOYEE DEPARTMENTS  PROJECTS and EMPLOYEE PROJECTS
 		+----+--------+
 		|  6 |  50000 |
 		+----+--------+
+# WE CANNOT GROUP BY AND THEN GET THE AGGREGATE FUNCTION
+  In the example below we are using group by and trying to get the max of salary.
+	As it is grouped by it would group all the salary
+	select max(salary) from employees 
+		group by salary 
+		order by salary limit 1;
+			+-------------+
+			| max(salary) |
+			+-------------+
+			|       10000 |
+			+-------------+
+
+	Note : Here we are using group by with limit where we filter only one record
+	select max(salary) from employees 
+			group by salary order by salary limit 1;
+		+-------------+
+		| max(salary) |
+		+-------------+
+		|       10000 |
+		+-------------+
 # SELECT EMPLOYEE WHO HAS MAX SALARY 
 	select id,max(salary) 
 		from employees 
