@@ -94,3 +94,10 @@
 				 select customer_id,min(order_date) min_date from order_tbl group by customer_id) a 
 				on ord.order_date =a.min_date and a.customer_id=ord.customer_id 
 				group by ord.order_date;
+		+-----+------------+
+		| cnt | order_date |
+		+-----+------------+
+		|   3 | 2019-01-01 |
+		|   2 | 2019-01-02 |
+		|   1 | 2019-01-03 |
+		+-----+------------+
