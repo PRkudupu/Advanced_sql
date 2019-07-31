@@ -1,0 +1,94 @@
+create table member (firstname varchar(256),lastname varchar(256),title varchar(256),id int)
+
+create table team(leader_id int,name varchar(64));
+
+create table team_member(member_id int,supervisor_id int,distance int);
+
+
+insert into member values ("Zeus","Titano","Chief Executive officer",1);
+insert into member values ("Hera","Titania","Chief Operation officer",2);
+insert into member values ("Apollo","olymplades","sales and marketing",3);
+insert into member values ("Hephaestus","olymplades","Manufacturing,Vice president",4);
+insert into member values ("Hestia","Titania","Facilities Sr Director",9);
+insert into member values ("Heracles","olymplades","Janitorial Service D",10);
+
+
+insert into team values (1,"ceo");
+insert into team values (2,"opeartions");
+insert into team values (3,"manufacturing");
+insert into team values (9,"facility");
+
+
+insert into team_member values (1,1,0);
+insert into team_member values (2,2,0);
+insert into team_member values (2,1,1);
+insert into team_member values (9,9,1);
+insert into team_member values (9,2,1);
+insert into team_member values (10,9,1);
+
+
+member
++-----------+------------+-------------------------+------+
+| firstname | last_name  | title                   | id   |
++-----------+------------+-------------------------+------+
+| Zeus      | Titano     | Chief Executive officer |    1 |
+| Hera      | Titania    | Chief Operation officer |    2 |
+| Apollo    | olymplades | sales and marketing     |    3 |
++-----------+------------+-------------------------+------+
+
+team
++-----------+---------------+
+| leader_id | name          |
++-----------+---------------+
+|         1 | ceo           |
+|         2 | opeartions    |
+|         3 | manufacturing |
+|         9 | facility      |
++-----------+---------------+
+team_member
++-----------+---------------+----------+
+| member_id | supervisor_id | distance |
++-----------+---------------+----------+
+|         1 |             1 |        0 |
+|         2 |             2 |        0 |
+|         2 |             1 |        1 |
+|         9 |             9 |        1 |
+|         9 |             2 |        1 |
+|        10 |             9 |        1 |
++-----------+---------------+----------+
+
+1. List the primary and foreign keys from each table. 
+
+   member id (primary)
+   team leader_id (primary)
+   team_member (supervisor_id, member_id) foriegn key
+   
+2. Write a query that will produce the following result set (team name, name of team leader) 
+
+       ceo, Zeus Titanuo
+       
+
+   select t.name as team_name,concat(m.firstname," ",m.lastname) leader_name  
+            from team t join 
+            member m on m.id=t.leader_id;
+   
+3. Write a query to extract all current member of the facility team.
+        
+        select concat(m.firstname," ",m.lastname) as members from team t 
+              join team_member tm
+              on t.leader_id=tm.supervisor_id
+              join member m
+              on tm.member_id=m.id
+               where t.name ='facility';
+
+  
+4. What information does the data in the team_member.distance field provide? 
+     Since the information is not provided, My best guess it should be the floor where the team sits
+     
+5. (Bonus) Draw an organisational chart based on the data. 
+     
+6. (Bonus) Write a query to insert a new employee named 'Daedalus Metiades' in the manufacturing team, reporting to Hephaestus.
+    insert into member values ("Daedalus","Metiades","new employee",11);
+    insert into team_member values (11,4,1);
+
+7. (Bonus) Heracles has decided to leave Olympus, LLC. Write a query to cleanly update the personnel database.
