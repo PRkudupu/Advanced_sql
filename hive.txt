@@ -1,0 +1,5 @@
+
+DETAILS ABOUT HIVE TABLE
+ describe  formatted table_name;
+ 
+ output would have location,table type serde
