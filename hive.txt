@@ -1,5 +1,12 @@
 
 DETAILS ABOUT HIVE TABLE
- describe  formatted table_name;
+	describe  formatted table_name;
  
- output would have location,table type serde
+	output would have location,table type serde
+ 
+LOAD DATA INTO HIVE EXTERNAL TABLE
+	load data inpath ‘hdfs:/data/2012.txt’ into table weatherext;
+	
+SHA 256 HASH
+    select reflect('org.apache.commons.codec.digest.DigestUtils', 'sha256Hex', 'COLUMN_TO_BE_HASEHED')  as email_hash_sha256
+ 
