@@ -11,11 +11,14 @@
 	-----------+----------+----------+-------------+-------------+-----------------------
  	testing   | coderpad | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
  3) SWITCHING DATABASE
-        \c testing
+    \c testing
 	coderpad=# \c testing
     testing=# 
  4) listing tables
-	
+	\dt
+ 	Schema |        Name        | Type  |  Owner   
+	--------+--------------------+-------+----------
+	public | departments        | table | coderpad
  
  
  
