@@ -9,4 +9,20 @@ LOAD DATA INTO HIVE EXTERNAL TABLE
 	
 SHA 256 HASH
     select reflect('org.apache.commons.codec.digest.DigestUtils', 'sha256Hex', 'COLUMN_TO_BE_HASEHED')  as email_hash_sha256
+	
+GET CURRENT TIME AS TIMESTAMP
+    select now() as  rpting_dts
+    
+GET CURRENT TIME AS STRING
+    select from_unixtime(unix_timestamp()) as rpting_dt
  
+UNION FOR ALL TABLE RECORD COUNTS
+	select 'rawdata_rolling_purchase_order' as table_name, count(cosmos_customerid) as cnt   from aggregated.rawdata_rolling_purchase_order
+	union all
+	select 'rawdata_customer_loyalty_status'  as table_name ,count(cosmos_customerid) as cnt  from aggregated.rawdata_customer_loyalty_status
+	union all 
+	select 'customer_loyalty_status_incr' as table_name, count(cosmos_customerid) as cnt   from aggregated_incr.customer_loyalty_status_incr;
+	
+CHECK IF TABLE EXISTS
+	use aggregated;
+	show tables like 'rawdata_rolling_purchase_order';
