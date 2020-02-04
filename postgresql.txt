@@ -1,8 +1,8 @@
  1) LIST DATABASE
 	postgres=# \l
  	 Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   
-     -----------+----------+----------+-------------+-------------+-----------------------
-     coderpad  | coderpad | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
+      -----------+----------+----------+-------------+-------------+-----------------------
+       coderpad  | coderpad | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
   
  2) CREATE DATABASE
 	create database testing;
@@ -10,20 +10,20 @@
 	  Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   
 	-----------+----------+----------+-------------+-------------+-----------------------
  	testing   | coderpad | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
- 3) SWITCHING DATABASE
-    \c testing
+  3) SWITCHING DATABASE
+         \c testing
+	
 	coderpad=# \c testing
-    testing=# 
- 4) listing tables
-	\dt
- 	Schema |        Name        | Type  |  Owner   
-	--------+--------------------+-------+----------
-	public | departments        | table | coderpad
- 
- 
- 
- 
- 
+	testing=# 
+  4)SELECT column FROM table
+	LIMIT 10
+	
+
+  5)PostgreSQL and MySQL have a cool feature that will let you return an arbitrary range of rows (eg return rows 10-20). This is very handy for displaying pages of records:
+
+	SELECT column FROM table
+	LIMIT 10 OFFSET 20
+	The above query will return rows 20-30
   ABORT                            CREATE USER MAPPING
   ALTER AGGREGATE                  CREATE VIEW
   ALTER COLLATION                  DEALLOCATE
