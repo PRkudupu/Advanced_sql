@@ -37,14 +37,17 @@
 	+---------------+------------+
 
 #SELECT EMPLOYEES WHO DO NOT HAVE A BOSS
-	select employee_id,name  
-		from employee e  
-		where boss_id is null;
-	+-------------+------------+
-	| employee_id | name       |
-	+-------------+------------+
-	|           6 | John Mills |
-	+-------------+------------+
+	select e.employee_id 
+		from employee e
+		left outer join employee b
+		on e.employee_id=b.boss_id
+		where b.employee_id is null;
+	
+	employee_id 
+	-------------
+           3
+           6
+	+-------------+
 
 #LIST EMPLOYEES WHO HAVE BIGGER SALARIES FROM THIER BOSSES.
 	select e.employee_id,e.boss_id,e.salary as emp_salary,b.salary as boss_salary 
