@@ -97,7 +97,12 @@ EMPLOYEE DEPARTMENTS  PROJECTS and EMPLOYEE PROJECTS
 		+-------------+
 		|       10000 |
 		+-------------+
-# SELECT EMPLOYEE WHO HAS MAX SALARY 
+	NOte: we do not have to use max we can just order by salary in descending order and then limit 1
+	select id, salary
+		from employees 
+		order by salary desc
+		limit 1;
+    # SELECT EMPLOYEE WHO HAS MAX SALARY 
 	select id,max(salary) 
 		from employees 
 		group by salary,id 
@@ -110,7 +115,15 @@ EMPLOYEE DEPARTMENTS  PROJECTS and EMPLOYEE PROJECTS
 		where salary in 
 		(	select max(salary) from employees);
 	
-        #using CTE
+    #using dense_rnk
+	select a.id
+		,a.rnk
+		,a.salary
+		from
+			(select id,salary, dense_rank() over (order by salary desc) as rnk from employees) a
+		where rnk=1;
+	
+	#using CTE
 	with result as (select id,first_name,salary, DENSE_RANK() 
 			over (order by salary desc) as rnk  
 			from employees)  
@@ -192,8 +205,9 @@ EMPLOYEE DEPARTMENTS  PROJECTS and EMPLOYEE PROJECTS
 
 #SELECT TOP 3 EMPLOYEE SALARIES IN EACH DEPARTMENT
     # using dense_rank()
-    with cte as (select id,department_id,salary,DENSE_RANK() over (partition by department_id order by salary desc) as rnk from employees) 
-		   select * from cte where rnk <=3;
+    with cte as (select id,department_id,
+		salary,DENSE_RANK() over (partition by department_id order by salary desc) as rnk from employees) 
+		select * from cte where rnk <=3;
 		+----+--------+---------------+-----+
 		| id | salary | department_id | rnk |
 		+----+--------+---------------+-----+
@@ -300,4 +314,20 @@ mysql> select max(salary) from employees group by salary;
 		|  2 | Ava        |  10000 |   5 |
 		+----+------------+--------+-----+
 
+		
+# SELECT EMPLOYEES WHO HAS NOT BEEN ASSIGNED PROJECTS
+	select e.id, p.project_id from employees e
+		left outer join employees_projects p
+		on e.id=p.employee_id
+		where p.employee_id is null;
+	
+		id | project_id 
+		----+------------
+		6 |    
+
+# SELECT EMPLOYEES ASSIGNED TO PROJECTS
+	select e.id, p.project_id from employees e
+                  left outer join employees_projects p
+                  on e.id=p.employee_id
+                  where p.employee_id is null;
 		

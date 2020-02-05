@@ -25,11 +25,17 @@ insert into sales values(20,'9/9/2010',150);
 insert into sales values(30,'2/1/2002',200);
 insert into sales values(40,'5/3/2005',300);
 
-1 a) Using analytical function
-select subscription_date,sum(revenue) 
-   over (order by subscription_date asc rows 10 preceding) as rolling_revenue 
-   from sales order by subscription_date;
+1 SIMPLE QUERY
+   select subscription_date
+       , sum(revenue) over (order by subscription_date asc) as rolling_sum
+       from sales;
 
+ NOTE:Here we are using rows preceding
+ Using analytical function
+	select subscription_date,sum(revenue) 
+		over (order by subscription_date asc rows 10 preceding) as rolling_revenue 
+		from sales order by subscription_date;
+	
 +-------------------+-----------------+
 | subscription_date | rolling_revenue |
 +-------------------+-----------------+

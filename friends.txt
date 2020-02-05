@@ -7,6 +7,9 @@
 	insert into table1 values('2018-10-01',2,'facebook','sent');
 	insert into table1 values('2018-10-02',2,'facebook','accepted');
 	insert into table1 values('2018-10-01',3,'facebook','sent');
+	insert into table1 values('2018-11-01',4,'facebook','sent');
+	insert into table1 values('2019-11-01',4,'facebook','sent');
+
 
 	select * from table1;
 	+------------+---------+----------+-----------+
@@ -33,9 +36,9 @@
 	2) GET THE NO OF USERS WHO SENT THE MESSAGES IN OCT
 	Month of oct how many users who have sent messages;
                                                                         
-       select user_id 
-		from table1 
-		where event='sent' and time between '2018-10-01' and '2018-10-31';
+        select count(user_id) 
+			from table1 
+			where event='sent' and time between '2018-10-01' and '2018-10-31';
 		+---------+
 		| user_id |
 		+---------+
