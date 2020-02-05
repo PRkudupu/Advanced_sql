@@ -29,7 +29,7 @@ Using the above tables as example, return the following:
 	+-----------+
 	
 	DDL SCRIPTS
-	create table customer (id int,name varchar(100))
+	create table customer (id int,name varchar(100));
 	insert into customer values(1,'Joe');
 	insert into customer values(2,'Henry');
 	insert into customer values(3,'Sam');
