@@ -4,14 +4,22 @@ Delete duplicate rows in sql
 
 SQL Script to create dup_employees table
 Create table dup_employees
-(
-     id int,
-     first_name nvarchar(50),
-     last_name nvarchar(50),
-     gender nvarchar(50),
-     salary int
-);
-
+	(
+		 id int,
+		 first_name nvarchar(50),
+		 last_name nvarchar(50),
+		 gender nvarchar(50),
+		 salary int
+	);
+#pastgresql
+	Create table dup_employees
+	(
+		 id int,
+		 first_name varchar(50),
+		 last_name varchar(50),
+		 gender varchar(50),
+		 salary int
+	);
 Insert into dup_employees values (1, 'Mark', 'Hastings', 'Male', 60000);
 Insert into dup_employees values (1, 'Mark', 'Hastings', 'Male', 60000);
 Insert into dup_employees values (1, 'Mark', 'Hastings', 'Male', 60000);
@@ -105,7 +113,13 @@ CONTACTS
 			   ('Jean','King','jean.king@me.com'),
 			   ('Susan','Nelson','susan.nelson@comcast.net'),
 			   ('Roland','Keitel','roland.keitel@yahoo.com');
-	
+		#POSTGRESQL
+		CREATE TABLE contacts (
+			id SERIAL PRIMARY KEY ,
+			first_name VARCHAR(50) NOT NULL,
+			last_name VARCHAR(50) NOT NULL, 
+			email VARCHAR(255) NOT NULL
+		);
 	 5) FIND THE DUPLICATE ROWS
 		select email,count(email) as dup_count 
 			from contacts 
@@ -119,6 +133,8 @@ CONTACTS
 			| susan.nelson@comcast.net |         2 |
 			| roland.keitel@yahoo.com  |         2 |
 			+--------------------------+-----------+
+			
+		Note: In the example below where condition is responsible for filtering duplicates
 		* self join based on the common data
 		  Note: First id would be always smaller. we need to just keep the first id
 		select c.id,d.id,c.email 
