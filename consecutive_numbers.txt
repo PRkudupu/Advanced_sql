@@ -42,6 +42,22 @@ Note: The first two columns are from l1, then the next two are from l2, and the 
 Then we can select any Num column from the above table to get the target data. 
 However, we need to add a keyword DISTINCT because it will display a duplicated number if one number appears more than 3 times consecutively.	
 	
+#SOLUTION USING LEAD FUNCTION
+select b.id,b.num,b.num_1,b.num_2
+    from
+    (select a.id,a.num,a.num_1, lead(a.num_1) over (order by a.id) as num_2
+       
+      from
+          (
+          select id,num, lead(num) over (order by id) as num_1 from numbers
+   
+          )a
+     )b
+     where b.num=b.num_1 and b.num_1=b.num_2;
+    id | num | num_1 | num_2 
+	----+-----+-------+-------
+	 1 |   1 |     1 |     1
+	 
 	select distinct(n1.num) consecutive_threes 
 		from numbers n1,numbers n2,numbers n3 
 		where n1.id=n2.id - 1 and n2.id=n3.id-1 
