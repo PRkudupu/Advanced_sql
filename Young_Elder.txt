@@ -8,8 +8,8 @@ create table product(product_id int,product_name varchar(50));
 create table customer (customer_id int, customer_name varchar(50), dob varchar(50), gender varchar(10));
 create table sale(sales_id int,customer_id int,product_id int,quantity int);
 
-insert into product values(1,'cell')
-insert into product values (2,'cover')
+insert into product values(1,'cell');
+insert into product values (2,'cover');
 
 insert into customer values (1,'prathap','01/05/1979','M');
 insert into customer values (2,'sandeep','01/05/1981','M');
