@@ -16,6 +16,10 @@
 	INSERT INTO attendance VALUES ('2018/02/22', 1,1);
 	INSERT INTO attendance VALUES ('2018/02/22', 4,1);
 	INSERT INTO attendance VALUES ('2018/02/22', 5,1);
+	INSERT INTO attendance VALUES ('2020/02/04', 4,1);
+	INSERT INTO attendance VALUES ('2020/02/04', 5,1);
+	INSERT INTO attendance VALUES ('2020/02/04', 8,1);
+	INSERT INTO attendance VALUES ('2020/02/04', 9,1);
 
 
 	CREATE TABLE student (
@@ -33,6 +37,9 @@
 	INSERT INTO student VALUES (5,100, 3 ,'1994/01/02','LA');
 	INSERT INTO student VALUES (6,100, 3 ,'1994/01/02','LA');
 	INSERT INTO student VALUES (7,100, 2 ,'1994/01/02','LA');
+	INSERT INTO student VALUES (8,200, 3 ,'1994/01/02','LA');
+	INSERT INTO student VALUES (9,200, 2 ,'1994/01/02','LA');
+	
 	
 	+------------+-----------+-------------+---------------------+----------+
 	| student_id | school_id | grade_level | date_of_birth       | hometown |
@@ -83,3 +90,60 @@
 					from (select grade_level ,count(student_id) student_cnt from student group by grade_level)
 				a ) b
      where b.rnk=1;
+	 
+	2)What was the overall attendance rate for the school district yesterday?
+	select cast(a.cnt as float) / cast(b.total as float)  as attendance_rate,a.cnt,b.total
+		from
+			(select count(student_id) cnt
+				from attendance
+				where date_part('day', now() -date) <=2
+			)a
+		,
+		(
+			select count(student_id) as total
+			from student 
+		)b;
+	#PERCENTAGE
+	select cast(a.cnt as float) / cast(b.total as float) * 100 as attendance_rate,a.cnt,b.total
+		from
+			(select count(student_id) cnt
+				from attendance
+				where date_part('day', now() -date) <=2
+			)a
+		,
+		(
+			select count(student_id) as total
+			from student 
+		)b;
+	
+	3)Which school had the average highest attendance rate? the lowest?
+	  -- take avarage
+	  -- daily attendance per school
+      -- number of students per school
+	  
+	select f.school_id, avg(f.rate_per_school_per_day) as avg_rate
+	    from
+	    --rate per school per day
+	    (select a.date,a.school_id, cast(a.daily_att as float)/b.no_students  rate_per_school_per_day
+			from
+			--daily attendance
+			(select count(t1.student_id) daily_att
+				,t2.school_id
+				,t1.date
+				from attendance t1
+				join student t2
+				on t2.student_id=t1.student_id
+				group by t2.school_id,t1.date
+			)a
+			join
+			-- no of students
+			(select count(student_id) no_students
+				, school_id
+				from student
+				group by school_id
+			)b    
+		   on a.school_id=b.school_id
+		)f
+    group by f.school_id
+	  
+	  
