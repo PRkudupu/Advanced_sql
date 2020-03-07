@@ -148,7 +148,7 @@ CONTACTS
 			last_name VARCHAR(50) NOT NULL, 
 			email VARCHAR(255) NOT NULL
 		);
-	 5) FIND THE DUPLICATE ROWS
+	 5 A) FIND ALL THE ROWS WHICH HAS DUPLICATE EMAIL 
 		select email,count(email) as dup_count 
 			from contacts 
 			group by email 
@@ -161,6 +161,11 @@ CONTACTS
 			| susan.nelson@comcast.net |         2 |
 			| roland.keitel@yahoo.com  |         2 |
 			+--------------------------+-----------+
+	 5 B) FIND ALL THE ROWS WHICH HAS DUPLICATE EMAIL AND FIRST NAME
+		select email 
+			from contacts 
+			group by email,first_name
+			having count(email) > 1;
 			
 		Note: In the example below where condition is responsible for filtering duplicates
 		* self join based on the common data
