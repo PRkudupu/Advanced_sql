@@ -88,10 +88,10 @@ EMPLOYEES
 		|    3 | Ben        | Hoskins   | Male   |  70000 |
 		+------+------------+-----------+--------+--------+
 	5) FILTER DUPLICATES 
-               select * from 
- 	       		(select row_number() over (partition by id order by id desc ) as rnk
-      			 ,id ,first_name, last_name, gender, salary
-      		from dup_employees) a 
+		    select * from 
+				(select row_number() over (partition by id order by id desc ) as rnk
+				 ,id ,first_name, last_name, gender, salary
+					from dup_employees) a 
 		where a.rnk=1
 		+-----+------+------------+-----------+--------+--------+
 		| rnk | id   | first_name | last_name | gender | salary |
@@ -100,7 +100,19 @@ EMPLOYEES
 		|   1 |    2 | Mary       | Lambeth   | Female |  30000 |
 		|   1 |    3 | Ben        | Hoskins   | Male   |  70000 |
 		+-----+------+------------+-----------+--------+--------+
+	6) MOVE FILTERED DATA INTO CTE TABLE
+		with cte
+		as
+		(
+		   select * from 
+			( select row_number() over (partition by id order by id desc ) as rnk
+			  ,id ,first_name, last_name, gender, salary
+			  from dup_employees) a 
+		  where a.rnk=1
 
+		)
+		select * from cte;
+		
 CONTACTS
 	DROP TABLE IF EXISTS contacts;
  
@@ -113,7 +125,9 @@ CONTACTS
 		 
 		INSERT INTO contacts (first_name,last_name,email) 
 		VALUES ('Carine ','Schmitt','carine.schmitt@verizon.net'),
+		       ('Carine1 ','Schmitt1','carine.schmitt@verizon.net')
 			   ('Jean','King','jean.king@me.com'),
+			   ('Jean1','King','jean.king@me.com'),
 			   ('Peter','Ferguson','peter.ferguson@google.com'),
 			   ('Janine ','Labrune','janine.labrune@aol.com'),
 			   ('Jonas ','Bergulfsen','jonas.bergulfsen@mac.com'),
@@ -125,7 +139,8 @@ CONTACTS
 			   ('Kwai','Lee','kwai.lee@google.com'),
 			   ('Jean','King','jean.king@me.com'),
 			   ('Susan','Nelson','susan.nelson@comcast.net'),
-			   ('Roland','Keitel','roland.keitel@yahoo.com');
+			   ('Roland','Keitel','roland.keitel@yahoo.com'),
+			   ;
 		#POSTGRESQL
 		CREATE TABLE contacts (
 			id SERIAL PRIMARY KEY ,
