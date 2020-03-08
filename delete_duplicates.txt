@@ -182,7 +182,8 @@ CONTACTS
 			| 13 |  7 | susan.nelson@comcast.net |
 			| 14 |  9 | roland.keitel@yahoo.com  |
 			+----+----+--------------------------+
-	  6)DELETE DUPLICATE ROWS USING DELETE JOIN STATEMENT
+	 
+	 6)DELETE DUPLICATE ROWS USING DELETE JOIN STATEMENT
 	 	delete c 
 			from contacts c 
 			join contacts d 
@@ -223,8 +224,16 @@ CONTACTS
 	1.c Delete duplicate records.
 	Write a SQL query to delete duplicate records from the table below, keeping only one record per emp_id, one with the latest date.
         
-       create table emp(Emp_id integer,Emp_name varchar(50),date varchar(50));
+    create table emp(Emp_id integer,Emp_name varchar(50),date varchar(50));
 
+	
+	INSERT DATA
+	insert into emp values (10,'xavier','1/1/2011');
+	insert into emp values (10,'Adam','3/1/2013');
+	insert into emp values (20,'John','6/6/2018');
+	insert into emp values (20,'Zach','10/11/2011');
+	insert into emp values (30,'Brian','2/1/2019');
+	
 	Table before duplicate records are deleted.
                     Emp_Id	     Emp_Name	Date
                      10	     Xavier	1/1/2011
@@ -238,12 +247,6 @@ CONTACTS
                      10	     Adam	3/1/2013
                      20	     John	6/6/2018
                      30	     Brian	2/1/2019
-	INSERT DATA
-	insert into emp values (10,'xavier','1/1/2011');
-	insert into emp values (10,'Adam','3/1/2013');
-	insert into emp values (20,'John','6/6/2018');
-	insert into emp values (20,'Zach','10/11/2011');
-	insert into emp values (30,'Brian','2/1/2019');
 
 
        delete e from emp e join emp d on e.Emp_id=d.Emp_id where d.date > e.date;
