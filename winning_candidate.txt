@@ -38,7 +38,7 @@ Write a sql to find the name of the winning candidate, the above example will re
 	insert into candidate values (1,'D');
 	insert into candidate values (1,'E');
 	
-	creat table vote(id int,candidate_id int);
+	create table vote(id int,candidate_id int);
 	insert into vote values(1,2);
 	insert into vote values(2,4);
 	insert into vote values(3,3);
