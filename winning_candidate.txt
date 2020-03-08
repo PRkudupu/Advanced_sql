@@ -1,53 +1,76 @@
-SQL Schema
-Table: Candidate
+	SQL Schema
+	Table: Candidate
 
-+-----+---------+
-| id  | Name    |
-+-----+---------+
-| 1   | A       |
-| 2   | B       |
-| 3   | C       |
-| 4   | D       |
-| 5   | E       |
-+-----+---------+  
-Table: Vote
+	+-----+---------+
+	| id  | Name    |
+	+-----+---------+
+	| 1   | A       |
+	| 2   | B       |
+	| 3   | C       |
+	| 4   | D       |
+	| 5   | E       |
+	+-----+---------+  
+	Table: Vote
 
-+-----+--------------+
-| id  | candidate_id  |
-+-----+--------------+
-| 1   |     2        |
-| 2   |     4        |
-| 3   |     3        |
-| 4   |     2        |
-| 5   |     5        |
-+-----+--------------+
-id is the auto-increment primary key,
-candidate_id is the id appeared in Candidate table.
-Write a sql to find the name of the winning candidate, the above example will return the winner B.
+	+-----+--------------+
+	| id  | candidate_id  |
+	+-----+--------------+
+	| 1   |     2        |
+	| 2   |     4        |
+	| 3   |     3        |
+	| 4   |     2        |
+	| 5   |     5        |
+	+-----+--------------+
+	id is the auto-increment primary key,
+	candidate_id is the id appeared in Candidate table.
+	WRITE A SQL TO FIND THE NAME OF THE WINNING CANDIDATE, THE ABOVE EXAMPLE WILL RETURN THE WINNER B.
 
-+------+
-| Name |
-+------+
-| B    |
-+------+
+	+------+
+	| Name |
+	+------+
+	| B    |
+	+------+
+	
 	DDL SCRIPTS
-	create table candidate(id int,name varchar(100));
-	insert into candidate values (1,'A');
-	insert into candidate values (1,'B');
-	insert into candidate values (1,'C');
-	insert into candidate values (1,'D');
-	insert into candidate values (1,'E');
-	
-	create table vote(id int,candidate_id int);
-	insert into vote values(1,2);
-	insert into vote values(2,4);
-	insert into vote values(3,3);
-	insert into vote values(4,2);
-	insert into vote values(5,5);
-	
-	SOLUTION
-	select cand.name from candidate cand 
-		join (select count(id),candidate_id from vote group by candidate_id order by count(id) desc limit 1) a 
-		on cand.id=a.candidate_id;
+		create table candidate(id int,name varchar(100));
+		insert into candidate values (1,'A');
+		insert into candidate values (2,'B');
+		insert into candidate values (3,'C');
+		insert into candidate values (4,'D');
+		insert into candidate values (5,'E');
 		
+		create table vote(id int,candidate_id int);
+		insert into vote values(1,2);
+		insert into vote values(2,4);
+		insert into vote values(3,3);
+		insert into vote values(4,2);
+		insert into vote values(5,5);
+	
+	1a )USING COUNT ORDER BY AND LIMIT
+		select count(v.candidate_id) as cnt
+           ,c.name
+           from candidate c
+             join vote v
+             on c.id=v.candidate_id
+             group by c.name
+             order by cnt desc limit 1;
+	+-----+------+
+	| cnt | name |
+	+-----+------+
+	|   2 | B    |
+	+-----+------+	
+	
+	1b) USING AGGREGATE FUNCTIONS
+		select max(a.rnk) rnk
+          , a.name
+			from
+			 (select row_number() over (partition by v.candidate_id order by candidate_id desc) rnk 
+				  ,c.name 
+				  from candidate c
+				  join vote v
+				  on c.id=v.candidate_id
+			  )a
+			  group by a.name
+			  order by rnk desc
+			  limit 1;
 		
