@@ -227,7 +227,7 @@ CONTACTS
     create table emp(Emp_id integer,Emp_name varchar(50),date varchar(50));
 
 	
-	INSERT DATA
+	I#NSERT DATA
 	insert into emp values (10,'xavier','1/1/2011');
 	insert into emp values (10,'Adam','3/1/2013');
 	insert into emp values (20,'John','6/6/2018');
