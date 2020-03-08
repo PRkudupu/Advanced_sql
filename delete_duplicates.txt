@@ -206,7 +206,7 @@ CONTACTS
 			| 10 | julie.murphy@yahoo.com          |
 			| 11 | kwai.lee@google.com             |
 			+----+---------------------------------+
-		7) DELETE DUPLICATE RECORDS USING WINDOW FUNCTIONS
+	7) DELETE DUPLICATE RECORDS USING WINDOW FUNCTIONS
 		    delete from contacts 
 				where id in (select id 
 								from (select a.id,a.email from 
@@ -219,15 +219,12 @@ CONTACTS
 	
 	
 	
-	          8)
-	
-	1.c Delete duplicate records.
+	8)DELETE DUPLICATE RECORDS
 	Write a SQL query to delete duplicate records from the table below, keeping only one record per emp_id, one with the latest date.
         
     create table emp(Emp_id integer,Emp_name varchar(50),date varchar(50));
 
-	
-	I#NSERT DATA
+	#INSERT DATA
 	insert into emp values (10,'xavier','1/1/2011');
 	insert into emp values (10,'Adam','3/1/2013');
 	insert into emp values (20,'John','6/6/2018');
@@ -249,10 +246,14 @@ CONTACTS
                      30	     Brian	2/1/2019
 
 
-       delete e from emp e join emp d on e.Emp_id=d.Emp_id where d.date > e.date;
+    8 a)USING JOIN
+		delete e from 
+		emp e join emp d 
+		on e.Emp_id=d.Emp_id 
+		where d.date > e.date;
        
 	select * from emp order by Emp_id;
-	   select * from emp order by Emp_id;
+
 	+--------+----------+----------+
 	| Emp_id | Emp_name | date     |
 	+--------+----------+----------+
@@ -261,6 +262,17 @@ CONTACTS
 	|     30 | Brian    | 2/1/2019 |
 	+--------+----------+----------+
 	
+	8 b) USING CTE
+	with cte
+	  as
+	  (
+		select emp_Id
+			,row_number() over (partition by emp_id order by date desc) rn
+			, emp_name
+			, date 
+			from emp
+	  )
+	  select * from cte where rn=1;	
 	
 	
 	
