@@ -69,27 +69,40 @@ For the above tables, your SQL query should return the following rows with the c
 	insert into users values (    13    ,   'No'   , 'driver' );
   
   1) Get count of trips for unbanned users for all rides
+	select  u.Users_Id
+		,count(t.id) as trip_cnts
+        from trip t join users u
+			on t.client_id=u.Users_Id
+            where u.banned ="no"
+            group by u.users_id;
   2) Get count of trips for unbanned users for cancelled rides
-  3) cancellation_rate = count of cancelled trip/ count of all rids
-  
-    select a.client_id ,a.total_trip,b.cancelled_trip, (a.total_trip/b.cancelled_trip)::decimal(4,2) as ratio
-     from
-     (select t.client_id, count(id) as total_trip 
-      from trip t
-      right outer join users u
-      on t.client_id =u.users_id
-      where status='completed' and u.banned ='No' and role='client'
-      group by client_id,status) a
-      
-     join
-     (select t.client_id, count(id) as cancelled_trip 
-      from trip t
-      right outer join users u
-      on t.client_id =u.users_id
-      where status='cancelled_by_client' and u.banned ='No' and role='client'
-      group by client_id,status) b
-      on
-      a.client_id=b.client_id;
+     select  u.users_Id
+       ,count(t.id) as trip_cnts
+       from trip t join users u
+      on t.client_id=u.Users_Id
+            where u.banned ="no" and t.status='completed' and u.role='client'
+            group by u.users_id;
+ 3) cancellation_rate = count of cancelled trip/ count of all rids
+    select a.users_id
+      ,cast((b.cancelled_cnts/a.trip_cnts)  as decimal(4,2)) as cancellation_rates
+		from
+			(select  u.users_Id
+				,count(t.id) as trip_cnts
+				from trip t join users u
+					on t.client_id=u.Users_Id
+              where u.banned ="no" and t.status='completed' and u.role='client'
+              group by u.users_id
+			)a 
+
+        join
+
+			(select  u.users_Id
+				,count(t.id) as cancelled_cnts
+				from trip t join users u
+					on t.client_id=u.Users_Id
+              where u.banned ="no" and t.status='cancelled_by_client' and u.role='client'
+              group by u.users_id
+        )b;
       
     
      
