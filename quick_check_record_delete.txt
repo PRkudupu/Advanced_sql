@@ -1,6 +1,6 @@
-CHECK IF THE RECORDS IN THE TABLE IS DELETED WITHOUT RUNNING ANY COMPLEX QUERY
+#CHECK IF THE RECORDS IN THE TABLE IS DELETED WITHOUT RUNNING ANY COMPLEX QUERY
 
-  CREATE TABLE AND LOAD DATA
+  #CREATE TABLE AND LOAD DATA
   create table employee(id int,name varchar(20));
   insert into employee values (1,'Prathap');
   insert into employee values (3,'Sandeep');

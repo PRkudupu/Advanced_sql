@@ -16,10 +16,10 @@
 	INSERT INTO attendance VALUES ('2018/02/22', 1,1);
 	INSERT INTO attendance VALUES ('2018/02/22', 4,1);
 	INSERT INTO attendance VALUES ('2018/02/22', 5,1);
-	INSERT INTO attendance VALUES ('2020/02/04', 4,1);
-	INSERT INTO attendance VALUES ('2020/02/04', 5,1);
-	INSERT INTO attendance VALUES ('2020/02/04', 8,1);
-	INSERT INTO attendance VALUES ('2020/02/04', 9,1);
+	INSERT INTO attendance VALUES ('2020/03/07', 4,1);
+	INSERT INTO attendance VALUES ('2020/03/07', 5,1);
+	INSERT INTO attendance VALUES ('2020/03/07', 8,1);
+	INSERT INTO attendance VALUES ('2020/03/07', 9,1);
 
 
 	CREATE TABLE student (
@@ -54,15 +54,15 @@
 	+------------+-----------+-------------+---------------------+----------+
 	1) WHICH GRADE LEVEL CURRENTLY HAS THE MOST STUDENTS IN THIS SCHOOL DISTRICT?
 	POSTGRESQL
-	select grade_level , count(student_id) as cnt 
-      from student 
-      group by grade_level
-      order by cnt desc
-      limit 1;
+		select grade_level , count(student_id) as cnt 
+			 from student 
+			 group by grade_level
+			 order by cnt desc
+			 limit 1;
 	
 	MYSQL
-	select  max(a.student_cnt) 
-		from (select grade_level ,count(student_id) student_cnt from student group by grade_level) 
+		select  max(a.student_cnt) 
+			from (select grade_level ,count(student_id) student_cnt from student group by grade_level) 
 		a group by a.grade_level;
 	+------+-------------+
 	| cnt  | grade_level |
@@ -92,34 +92,85 @@
      where b.rnk=1;
 	 
 	2)What was the overall attendance rate for the school district yesterday?
-	select cast(a.cnt as float) / cast(b.total as float)  as attendance_rate,a.cnt,b.total
-		from
-			(select count(student_id) cnt
-				from attendance
-				where date_part('day', now() -date) <=2
-			)a
-		,
-		(
-			select count(student_id) as total
-			from student 
-		)b;
+	#POSTGRESQL
+		select cast(a.cnt as float) / cast(b.total as float)  as attendance_rate,a.cnt,b.total
+			from
+				(select count(student_id) cnt
+					from attendance
+					where date_part('day', now() -date) <=2
+				)a
+			,
+			(
+				select count(student_id) as total
+				from student 
+			)b;
+		
+	#MY SQL
+	#DATE DIFFERENCE
+		select datediff(curdate(),date) as diff
+			,date
+		   from attendance;
+		
+		+------+---------------------+
+		| diff | date                |
+		+------+---------------------+
+		|  796 | 2018-01-02 00:00:00 |
+		|  796 | 2018-01-02 00:00:00 |
+		|  796 | 2018-01-02 00:00:00 |
+		|  765 | 2018-02-02 00:00:00 |
+		|  745 | 2018-02-22 00:00:00 |
+		|  745 | 2018-02-22 00:00:00 |
+		|  745 | 2018-02-22 00:00:00 |
+		|    1 | 2020-03-07 00:00:00 |
+		|    1 | 2020-03-07 00:00:00 |
+		|    1 | 2020-03-07 00:00:00 |
+		|    1 | 2020-03-07 00:00:00 |
+		+------+---------------------+
+
 	#PERCENTAGE
-	select cast(a.cnt as float) / cast(b.total as float) * 100 as attendance_rate,a.cnt,b.total
-		from
-			(select count(student_id) cnt
-				from attendance
-				where date_part('day', now() -date) <=2
-			)a
-		,
-		(
-			select count(student_id) as total
-			from student 
-		)b;
+	MYSQL
+		select  (a.cnt / b.total_cnt) * 100 as attendence_rate
+			, a.cnt
+			, b.total_cnt
+			from
+				(select count(student_id) cnt
+					from attendance
+				where datediff(curdate(),date) =1
+				)a
+			,
+				(select count(student_id) total_cnt
+				   from attendance
+				)b;
+			+-----------------+-----+-----------+
+			| attendence_rate | cnt | total_cnt |
+			+-----------------+-----+-----------+
+			|         36.3636 |   4 |        11 |
+			+-----------------+-----+-----------+
+		
+		select cast(a.cnt as float) / cast(b.total as float) * 100 as attendance_rate,a.cnt,b.total
+			from
+				(select count(student_id) cnt
+					from attendance
+					where date_part('day', now() -date) <=2
+				)a
+			,
+			(
+				select count(student_id) as total
+				from student 
+			)b;
 	
 	3)Which school had the average highest attendance rate? the lowest?
 	  -- take avarage
 	  -- daily attendance per school
-      -- number of students per school
+		 select count(a.student_id) as cnt
+			,school_id
+			,date
+				from attendance a
+				join student s
+					on a.student_id=s.student_id
+			group by school_id,date;
+      
+	  -- number of students per school
 	  
 	select f.school_id, avg(f.rate_per_school_per_day) as avg_rate
 	    from
