@@ -153,18 +153,24 @@
 	|             3 |        50000 |
 	+---------------+--------------+
 
-
+ /****
+   EMPLOYEE BOSS RELATIONSHIP
+   JOIN EXPLAINED.
+  **/
+   
 create table employee(employee_id integer,boss_id integer);
   
   insert into employee values(1,2);
   insert into employee values(2,5);
   insert into employee values(3,null);
-  
-  /****
-   EMPLOYEE BOSS RELATIONSHIP
-   JOIN EXPLAINED.
-  **/
-   
+  +-------------+---------+
+| employee_id | boss_id |
++-------------+---------+
+|           1 |       2 |
+|           2 |       5 |
+|           3 |    NULL |
++-------------+---------+
+ 
   #SIMPLE JOIN WTIH 
   # BY DEFAULT LEFT TABLE IS SELECTED ON THE LEFT SIDE.
   # In this join is formed between employee_id =2 and boss_id=2
