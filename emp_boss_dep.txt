@@ -152,3 +152,69 @@
 	|             2 |       130000 |
 	|             3 |        50000 |
 	+---------------+--------------+
+
+
+create table employee(employee_id integer,boss_id integer);
+  
+  insert into employee values(1,2);
+  insert into employee values(2,5);
+  insert into employee values(3,null);
+  
+  /****
+   EMPLOYEE BOSS RELATIONSHIP
+   JOIN EXPLAINED.
+  **/
+   
+  #SIMPLE JOIN WTIH 
+  # BY DEFAULT LEFT TABLE IS SELECTED ON THE LEFT SIDE.
+  # In this join is formed between employee_id =2 and boss_id=2
+  # From employee table we have 2 and 5
+  # From boss table we have 2 and 1 
+  select  e.employee_id
+        , e.boss_id
+        , b.employee_id
+        , b.boss_id
+         from employee e 
+         join employee b
+           on e.employee_id =b.boss_id;
+  +-------------+---------+-------------+---------+
+  | employee_id | boss_id | employee_id | boss_id |
+  +-------------+---------+-------------+---------+
+  |           2 |       5 |           1 |       2 |
+  +-------------+---------+-------------+---------+
+ 
+ # LEFT JOIN
+ select  e.employee_id
+        , e.boss_id
+        , b.employee_id
+        , b.boss_id
+         from employee e 
+         left outer join employee b
+         on e.employee_id =b.boss_id;                 
+  +-------------+---------+-------------+---------+
+  | employee_id | boss_id | employee_id | boss_id |
+  +-------------+---------+-------------+---------+
+  |           2 |       5 |           1 |       2 |
+  |           1 |       2 |        NULL |    NULL |
+  |           3 |    NULL |        NULL |    NULL |
+  +-------------+---------+-------------+---------+
+  
+ # RIGHT JOIN
+ select  e.employee_id
+        , e.boss_id
+        , b.employee_id
+        , b.boss_id
+         from employee e 
+         right outer join employee b
+         on e.employee_id =b.boss_id;  
+
+# FIND EMPLOYEES WHO DOES NOT HAVE BOSS
+select  e.employee_id
+        , e.boss_id
+        , b.employee_id
+        , b.boss_id
+         from employee e 
+         left outer join employee b
+         on e.employee_id =b.boss_id
+         where b.employee_id is null;
+

@@ -72,6 +72,21 @@
 			|           2 |
 			|           3 |
 			+-------------+
+		 select a.customer_id
+            from
+            (select lead(order_date) over (partition by customer_id order by order_date) 
+                second_day
+              , order_date
+              , customer_id
+              from order_tbl
+             )a
+             where datediff(a.second_day,a.order_date)=1;
+			+-------------+
+			customer_id |
+			+-------------+
+			|           2 |
+			|           3 |
+			+-------------+
 		POSTGRESQL
 		select customer_id
          from
