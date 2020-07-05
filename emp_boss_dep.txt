@@ -36,7 +36,7 @@
 	|             5 | innovation |
 	+---------------+------------+
 
-#SELECT EMPLOYEES WHO DO NOT HAVE A BOSS
+#SELECT EMPLOYEES WHO ARE NOT A BOSS
 	select e.employee_id 
 		from employee e
 		left outer join employee b
@@ -48,7 +48,16 @@
            3
            6
 	+-------------+
-
+# SELECT EMPLOYEES WHO DO NOT HAVE A BOSS
+    select employee_id 
+		from employee 
+		where boss_id is null;
+	+-------------+
+	| employee_id |
+	+-------------+
+	|           6 |
+	+-------------+
+	
 #LIST EMPLOYEES WHO HAVE BIGGER SALARIES FROM THIER BOSSES.
 	select e.employee_id,e.boss_id,e.salary as emp_salary,b.salary as boss_salary 
 		from employee e join employee b 
