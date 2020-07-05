@@ -9,16 +9,7 @@
 	insert into employee values(5,2,1,'Ian Peterson',80000);
 	insert into employee values(6,3,null,'John Mills',50000);
 
-	+-------------+---------------+---------+---------------+--------+
-	| employee_id | department_id | boss_id | name          | salary |
-	+-------------+---------------+---------+---------------+--------+
-	|           1 |             1 |       2 | John Smith    |  20000 |
-	|           2 |             5 |       4 | Ava Muffinson |  10000 |
-	|           3 |             2 |       5 | Cailin Ninson |  30000 |
-	|           4 |             2 |       5 | Mike Peterson |  20000 |
-	|           5 |             2 |       1 | Ian Peterson  |  80000 |
-	|           6 |             3 |    NULL | John Mills    |  50000 |
-	+-------------+---------------+---------+---------------+--------+
+	
 		
 	#DEPARTMENT TABLE
 	create table department(department_id integer, name varchar(50));
@@ -35,8 +26,65 @@
 	|             3 | electric   |
 	|             5 | innovation |
 	+---------------+------------+
-
-#SELECT EMPLOYEES WHO ARE NOT A BOSS
+	
+	
+	+-------------+---------------+
+	| employee_id |     boss_id  
+	+-------------+---------------+
+	|           1 |       2 
+	|           2 |       5 
+	|           3 |       2 
+	|           4 |       2 
+	|           5 |       2 
+	|           6 |       3 
+	+-------------+---------------+
+	
+	+-------------+---------------+---------+---------------+--------+  
+	| employee_id | department_id | boss_id | name          | salary |
+	+-------------+---------------+---------+---------------+--------+
+	|           1 |             1 |       2 | John Smith    |  20000 |
+	|           2 |             5 |       4 | Ava Muffinson |  10000 |
+	|           3 |             2 |       5 | Cailin Ninson |  30000 |
+	|           4 |             2 |       5 | Mike Peterson |  20000 |
+	|           5 |             2 |       1 | Ian Peterson  |  80000 |
+	|           6 |             3 |    NULL | John Mills    |  50000 |
+	+-------------+---------------+---------+---------------+--------+
+	
+	# THESE ARE THE DIIFFERENT JOINS WHICH IS POSSIBLE
+	select * from employee e 
+               join employee b 
+               on e.employee_id=b.boss_id;
+	
+	Note:
+		1)In this join employee_id is joined with boss_id
+		2)First set of tables are on the left side.
+		3)join happens in z fashion.
+	     
+	
+	+-------------+---------------+---------+---------------+--------+-------------+---------------+---------+---------------+--------+
+	| employee_id | department_id | boss_id | name          | salary | employee_id | department_id | boss_id | name          | salary |
+	+-------------+---------------+---------+---------------+--------+-------------+---------------+---------+---------------+--------+
+	|           2 |             5 |       4 | Ava Muffinson |  10000 |           1 |             1 |       2 | John Smith    |  20000 |
+	|           4 |             2 |       5 | Mike Peterson |  20000 |           2 |             5 |       4 | Ava Muffinson |  10000 |
+	|           5 |             2 |       1 | Ian Peterson  |  80000 |           3 |             2 |       5 | Cailin Ninson |  30000 |
+	|           5 |             2 |       1 | Ian Peterson  |  80000 |           4 |             2 |       5 | Mike Peterson |  20000 |
+	|           1 |             1 |       2 | John Smith    |  20000 |           5 |             2 |       1 | Ian Peterson  |  80000 |
+	+-------------+---------------+---------+---------------+--------+-------------+---------------+---------+---------------+--------+   
+	
+	select * from employee e 
+               join employee b 
+               on e.boss_id=b.employee_id	
+	+-------------+---------------+---------+---------------+--------+-------------+---------------+---------+---------------+--------+
+	| employee_id | department_id | boss_id | name          | salary | employee_id | department_id | boss_id | name          | salary |
+	+-------------+---------------+---------+---------------+--------+-------------+---------------+---------+---------------+--------+
+	|           5 |             2 |       1 | Ian Peterson  |  80000 |           1 |             1 |       2 | John Smith    |  20000 |
+	|           1 |             1 |       2 | John Smith    |  20000 |           2 |             5 |       4 | Ava Muffinson |  10000 |
+	|           2 |             5 |       4 | Ava Muffinson |  10000 |           4 |             2 |       5 | Mike Peterson |  20000 |
+	|           4 |             2 |       5 | Mike Peterson |  20000 |           5 |             2 |       1 | Ian Peterson  |  80000 |
+	|           3 |             2 |       5 | Cailin Ninson |  30000 |           5 |             2 |       1 | Ian Peterson  |  80000 |
+	+-------------+---------------+---------+---------------+--------+-------------+---------------+---------+---------------+--------+
+	
+	#SELECT EMPLOYEES WHO ARE NOT A BOSS
 	select e.employee_id 
 		from employee e
 		left outer join employee b
@@ -48,7 +96,7 @@
            3
            6
 	+-------------+
-# SELECT EMPLOYEES WHO DO NOT HAVE A BOSS
+	# SELECT EMPLOYEES WHO DO NOT HAVE A BOSS
     select employee_id 
 		from employee 
 		where boss_id is null;
