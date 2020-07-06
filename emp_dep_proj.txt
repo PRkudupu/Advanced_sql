@@ -329,5 +329,13 @@ mysql> select max(salary) from employees group by salary;
 	select e.id, p.project_id from employees e
                   left outer join employees_projects p
                   on e.id=p.employee_id
-                  where p.employee_id is null;
-		
+                  where p.employee_id is not null;
+	+----+
+	| id |
+	+----+
+	|  1 |
+	|  3 |
+	|  4 |
+	|  5 |
+	|  2 |
+	+----+	
