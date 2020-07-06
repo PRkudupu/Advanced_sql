@@ -142,9 +142,9 @@ CONTACTS
 			email VARCHAR(255) NOT NULL
 		);
 		 
-		INSERT INTO contacts (first_name,last_name,email) 
+		 INSERT INTO contacts (first_name,last_name,email) 
 		VALUES ('Carine ','Schmitt','carine.schmitt@verizon.net'),
-		       ('Carine1 ','Schmitt1','carine.schmitt@verizon.net')
+			   ('Carine1 ','Schmitt1','carine.schmitt@verizon.net'),
 			   ('Jean','King','jean.king@me.com'),
 			   ('Jean1','King','jean.king@me.com'),
 			   ('Peter','Ferguson','peter.ferguson@google.com'),
@@ -158,7 +158,7 @@ CONTACTS
 			   ('Kwai','Lee','kwai.lee@google.com'),
 			   ('Jean','King','jean.king@me.com'),
 			   ('Susan','Nelson','susan.nelson@comcast.net'),
-			   ('Roland','Keitel','roland.keitel@yahoo.com'),
+			   ('Roland','Keitel','roland.keitel@yahoo.com')
 			   ;
 		#POSTGRESQL
 		CREATE TABLE contacts (
