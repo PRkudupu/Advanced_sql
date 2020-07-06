@@ -3,7 +3,7 @@ We will be using dup_employees table for this demo.
 Delete duplicate rows in sql 
 
 SQL Script to create dup_employees table
-Create table dup_employees
+create table dup_employees
 	(
 		 id int,
 		 first_name nvarchar(50),
