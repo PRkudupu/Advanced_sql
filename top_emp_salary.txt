@@ -1,0 +1,52 @@
+	create table employee
+	(
+	  id int,
+	  name varchar(50),
+	  salary int,
+	  department_id int
+	);
+
+	insert into employee values
+	(1,'Joe',70000,1),
+	(2,'Henry',80000,2),
+	(3,'Sam',60000,2),
+	(4,'Max',90000,1),
+	(5,'Janet',69000,1),
+	(6,'Randy',85000,1);
+
+	create table department
+	(
+	  id int,
+	  name varchar(50)
+	);
+
+	insert into department values
+	(1,'IT'),
+	(2,'Sales');
+
+	SELECT EMPLOYEE TOP 3 EMPLOYEE SALARIES IN EACH DEPARTMENT
+		select d.name ,
+       e.name ,
+       e.salary ,
+       count(e2.salary) as count_employees_earn_more
+         from employee e 
+        join department d
+        on e.department_id=d.id
+        left join employee e2 on 
+           e2.department_id =e.department_id
+           and e2.salary > e.salary
+         group by d.name ,
+                 e.name ,
+                 e.salary
+         order by d.name;
+		
+	    +-------+-------+--------+---------------------------+
+		| name  | name  | salary | count_employees_earn_more |
+		+-------+-------+--------+---------------------------+
+		| IT    | Janet |  69000 |                         3 |
+		| IT    | Joe   |  70000 |                         2 |
+		| IT    | Max   |  90000 |                         0 |
+		| IT    | Randy |  85000 |                         1 |
+		| Sales | Henry |  80000 |                         0 |
+		| Sales | Sam   |  60000 |                         1 |
+		+-------+-------+--------+---------------------------+

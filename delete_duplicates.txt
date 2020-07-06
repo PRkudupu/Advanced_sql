@@ -167,7 +167,7 @@ CONTACTS
 			last_name VARCHAR(50) NOT NULL, 
 			email VARCHAR(255) NOT NULL
 		);
-	 5 A) FIND ALL THE ROWS WHICH HAS DUPLICATE EMAIL 
+	 5 A) FIND THE DUPLICATE EMAILS IN THE TABLE
 		select email,count(email) as dup_count 
 			from contacts 
 			group by email 

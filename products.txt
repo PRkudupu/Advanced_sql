@@ -61,6 +61,24 @@
 
 	q2) Get the list of customers that have orders on 2 consecutive days 
 	    MY SQL
+		
+		/*****
+		LEAD : function is an analytic function that lets you query more than one row in a table at a time without having to join the table to itself. 
+		It returns values from the next row in the table. To return a value from a previous row, try using the LAG function.
+		Parameters or Arguments
+		EXPRESSION
+			An expression that can contain other built-in functions, but can not contain any analytic functions.
+		OFFSET
+			Optional. It is the physical offset from the current row in the table. If this parameter is omitted, the default is 1.
+		DEFAULT
+			Optional. It is the value that is returned if the offset goes out of the bounds of the table. If this parameter is omitted, the default is null.
+		QUERY_PARTITION_CLAUSE
+			Optional
+			It is used to partition the results into groups based on one or more expressions.
+		ORDER_BY_CLAUSE
+			Optional. It is used to order the data within each partition.
+		******/
+		
 		select b.customer_id from (select a.customer_id,a.first_day,a.second_day,datediff(second_day,first_day) as diff 
 			from  (select customer_id,order_date as first_day, 
 				 lead(order_date) over (partition by customer_id order by order_date) second_day 
@@ -128,4 +146,6 @@
 		|   1 | 2019-01-02 |
 		|   0 | 2019-01-03 |
 		+-----+------------+
+		
+		
 		
