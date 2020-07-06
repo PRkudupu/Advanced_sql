@@ -112,7 +112,26 @@ EMPLOYEES
 
 		)
 		select * from cte;
-		
+	7) GET ONLY SINGLE RECORDS WITHOUT USING RANK 
+		select id
+			  , first_name
+			  , last_name
+			  , gender
+			  , salary
+		from dup_employees
+			 group by 
+				id
+			  , first_name
+			  , last_name
+			  , gender
+			  , salary;
+	+------+------------+-----------+--------+--------+
+	| id   | first_name | last_name | gender | salary |
+	+------+------------+-----------+--------+--------+
+	|    1 | Mark       | Hastings  | Male   |  60000 |
+	|    2 | Mary       | Lambeth   | Female |  30000 |
+	|    3 | Ben        | Hoskins   | Male   |  70000 |
+	+------+------------+-----------+--------+--------+
 CONTACTS
 	DROP TABLE IF EXISTS contacts;
  
