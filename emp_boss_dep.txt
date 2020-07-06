@@ -271,13 +271,4 @@ create table employee(employee_id integer,boss_id integer);
          right outer join employee b
          on e.employee_id =b.boss_id;  
 
-# FIND EMPLOYEES WHO DOES NOT HAVE BOSS
-select  e.employee_id
-        , e.boss_id
-        , b.employee_id
-        , b.boss_id
-         from employee e 
-         left outer join employee b
-         on e.employee_id =b.boss_id
-         where b.employee_id is null;
 
