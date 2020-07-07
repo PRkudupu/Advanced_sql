@@ -1,52 +1,72 @@
 	SQL Schema
-	Table: Candidate
-
-	+-----+---------+
-	| id  | Name    |
-	+-----+---------+
-	| 1   | A       |
-	| 2   | B       |
-	| 3   | C       |
-	| 4   | D       |
-	| 5   | E       |
-	+-----+---------+  
-	Table: Vote
-
-	+-----+--------------+
-	| id  | candidate_id  |
-	+-----+--------------+
-	| 1   |     2        |
-	| 2   |     4        |
-	| 3   |     3        |
-	| 4   |     2        |
-	| 5   |     5        |
-	+-----+--------------+
+	
+	DDL SCRIPTS
+	create table candidate(id int,name varchar(100));
+	insert into candidate values (1,'A');
+	insert into candidate values (2,'B');
+	insert into candidate values (3,'C');
+	insert into candidate values (4,'D');
+	insert into candidate values (5,'E');
+	
+	create table vote(id int,candidate_id int);
+	insert into vote values(1,2);
+	insert into vote values(2,4);
+	insert into vote values(3,3);
+	insert into vote values(4,2);
+	insert into vote values(5,5);
+		
+	CANDIDATE
+		+-----+---------+
+		| id  | Name    |
+		+-----+---------+
+		| 1   | A       |
+		| 2   | B       |
+		| 3   | C       |
+		| 4   | D       |
+		| 5   | E       |
+		+-----+---------+  
+	VOTE
+		+-----+--------------+
+		| id  | candidate_id |
+		+-----+--------------+
+		| 1   |     2        |
+		| 2   |     4        |
+		| 3   |     3        |
+		| 4   |     2        |
+		| 5   |     5        |
+		+-----+--------------+
+	
 	id is the auto-increment primary key,
 	candidate_id is the id appeared in Candidate table.
-	WRITE A SQL TO FIND THE NAME OF THE WINNING CANDIDATE, THE ABOVE EXAMPLE WILL RETURN THE WINNER B.
+	
+	
+	#WRITE A SQL TO FIND THE NAME OF THE WINNING CANDIDATE, THE ABOVE EXAMPLE WILL RETURN THE WINNER B.
 
 	+------+
 	| Name |
 	+------+
 	| B    |
 	+------+
+    1 a)USING CTE
+	   with cte
+		as
+		(select c.name
+			,count(v.candidate_id) as cnt
+			 from candidate c
+			 left outer join vote v
+			 on c.id=v.candidate_id
+			 group by 
+			 c.name
+		)
+         
+		select name from cte where cnt=(select max(cnt) from cte)
+		+------+
+		| name |
+		+------+
+		| B    |
+		+------+
 	
-	DDL SCRIPTS
-		create table candidate(id int,name varchar(100));
-		insert into candidate values (1,'A');
-		insert into candidate values (2,'B');
-		insert into candidate values (3,'C');
-		insert into candidate values (4,'D');
-		insert into candidate values (5,'E');
-		
-		create table vote(id int,candidate_id int);
-		insert into vote values(1,2);
-		insert into vote values(2,4);
-		insert into vote values(3,3);
-		insert into vote values(4,2);
-		insert into vote values(5,5);
-	
-	1a )USING COUNT ORDER BY AND LIMIT
+	1b )USING COUNT ORDER BY AND LIMIT
 		select count(v.candidate_id) as cnt
            ,c.name
            from candidate c
@@ -54,13 +74,13 @@
              on c.id=v.candidate_id
              group by c.name
              order by cnt desc limit 1;
-	+-----+------+
-	| cnt | name |
-	+-----+------+
-	|   2 | B    |
-	+-----+------+	
+			+-----+------+
+			| cnt | name |
+			+-----+------+
+			|   2 | B    |
+			+-----+------+	
 	
-	1b) USING AGGREGATE FUNCTIONS
+	1c) USING AGGREGATE FUNCTIONS
 		select max(a.rnk) rnk
           , a.name
 			from
