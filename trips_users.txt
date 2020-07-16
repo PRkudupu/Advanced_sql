@@ -81,14 +81,32 @@ For the above tables, your SQL query should return the following rows with the c
             where u.banned ="no" and t.status='completed' and u.role='client'
             group by u.users_id;
   3) CANCELLATION RATE = COUNT OF CANCELLED TRIP /COUNT OF ALL RIDES
-	+------------+-------------------+
-	|     Day    | Cancellation Rate |
-	+------------+-------------------+
-	| 2013-10-01 |       0.33        |
-	| 2013-10-02 |       0.00        |
-	| 2013-10-03 |       0.50        |
-	+------------+-------------------+
-    POSTGRESQL
+  
+	COMPLETED TRIPS
+		+-----------------+------------+
+		| completed_trips | Request_at |
+		+-----------------+------------+
+		|               3 | 2013-10-01 |
+		|               2 | 2013-10-02 |
+		|               2 | 2013-10-03 |
+		+-----------------+------------+
+	CANCELLED TRIPS
+		+-----------------+------------+
+		| cancelled_trips | Request_at |
+		+-----------------+------------+
+		|               1 | 2013-10-01 |
+		|               1 | 2013-10-03 |
+		+-----------------+------------+
+	CANCELLATION RATE = CANCELLED TRIPS/ TOTAL RIDES
+		+------------+-------------------+
+		|     Day    | Cancellation Rate |
+		+------------+-------------------+
+		| 2013-10-01 |       0.33        |
+		| 2013-10-02 |       0.00        |
+		| 2013-10-03 |       0.50        |
+		+------------+-------------------+
+    
+	POSTGRESQL
     select a.client_id ,a.total_trip,b.cancelled_trip, (a.total_trip/b.cancelled_trip)::decimal(4,2) as ratio
 		from
 		 (select t.client_id, count(id) as total_trip 

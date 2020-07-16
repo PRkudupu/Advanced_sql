@@ -1,0 +1,327 @@
+Please put all of your solution in the very bottom of the solution section.
+
+Now consider some user level revenue data with the following schema:
+ 
+<column>,<data_type>
+game_id, string
+user_id, string
+amount,  double
+date,    string 
+
+where amount is the amount of revenue for a single transaction from a user_id in a game_id on the given date.
+
+Suppose the table contains the following data:
+
+game_id  user_id   amount date
++--------+---------+------+----------+
+|Racing  |ABC123   |5     |2020-01-01|
+|Racing  |ABC123   |1     |2020-01-04|
+|Racing  |CDE123   |1     |2020-01-04|
+|DH      |CDE123   |100   |2020-01-03|
+|DH      |CDE456   |10    |2020-01-02|
+|DH      |CDE789   |5     |2020-01-02|
+|DH      |CDE456   |1     |2020-01-03|
+|DH      |CDE456   |1     |2020-01-03|
++--------+---------+------+----------+
+
+Calculate cumulative revenue over time since 2020-01-01 for each game.
+
+Calculate the question below using the following. Feel free to start in any order you like. Try to get as far as you can within the time limit:
+
+1. SQL (any SQL syntax)
+
+To get started with SQL, please choose either PostgreSQL or MYSQL, and run the following commands to create the input table.
+
+drop table if exists revenue;
+
+create table revenue
+(
+  game_id        varchar(255),
+  user_id        varchar(255),
+  amount         int,
+  activity_date  varchar(255)
+);
+
+insert into revenue
+  (game_id, user_id, amount, activity_date)
+values
+  ('Racing', 'ABC123', 5, '2020-01-01'),
+  ('Racing', 'ABC123', 1, '2020-01-04'),
+  ('Racing', 'CDE123', 1, '2020-01-04'),
+  ('DH', 'CDE123', 100, '2020-01-03'),
+  ('DH', 'CDE456', 10, '2020-01-02'),
+  ('DH', 'CDE789', 5, '2020-01-02'),
+  ('DH', 'CDE456', 1, '2020-01-03'),
+  ('DH', 'CDE456', 1, '2020-01-03');
+  
+  
+Your final output should look like below:
+
+Game   Age  Cum_rev Total_unique_payers_per_game
+Racing 0    5       2
+Racing 1    5       2
+Racing 2    5       2
+Racing 3    7       2
+DH     0    0       3
+DH     1    15      3
+DH     2    117     3
+DH     3    117     3
+
+Note: Age is the difference between transaction date and 2020-01-01. And Total_payer_count is number of payers in each game and it is independent of age. Note ABC123 and CDE123 are in Racing, and CDE123, CDE456, and CDE789 are in DH
+
+Once you are finished, comment out your solution and move on. 
+
+select   o.Game
+          , o.Age
+		  , o.cum_rev
+		  , max(o.Total_unique_payers_per_game) over (partition by o.Game ) as total
+	
+   from
+   ( select   base.Game
+          , base.Age
+		  , coalesce(tran.cum_rev,0) as cum_rev
+		  , count(tran.user_id) as Total_unique_payers_per_game
+		    from
+             (
+              select Age
+                   , 'Racing' as Game
+				   ,  0 as amount
+                  from 
+                  (select distinct(activity_date) 
+                  , datediff(activity_date,'2020-01-01') as Age
+                   from revenue where game_id='Racing'
+                  union all 
+                   select distinct(activity_date)
+                  , datediff(activity_date,'2020-01-01') as Age
+                  from revenue where game_id='DH'
+                  )a
+               union all
+                  select Age
+				 , 'DH' as Game
+				 , 0 as amount
+				  from 
+				  (select distinct(activity_date) 
+				  , datediff(activity_date,'2020-01-01') as Age
+				   from revenue where game_id='Racing'
+				  union all 
+				   select distinct(activity_date)
+				  , datediff(activity_date,'2020-01-01') as Age
+				  from revenue where game_id='DH'
+				   )b
+				 )base
+         
+         left outer join
+           (select datediff(activity_date,'2020-01-01') as Age
+              , user_id
+              , amount
+              , activity_date
+              , game_id
+              , coalesce(sum(amount) over (partition by game_id order by activity_date),0) as cum_rev
+              from revenue
+             )tran
+        on base.Age=tran.Age and base.Game=tran.game_id
+		group by  base.Game, base.Age, tran.cum_rev 
+		order by base.Game,base.Age 
+		) o
+	order by Game;
+	     
++------+--------+------+---------+--------+---------------+---------+---------+
+| Age  | Game   | Age  | user_id | amount | activity_date | game_id | cum_rev |
++------+--------+------+---------+--------+---------------+---------+---------+
+|    1 | DH     |    1 | CDE456  |     10 | 2020-01-02    | DH      |      15 |
+|    1 | DH     |    1 | CDE789  |      5 | 2020-01-02    | DH      |      15 |
+|    2 | DH     |    2 | CDE123  |    100 | 2020-01-03    | DH      |     117 |
+|    2 | DH     |    2 | CDE456  |      1 | 2020-01-03    | DH      |     117 |
+|    2 | DH     |    2 | CDE456  |      1 | 2020-01-03    | DH      |     117 |
+|    0 | Racing |    0 | ABC123  |      5 | 2020-01-01    | Racing  |       5 |
+|    3 | Racing |    3 | ABC123  |      1 | 2020-01-04    | Racing  |       7 |
+|    3 | Racing |    3 | CDE123  |      1 | 2020-01-04    | Racing  |       7 |
+|    2 | Racing | NULL | NULL    |   NULL | NULL          | NULL    |    NULL |
+|    1 | Racing | NULL | NULL    |   NULL | NULL          | NULL    |    NULL |
+|    0 | DH     | NULL | NULL    |   NULL | NULL          | NULL    |    NULL |
+|    3 | DH     | NULL | NULL    |   NULL | NULL          | NULL    |    NULL |
++------+--------+------+---------+--------+---------------+---------+---------+
+
+
++--------+------+---------+-------+----------------------------------------+
+| Game   | Age  | cum_rev | total | lead(o.cum_rev) over(partition by Age) |
++--------+------+---------+-------+----------------------------------------+
+| DH     |    0 |       0 |     3 |                                      5 |
+| Racing |    0 |       5 |     2 |                                   NULL |
+| DH     |    1 |      15 |     3 |                                      0 |
+| Racing |    1 |       0 |     2 |                                   NULL |
+| DH     |    2 |     117 |     3 |                                      0 |
+| Racing |    2 |       0 |     2 |                                   NULL |
+| DH     |    3 |       0 |     3 |                                      7 |
+| Racing |    3 |       7 |     2 |                                   NULL |
++--------+------+---------+-------+--------------------------------------
+
+
+
+
+2. Python or Java without using dataframe or sql libraries
+
+To get started with this approach, please choose your selected language. You can use the following in your code to help you get started with creating a data-structure to store the input data. You can edit it if want to fit your solution/algorithm:
+
+Python:
+
+data = [{"game_id":"Racing","user_id":"ABC123","amt":5,"date":"2020-01-01"},{"game_id":"Racing","user_id":"ABC123","amt":1,"date":"2020-01-04"},{"game_id":"Racing","user_id":"CDE123","amt":1,"date":"2020-01-04"},{"game_id":"DH","user_id":"CDE123","amt":100,"date":"2020-01-03"},{"game_id":"DH","user_id":"CDE456","amt":10,"date":"2020-01-02"},{"game_id":"DH","user_id":"CDE789","amt":5,"date":"2020-01-02"},{"game_id":"DH","user_id":"CDE456","amt":1,"date":"2020-01-03"},{"game_id":"DH","user_id":"CDE456","amt":1,"date":"2020-01-03"}]
+
+Java:
+
+public static ArrayList<HashMap<String,String>> createTransactionDetailsList(){
+        ArrayList<HashMap<String,String>> transactionDetailsList = new ArrayList<HashMap<String,String>>();
+        HashMap<String, String> transDetails1 = new HashMap<String,String>();
+        transDetails1.put("game_id","Racing");
+        transDetails1.put("user_id","ABC123");
+        transDetails1.put("amt","5");
+        transDetails1.put("date","2020-01-01");
+        transactionDetailsList.add(transDetails1);
+        HashMap<String, String> transDetails2 = new HashMap<String,String>();
+        transDetails2.put("game_id","Racing");;
+        transDetails2.put("user_id","ABC123");
+        transDetails2.put("amt","1");
+        transDetails2.put("date","2020-01-04");
+        transactionDetailsList.add(transDetails2);
+        HashMap<String, String> transDetails3 = new HashMap<String,String>();
+        transDetails3.put("game_id","Racing");
+        transDetails3.put("user_id","CDE123");
+        transDetails3.put("amt","1");
+        transDetails3.put("date","2020-01-04");
+        transactionDetailsList.add(transDetails3);
+        HashMap<String, String> transDetails4 = new HashMap<String,String>();
+        transDetails4.put("game_id","DH");
+        transDetails4.put("user_id","CDE123");
+        transDetails4.put("amt","100");
+        transDetails4.put("date","2020-01-03");
+        transactionDetailsList.add(transDetails4);
+        HashMap<String, String> transDetails5 = new HashMap<String,String>();
+        transDetails5.put("game_id","DH");
+        transDetails5.put("user_id","CDE456");
+        transDetails5.put("amt","10");
+        transDetails5.put("date","2020-01-02");
+        transactionDetailsList.add(transDetails5);
+        HashMap<String, String> transDetails6 = new HashMap<String,String>();
+        transDetails6.put("game_id","DH");
+        transDetails6.put("user_id","CDE789");
+        transDetails6.put("amt","5");
+        transDetails6.put("date","2020-01-02");
+        transactionDetailsList.add(transDetails6);
+        HashMap<String, String> transDetails7 = new HashMap<String,String>();
+        transDetails7.put("game_id","DH");
+        transDetails7.put("user_id","CDE456");
+        transDetails7.put("amt","1");
+        transDetails7.put("date","2020-01-03");
+        transactionDetailsList.add(transDetails7);
+        HashMap<String, String> transDetails8= new HashMap<String,String>();
+        transDetails8.put("game_id","DH");
+        transDetails8.put("user_id","CDE456");
+        transDetails8.put("amt","1");
+        transDetails8.put("date","2020-01-03");
+        transactionDetailsList.add(transDetails8);
+        return transactionDetailsList;
+    }
+    
+    public static void printTransactionDetails (ArrayList<HashMap<String,String>> transactionDetailsList){
+        StringBuilder sb = new StringBuilder();
+        for (HashMap<String,String> transactionDetails:transactionDetailsList) {
+            System.out.print("{");
+            for(Map.Entry entry : transactionDetails.entrySet()) {
+                sb.append("\"" + entry.getKey() + "\":\"" + entry.getValue() + "\",");
+            }
+            sb.append("}");
+            sb.replace(sb.length()-2,sb.length()-1,"");
+            System.out.println(sb);
+            sb.setLength(0);
+        }
+    }
+    
+Once you are finished, congratulations! Now you know how to calculate LTV for mobile games.
+
+
+### SQL Soltuion ###
+	
+    select       b.game_id
+               , b.user_id
+               , b.amount
+               , b.activity_date
+    from revenue where game_id='Racing'
+
+
+
+select  b.game_id
+      , b.user_id
+      , b.amount
+      , b.activity_date
+      , a.d_date
+        from
+        
+        (select distinct(activity_date) d_date
+         , game_id
+           from revenue
+         group by game_id
+         )a
+       left outer join
+          (select game_id
+          , user_id
+          , amount
+          , activity_date
+            from
+            revenue
+          )b
+        on a.d_date=b.activity_date and a.game_id=b.game_id;
+    
+    
+    select distinct(activity_date) d_date
+           ,game_id
+           from revenue
+           group by game_id,activity_date;
+		   
+		   
+		   select * from
+       
+       (select datediff(activity_date,'2020-01-01') as Age
+        , user_id
+        , amount
+        , activity_date
+        , game_id
+        from revenue
+        where game_id='Racing'
+        )r
+        left outer join 
+        
+        (select datediff(activity_date,'2020-01-01') as Age
+        , user_id
+        , amount
+        , activity_date
+        , game_id
+        from revenue
+        where game_id='DH')
+        d
+        on r.activity_date=d.activity_date;
+        
+       
+         
+         (select  game_id as Game
+        , datediff(activity_date,'2020-01-01') as Age
+        , user_id
+        , amount
+        , activity_date
+        , sum(amount) over (partition by game_id order by activity_date) as cum_rev
+       from revenue
+       order by cum_rev) b
+
+
+
+
+
+### End of my SQL solution ###
+
+
+
+### Coding Soltuion ###
+
+
+
+### End of my coding solution ###
+
