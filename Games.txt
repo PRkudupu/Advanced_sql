@@ -71,59 +71,75 @@ Note: Age is the difference between transaction date and 2020-01-01. And Total_p
 
 Once you are finished, comment out your solution and move on. 
 
-select   o.Game
-          , o.Age
-		  , o.cum_rev
-		  , max(o.Total_unique_payers_per_game) over (partition by o.Game ) as total
-	
-   from
-   ( select   base.Game
-          , base.Age
-		  , coalesce(tran.cum_rev,0) as cum_rev
-		  , count(tran.user_id) as Total_unique_payers_per_game
-		    from
-             (
-              select Age
-                   , 'Racing' as Game
-				   ,  0 as amount
-                  from 
-                  (select distinct(activity_date) 
-                  , datediff(activity_date,'2020-01-01') as Age
-                   from revenue where game_id='Racing'
-                  union all 
-                   select distinct(activity_date)
-                  , datediff(activity_date,'2020-01-01') as Age
-                  from revenue where game_id='DH'
-                  )a
-               union all
-                  select Age
-				 , 'DH' as Game
-				 , 0 as amount
-				  from 
-				  (select distinct(activity_date) 
-				  , datediff(activity_date,'2020-01-01') as Age
-				   from revenue where game_id='Racing'
-				  union all 
-				   select distinct(activity_date)
-				  , datediff(activity_date,'2020-01-01') as Age
-				  from revenue where game_id='DH'
-				   )b
-				 )base
-         
-         left outer join
-           (select datediff(activity_date,'2020-01-01') as Age
-              , user_id
-              , amount
-              , activity_date
-              , game_id
-              , coalesce(sum(amount) over (partition by game_id order by activity_date),0) as cum_rev
-              from revenue
-             )tran
-        on base.Age=tran.Age and base.Game=tran.game_id
-		group by  base.Game, base.Age, tran.cum_rev 
-		order by base.Game,base.Age 
-		) o
-	order by Game;
+ select 
+	ot.Game
+  , ot.Age
+  , ot.cur_pay as Cum_rev
+  , ot.total_users as Total_unique_payers_per_game
+  from
+	(select   o.Game
+			  , o.Age
+			  , sum(coalesce(a.amount,0)) over (partition by o.Game order by o.Age) as cur_pay
+			  , a.user_id
+			  , max(o.total_users) over (partition by o.Game) as total_users
+		 from
+			 ( select   base.Game
+					  , base.Age
+					  , tran.user_id
+					  , count(tran.user_id) as total_users
+					from
+					 (
+						 select Age
+							   , 'Racing' as Game
+							   ,  0 as amount
+						  from 
+								(select distinct(activity_date) 
+								  , datediff(activity_date,'2020-01-01') as Age
+								   from revenue where game_id='Racing'
+						  union all 
+								   select distinct(activity_date)
+								  , datediff(activity_date,'2020-01-01') as Age
+								  from revenue where game_id='DH'
+								)a
+					   union all
+						select Age
+							   , 'DH' as Game
+							   , 0 as amount
+						  from 
+								(select distinct(activity_date) 
+								  , datediff(activity_date,'2020-01-01') as Age
+								   from revenue where game_id='Racing'
+							  union all 
+								   select distinct(activity_date)
+								  , datediff(activity_date,'2020-01-01') as Age
+								  from revenue where game_id='DH'
+						   )b
+						 )base
+				 left outer join
+					   (select datediff(activity_date,'2020-01-01') as Age
+						  , user_id
+						  , amount
+						  , activity_date
+						  , game_id
+							  from revenue
+						 )tran
+				on base.Age=tran.Age and base.Game=tran.game_id
+				group by  base.Game, base.Age
+				order by base.Game,base.Age 
+				) o
+		left outer join
+		     (select  amount
+			        , datediff(activity_date,'2020-01-01') as Age
+					, game_id
+					, user_id
+					 from 
+					revenue
+			  )a
+		on a.game_id = o.Game and a.Age=o.Age
+		order by o.Game,o.Age
+		)ot
+	group by ot.Game,ot.Age
+	order by ot.Game desc
 	     
 +------+--------+------+---------+--------+---------------+---------+---------+
 | Age  | Game   | Age  | user_id | amount | activity_date | game_id | cum_rev |
@@ -321,7 +337,479 @@ select  b.game_id
 
 ### Coding Soltuion ###
 
+/*Your previous Plain Text content is preserved below:
 
+Please put all of your solution in the very bottom of the solution section.
+
+Now consider some user level revenue data with the following schema:
+ 
+<column>,<data_type>
+game_id, string
+user_id, string
+amount,  double
+date,    string 
+
+where amount is the amount of revenue for a single transaction from a user_id in a game_id on the given date.
+
+Suppose the table contains the following data:
+
+game_id  user_id   amount date
++--------+---------+------+----------+
+|Racing  |ABC123   |5     |2020-01-01|
+|Racing  |ABC123   |1     |2020-01-04|
+|Racing  |CDE123   |1     |2020-01-04|
+|DH      |CDE123   |100   |2020-01-03|
+|DH      |CDE456   |10    |2020-01-02|
+|DH      |CDE789   |5     |2020-01-02|
+|DH      |CDE456   |1     |2020-01-03|
+|DH      |CDE456   |1     |2020-01-03|
++--------+---------+------+----------+
+
+Calculate cumulative revenue over time since 2020-01-01 for each game.
+
+Calculate the question below using the following. Feel free to start in any order you like. Try to get as far as you can within the time limit:
+*/
+1. SQL (any SQL syntax)
+
+To get started with SQL, please choose either PostgreSQL or MYSQL, and run the following commands to create the input table.
+
+drop table if exists revenue;
+
+create table revenue
+(
+  game_id        varchar(255),
+  user_id        varchar(255),
+  amount         int,
+  activity_date  varchar(255)
+);
+
+insert into revenue
+  (game_id, user_id, amount, activity_date)
+values
+  ('Racing', 'ABC123', 5, '2020-01-01'),
+  ('Racing', 'ABC123', 1, '2020-01-04'),
+  ('Racing', 'CDE123', 1, '2020-01-04'),
+  ('DH', 'CDE123', 100, '2020-01-03'),
+  ('DH', 'CDE456', 10, '2020-01-02'),
+  ('DH', 'CDE789', 5, '2020-01-02'),
+  ('DH', 'CDE456', 1, '2020-01-03'),
+  ('DH', 'CDE456', 1, '2020-01-03');
+  
+  
++---------+---------+--------+---------------+
+| game_id | user_id | amount | activity_date |
++---------+---------+--------+---------------+
+| Racing  | ABC123  |      5 | 2020-01-01    |
+| Racing  | ABC123  |      1 | 2020-01-04    |
+| Racing  | CDE123  |      1 | 2020-01-04    |
+| DH      | CDE123  |    100 | 2020-01-03    |
+| DH      | CDE456  |     10 | 2020-01-02    |
+| DH      | CDE789  |      5 | 2020-01-02    |
+| DH      | CDE456  |      1 | 2020-01-03    |
+| DH      | CDE456  |      1 | 2020-01-03    |
++---------+---------+--------+---------------+
+
+Your final output should look like below:
+
+Game   Age  Cum_rev Total_unique_payers_per_game
+Racing 0    5       2
+Racing 1    5       2
+Racing 2    5       2
+Racing 3    7       2
+DH     0    0       3
+DH     1    15      3
+DH     2    117     3
+DH     3    117     3
+
+
+      
+     
+      select   tran.game_id as Game
+              , tran.Age
+              , tran.cum_rev
+              , tran.user_id 
+              , tran.activity_date
+              , lead(cum_rev) over (partition by tran.game_id order by cum_rev)
+              , sum(cum_rev) over (partition by game_id order by activity_date) as cum_rev
+              from
+      
+             (
+              select Age
+                   , 'Racing' as Game
+                  from 
+                  (select distinct(activity_date) 
+                  , datediff(activity_date,'2020-01-01') as Age
+                   from revenue where game_id='Racing'
+                  union all 
+                   select distinct(activity_date)
+                  , datediff(activity_date,'2020-01-01') as Age
+                  from revenue where game_id='DH'
+                  )a
+               union
+                  select Age
+                         , 'DH' as Game
+                      from 
+                      (select distinct(activity_date) 
+                      , datediff(activity_date,'2020-01-01') as Age
+                       from revenue where game_id='Racing'
+                      union all 
+                       select distinct(activity_date)
+                      , datediff(activity_date,'2020-01-01') as Age
+                      from revenue where game_id='DH'
+                       )b
+             )base
+         
+         left outer join
+         
+            (select datediff(activity_date,'2020-01-01') as Age
+              , user_id
+              , amount
+              , activity_date
+              , game_id
+              , coalesce(sum(amount) over (partition by game_id order by activity_date),0) as c
+               
+              from revenue
+
+             )tran
+        on base.Age=tran.Age
+        group by base.Game 
+              , tran.user_id
+              , tran.game_id
+              , tran.cum_rev
+              , base.Age
+              , tran.activity_date
+        order by tran.game_id desc
+      
+
+       
+       
+      
+    
+
+        
+
+Note: 
+a) Age is the difference between transaction date and 2020-01-01. 
+b) And Total_payer_count is number of payers in each game and it is independent of age. 
+  Note ABC123 and CDE123 are in Racing, 
+  and CDE123, CDE456, and CDE789 are in DH
+
+Once you are finished, comment out your solution and move on. 
+
+select 
+
+2. Python or Java without using dataframe or sql libraries
+
+To get started with this approach, please choose your selected language. You can use the following in your code to help you get started with creating a data-structure to store the input data. You can edit it if want to fit your solution/algorithm:
+
+Python:
+
+data = [{"game_id":"Racing","user_id":"ABC123","amt":5,"date":"2020-01-01"},{"game_id":"Racing","user_id":"ABC123","amt":1,"date":"2020-01-04"},{"game_id":"Racing","user_id":"CDE123","amt":1,"date":"2020-01-04"},{"game_id":"DH","user_id":"CDE123","amt":100,"date":"2020-01-03"},{"game_id":"DH","user_id":"CDE456","amt":10,"date":"2020-01-02"},{"game_id":"DH","user_id":"CDE789","amt":5,"date":"2020-01-02"},{"game_id":"DH","user_id":"CDE456","amt":1,"date":"2020-01-03"},{"game_id":"DH","user_id":"CDE456","amt":1,"date":"2020-01-03"}]
+
+Java:
+
+public static ArrayList<HashMap<String,String>> createTransactionDetailsList(){
+        ArrayList<HashMap<String,String>> transactionDetailsList = new ArrayList<HashMap<String,String>>();
+        HashMap<String, String> transDetails1 = new HashMap<String,String>();
+        transDetails1.put("game_id","Racing");
+        transDetails1.put("user_id","ABC123");
+        transDetails1.put("amt","5");
+        transDetails1.put("date","2020-01-01");
+        transactionDetailsList.add(transDetails1);
+        HashMap<String, String> transDetails2 = new HashMap<String,String>();
+        transDetails2.put("game_id","Racing");;
+        transDetails2.put("user_id","ABC123");
+        transDetails2.put("amt","1");
+        transDetails2.put("date","2020-01-04");
+        transactionDetailsList.add(transDetails2);
+        HashMap<String, String> transDetails3 = new HashMap<String,String>();
+        transDetails3.put("game_id","Racing");
+        transDetails3.put("user_id","CDE123");
+        transDetails3.put("amt","1");
+        transDetails3.put("date","2020-01-04");
+        transactionDetailsList.add(transDetails3);
+        HashMap<String, String> transDetails4 = new HashMap<String,String>();
+        transDetails4.put("game_id","DH");
+        transDetails4.put("user_id","CDE123");
+        transDetails4.put("amt","100");
+        transDetails4.put("date","2020-01-03");
+        transactionDetailsList.add(transDetails4);
+        HashMap<String, String> transDetails5 = new HashMap<String,String>();
+        transDetails5.put("game_id","DH");
+        transDetails5.put("user_id","CDE456");
+        transDetails5.put("amt","10");
+        transDetails5.put("date","2020-01-02");
+        transactionDetailsList.add(transDetails5);
+        HashMap<String, String> transDetails6 = new HashMap<String,String>();
+        transDetails6.put("game_id","DH");
+        transDetails6.put("user_id","CDE789");
+        transDetails6.put("amt","5");
+        transDetails6.put("date","2020-01-02");
+        transactionDetailsList.add(transDetails6);
+        HashMap<String, String> transDetails7 = new HashMap<String,String>();
+        transDetails7.put("game_id","DH");
+        transDetails7.put("user_id","CDE456");
+        transDetails7.put("amt","1");
+        transDetails7.put("date","2020-01-03");
+        transactionDetailsList.add(transDetails7);
+        HashMap<String, String> transDetails8= new HashMap<String,String>();
+        transDetails8.put("game_id","DH");
+        transDetails8.put("user_id","CDE456");
+        transDetails8.put("amt","1");
+        transDetails8.put("date","2020-01-03");
+        transactionDetailsList.add(transDetails8);
+        return transactionDetailsList;
+    }
+    
+    public static void printTransactionDetails (ArrayList<HashMap<String,String>> transactionDetailsList){
+        StringBuilder sb = new StringBuilder();
+        for (HashMap<String,String> transactionDetails:transactionDetailsList) {
+            System.out.print("{");
+            for(Map.Entry entry : transactionDetails.entrySet()) {
+                sb.append("\"" + entry.getKey() + "\":\"" + entry.getValue() + "\",");
+            }
+            sb.append("}");
+            sb.replace(sb.length()-2,sb.length()-1,"");
+            System.out.println(sb);
+            sb.setLength(0);
+        }
+    }
+    
+Once you are finished, congratulations! Now you know how to calculate LTV for mobile games.
+
+
+### SQL Soltuion ###
+
+ select 
+	ot.Game
+  , ot.Age
+  , ot.cur_pay as Cum_rev
+  , ot.total_users as Total_unique_payers_per_game
+  from
+	(select   o.Game
+			  , o.Age
+			  , sum(coalesce(a.amount,0)) over (partition by o.Game order by o.Age) as cur_pay
+			  , a.user_id
+			  , max(o.total_users) over (partition by o.Game) as total_users
+		 from
+			 ( select   base.Game
+					  , base.Age
+					  , tran.user_id
+					  , count(tran.user_id) as total_users
+					from
+					 (
+						 select Age
+							   , 'Racing' as Game
+							   ,  0 as amount
+						  from 
+								(select distinct(activity_date) 
+								  , datediff(activity_date,'2020-01-01') as Age
+								   from revenue where game_id='Racing'
+						  union all 
+								   select distinct(activity_date)
+								  , datediff(activity_date,'2020-01-01') as Age
+								  from revenue where game_id='DH'
+								)a
+					   union all
+						select Age
+							   , 'DH' as Game
+							   , 0 as amount
+						  from 
+								(select distinct(activity_date) 
+								  , datediff(activity_date,'2020-01-01') as Age
+								   from revenue where game_id='Racing'
+							  union all 
+								   select distinct(activity_date)
+								  , datediff(activity_date,'2020-01-01') as Age
+								  from revenue where game_id='DH'
+						   )b
+						 )base
+				 left outer join
+					   (select datediff(activity_date,'2020-01-01') as Age
+						  , user_id
+						  , amount
+						  , activity_date
+						  , game_id
+							  from revenue
+						 )tran
+				on base.Age=tran.Age and base.Game=tran.game_id
+				group by  base.Game, base.Age
+				order by base.Game,base.Age 
+				) o
+		left outer join
+		     (select  amount
+			        , datediff(activity_date,'2020-01-01') as Age
+					, game_id
+					, user_id
+					 from 
+					revenue
+			  )a
+		on a.game_id = o.Game and a.Age=o.Age
+		order by o.Game,o.Age
+		)ot
+	group by ot.Game,ot.Age
+	order by ot.Game desc
+
+### End of my SQL solution ###
+
+
+
+### Coding Soltuion ###
+
+data = [{"game_id":"Racing","user_id":"ABC123","amt":5,"date":"2020-01-01"},        {"game_id":"Racing","user_id":"ABC123","amt":1,"date":"2020-01-04"},{"game_id":"Racing","user_id":"CDE123","amt":1,"date":"2020-01-04"},{"game_id":"DH","user_id":"CDE123","amt":100,"date":"2020-01-03"},{"game_id":"DH","user_id":"CDE456","amt":10,"date":"2020-01-02"},{"game_id":"DH","user_id":"CDE789","amt":5,"date":"2020-01-02"},{"game_id":"DH","user_id":"CDE456","amt":1,"date":"2020-01-03"},{"game_id":"DH","user_id":"CDE456","amt":1,"date":"2020-01-03"}]
+from datetime import datetime
+
+def days_between(d1, d2):
+    d1 = datetime.strptime(d1, "%Y-%m-%d")
+    d2 = datetime.strptime(d2, "%Y-%m-%d")
+    return abs((d2 - d1).days)
+
+def race(ls):
+    # Loop through all the elements in the list
+    ls_rc =[]
+    ls_dh =[]
+    rc_total_users =0
+    rc_amount=0
+    dh_total_users =0
+    dh_amount=0
+    rc_age_cnt=0
+    dh_age_cnt=0
+    max_rows=0
+    rc_s =set()
+    dh_s =set()
+    rc_players_s=set()
+    dh_players_s=set()
+    
+    """
+    Filter 2 games
+    """
+    for i in range(len(ls)):
+        for key,values in ls[i].items():
+            """
+            seperate the list for diffrent games:
+            """
+            #items which game_id is Racing 
+            if key == 'game_id' and values =='Racing':
+                #template for the new rows
+                dic ={"Game":"Racing","Age":0,"Cum_rev":0,"Total_unique_payers_per_game":0}
+                #initialize dictionary as rows
+                row=ls[i]
+                dic["Age"] = days_between('2020-01-01',row["date"])
+                # count the amount  
+                rc_amount +=int(row["amt"])
+                # count the number of users
+                rc_total_users +=1
+
+                # assign data to the new dic from the existing dictionaries
+                dic["Game"]= row["game_id"]
+                dic["Cum_rev"] =row["amt"]
+                dic["Total_unique_payers_per_game"] =rc_total_users
+                ls_rc.append(dic)
+                #max no count 
+                rc_age_cnt =max(rc_age_cnt,dic["Age"])
+                #max no of players
+                rc_players_s.add(row["user_id"])
+                
+                #using set to store the missing days for racing games
+                rc_s.add(dic["Age"])
+              #items which game_id is DH
+            if key == 'game_id' and values =='DH':
+                #template for the new rows
+                dic ={"Game":"DH","Age":0,"Cum_rev":0,"Total_unique_payers_per_game":0}
+                #initialize dictionary as rows
+                row=ls[i]
+                # count the amount  
+                dh_amount +=int(row["amt"])
+                # count the number of users
+                dh_total_users +=1
+                
+                dic["Game"]= row["game_id"]
+                dic["Age"] = days_between('2020-01-01',row["date"])
+                dic["Cum_rev"] =row["amt"]
+                
+                dic["Total_unique_payers_per_game"] =dh_total_users
+                ls_dh.append(dic)
+                dh_age_cnt =max(dh_age_cnt,dic["Age"])
+                #using set to store the missing days for racing games
+                dh_s.add(dic["Age"])
+                 #max no of players
+                dh_players_s.add(row["user_id"])
+    
+    #Filter 
+    max_rows=max(rc_age_cnt,dh_age_cnt)
+    """
+    Add the missing rows
+    """
+    for j in range(max_rows+1):
+        # add missing rows for racing games 
+        if j not in rc_s:
+            dic ={"Game":"Racing","Age":j,"Cum_rev":0,"Total_unique_payers_per_game":0}
+            ls_rc.append(dic)
+        # add missing games for DH games
+        if j not in dh_s:
+            dic ={"Game":"DH","Age":j,"Cum_rev":0,"Total_unique_payers_per_game":0}
+            ls_dh.append(dic)
+       # join 2 tables
+   
+    """
+    get the daily amount
+    in 0
+    {0: 5} 
+
+    in 3
+    {0: 5, 3: 1} 
+
+    else 3
+    {0: 5, 3: 2} 
+
+    in 1
+    {0: 5, 3: 2, 1: 0} 
+
+    in 2
+    {0: 5, 3: 2, 1: 0, 2: 0} 
+        """
+    max_rc_players=len(rc_players_s)
+    max_dh_players=len(dh_players_s)
+    rc_amt= {}
+    dh_amt= {}
+    #Racing
+    for row in ls_rc:
+        if row["Age"] not in rc_amt:
+            rc_amt[row["Age"]]=row["Cum_rev"]
+        else:
+            rc_amt[row["Age"]]=rc_amt[row["Age"]]+row["Cum_rev"]
+    
+    #DH
+    for row in ls_dh:
+        if row["Age"] not in dh_amt:
+            dh_amt[row["Age"]]=row["Cum_rev"]
+        else:
+            dh_amt[row["Age"]]=dh_amt[row["Age"]]+row["Cum_rev"]  
+
+    
+    """
+    Final changes
+    """
+    final_ls =[]
+    rc_cum_sum = 0
+    dh_cum_sum =0
+    for i in range(max_rows+1):
+        dic ={"Game":"Racing","Age":i,"Cum_rev":rc_amt[i]+rc_cum_sum,"Total_unique_payers_per_game":max_rc_players}
+        rc_cum_sum +=rc_amt[i]
+        final_ls.append(dic)
+    for i in range(max_rows+1):
+        dic ={"Game":"DH","Age":i,"Cum_rev":dh_amt[i]+dh_cum_sum,"Total_unique_payers_per_game":max_dh_players}
+        dh_cum_sum +=dh_amt[i]
+        
+        final_ls.append(dic)
+    
+    return final_ls
+    
+print(race(data))
+
+### End of my coding solution ###
+
+ */
 
 ### End of my coding solution ###
 

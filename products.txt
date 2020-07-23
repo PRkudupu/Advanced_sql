@@ -105,6 +105,17 @@
 			|           2 |
 			|           3 |
 			+-------------+
+		
+		# We need only customer_id, so other columns are not needed.
+		 select a.customer_id 
+			  from
+				 (select customer_id
+				  , order_date
+				  , lead(order_date) over (partition by customer_id order by order_date ) as sec_day
+			   from 
+			   order_tbl)
+			   a
+			   where datediff(a.sec_day,a.order_date) =1;
 		POSTGRESQL
 		select customer_id
          from
