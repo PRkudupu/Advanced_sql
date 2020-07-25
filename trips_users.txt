@@ -4,7 +4,7 @@ Each trip has a unique Id, while Client_Id and Driver_Id are both foreign keys t
 Status is an ENUM type of (‘completed’, ‘cancelled_by_driver’, ‘cancelled_by_client’).
 
 +----+-----------+-----------+---------+--------------------+----------+
-| Id | Client_Id | Driver_Id | City_Id |        Status      |Request_at|
+| id | client_Id | driver_id | city_id |        status      |request_at|
 +----+-----------+-----------+---------+--------------------+----------+
 | 1  |     1     |    10     |    1    |     completed      |2013-10-01|
 | 2  |     2     |    11     |    1    | cancelled_by_driver|2013-10-01|
@@ -20,7 +20,7 @@ Status is an ENUM type of (‘completed’, ‘cancelled_by_driver’, ‘cancel
 The Users table holds all users. Each user has an unique Users_Id, and Role is an ENUM type of (‘client’, ‘driver’, ‘partner’).
 
 +----------+--------+--------+
-| Users_Id | Banned |  Role  |
+| users_Id | banned |  role  |
 +----------+--------+--------+
 |    1     |   No   | client |
 |    2     |   Yes  | client |
@@ -43,7 +43,7 @@ For the above tables, your SQL query should return the following rows with the c
 | 2013-10-03 |       0.50        |
 +------------+-------------------+
   DDL SCRIPTS
-	create table trip (Id int, Client_Id int, Driver_Id int, City_Id int, Status varchar(30),Request_at date);
+	create table trip (id int, client_id int, driver_id int, city_id int, status varchar(30),request_at date);
 	insert into trip values (1  ,     1     ,    10     ,    1    ,     'completed'      ,'2013-10-01');
 	insert into trip values (2  ,     2     ,    11     ,    1    , 'cancelled_by_driver','2013-10-01');
 	insert into trip values (3  ,     3     ,    12     ,    6    ,     'completed'     ,'2013-10-01');
@@ -56,7 +56,7 @@ For the above tables, your SQL query should return the following rows with the c
 	insert into trip values ( 10 ,     4     ,    13     ,    12   , 'cancelled_by_driver','2013-10-03');
 		
 	
-	create table users(Users_Id int ,Banned varchar(20), Role varchar(20));
+	create table users(users_id int ,banned varchar(20), role varchar(20));
 	insert into users values (    1     ,   'No'  ,  'client' );
 	insert into users values (    2     ,   'Yes'  , 'client' );
 	insert into users values (    3     ,   'No'   , 'client' );
@@ -67,22 +67,24 @@ For the above tables, your SQL query should return the following rows with the c
 	insert into users values (    13    ,   'No'   , 'driver' );
   
   1) GET COUNT OF TRIPS FOR UNBANNED USERS FOR ALL RIDES
- 	select  u.Users_Id
+ 	select  u.users_Id
 		,count(t.id) as trip_cnts
         from trip t join users u
-			on t.client_id=u.Users_Id
+			on t.client_id=u.users_id
             where u.banned ="no"
             group by u.users_id;
-  2) GET COUNT OF TRIPS FOR UNBANNED USERS FOR CANCELLED RIDES
-     select  u.users_Id
-       ,count(t.id) as trip_cnts
-       from trip t join users u
-      on t.client_id=u.Users_Id
-            where u.banned ="no" and t.status='completed' and u.role='client'
-            group by u.users_id;
-  3) CANCELLATION RATE = COUNT OF CANCELLED TRIP /COUNT OF ALL RIDES
   
-	COMPLETED TRIPS
+  2) GET COUNT OF TRIPS FOR UNBANNED USERS FOR CANCELLED RIDES
+    select t.client_id
+       , count(t.id) 
+			from trip t
+			join users u
+       on t.client_id=u.users_id
+			where u.banned='No' and t.status !='completed' and u.role='client'
+		group by t.client_id;
+  
+  3) CANCELLATION RATE = COUNT OF CANCELLED TRIP /COUNT OF ALL RIDES
+  	COMPLETED TRIPS
 		+-----------------+------------+
 		| completed_trips | Request_at |
 		+-----------------+------------+
@@ -127,8 +129,11 @@ For the above tables, your SQL query should return the following rows with the c
 		a.client_id=b.client_id;
      
 	MY SQL
+	 #syntax for converting to decimal 
+	 #select cast(9 as decimal(4,2)); 
+	 
 	 select a.Request_at 
-      ,cast((coalesce(b.cancelled_trips,'0.0')/(a.completed_trips)) as decimal(4,2)) cancellation_rate 
+     , cast(coalesce(b.cancelled_trips,'0.0')/(a.total_rides) as decimal(4,2)) cancellation_rate
       from
 		(select count(Client_Id) completed_trips
 				, Request_at
