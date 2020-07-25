@@ -1,0 +1,61 @@
+create table friend_request 
+                (sender_id int 
+                 , send_to_id int
+                 , request_date varchar(50)
+                 );
+	
+	insert into friend_request values(1,2,'2016_06-01');
+	insert into friend_request values(1,3,'2016_06-01');
+	insert into friend_request values(1,4,'2016_06-01');
+	insert into friend_request values(2,3,'2016_06-02');
+	insert into friend_request values(3,4,'2016_06-09');
+	
+	create table request_accepted 
+                ( requester_id  int 
+                 , accepter_id int
+                 , accept_date varchar(50)
+                 );
+	
+	insert into request_accepted values(1,2,'2016_06-03');
+	insert into request_accepted values(1,3,'2016-06-08');
+	insert into request_accepted values(2,3,'2016-06-08');
+	insert into request_accepted values(3,4,'2016-06-09');
+	insert into request_accepted values(3,4,'2016-06-10');
+	
+	DISTINCT IS DEPENDENT ON THE NO OF COLUMNS THAT WE SPECIFY
+	
+	 
+	select requester_id
+			, accepter_id
+			from request_accepted;
+        +--------------+-------------+
+		| requester_id | accepter_id |
+		+--------------+-------------+
+		|            1 |           2 |
+		|            1 |           3 |
+		|            2 |           3 |
+		|            3 |           4 |
+		|            3 |           4 |
+		+--------------+-------------+
+	select distinct requester_id
+			from request_accepted;
+		+--------------+
+		| requester_id |
+		+--------------+
+		|            1 |
+		|            2 |
+		|            3 |
+		+--------------+
+        
+	select distinct requester_id
+			, accepter_id
+			from request_accepted;
+		+--------------+-------------+
+		| requester_id | accepter_id |
+		+--------------+-------------+
+		|            1 |           2 |
+		|            1 |           3 |
+		|            2 |           3 |
+		|            3 |           4 |
+		+--------------+-------------+	
+		

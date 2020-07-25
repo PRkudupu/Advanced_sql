@@ -1,0 +1,51 @@
+IFNULL
+	Control flow functions that accepts two arguments and returns the first argument if it is not null
+	otherwise it would return the second argument
+	This is similar to ISNULL in sql server
+	
+	SELECT IFNULL(1,0); # returns 1
+		IFNULL(1,0) returns 1 because 1 is not NUL
+	
+	SELECT IFNULL('',1); -- returns ''
+		IFNULL(' ',1) returns ' ' because the ' ' string is not NULL
+	
+	SELECT IFNULL(NULL,'IFNULL function'); -- returns IFNULL function
+		IFNULL(NULL,'IFNULL function') returns IFNULL function string because the first argument is NULL
+		
+	CREATE TABLE IF NOT EXISTS contacts (
+    contactid INT AUTO_INCREMENT PRIMARY KEY,
+    contactname VARCHAR(20) NOT NULL,
+    bizphone VARCHAR(15),
+    homephone VARCHAR(15)
+	);
+
+	INSERT INTO contacts(contactname,bizphone,homephone)
+	VALUES('John Doe','(541) 754-3009',NULL),
+		  ('Cindy Smith',NULL,'(541) 754-3110'),
+		  ('Sue Greenspan','(541) 754-3010','(541) 754-3011'),
+		  ('Lily Bush',NULL,'(541) 754-3111');
+		
+	+-----------+---------------+----------------+----------------+
+	| contactid | contactname   | bizphone       | homephone      |
+	+-----------+---------------+----------------+----------------+
+	|         1 | John Doe      | (541) 754-3009 | NULL           |
+	|         2 | Cindy Smith   | NULL           | (541) 754-3110 |
+	|         3 | Sue Greenspan | (541) 754-3010 | (541) 754-3011 |
+	|         4 | Lily Bush     | NULL           | (541) 754-3111 |
+	+-----------+---------------+----------------+----------------+
+	
+	The IFNULL function returns the home phone if the business phone is NULL.
+	
+	select contactname
+		, IFNULL(bizphone,homephone) phone
+		from contacts;
+	    +---------------+----------------+
+		| contactname   | phone          |
+		+---------------+----------------+
+		| John Doe      | (541) 754-3009 |
+		| Cindy Smith   | (541) 754-3110 |
+		| Sue Greenspan | (541) 754-3010 |
+		| Lily Bush     | (541) 754-3111 |
+		+---------------+----------------+
+	
+	
