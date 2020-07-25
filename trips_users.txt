@@ -132,25 +132,25 @@ For the above tables, your SQL query should return the following rows with the c
 	 #syntax for converting to decimal 
 	 #select cast(9 as decimal(4,2)); 
 	 
-	 select a.Request_at 
-     , cast(coalesce(b.cancelled_trips,'0.0')/(a.total_rides) as decimal(4,2)) cancellation_rate
+	 select a.Request_at Day
+     , cast(coalesce(b.cancelled_trips,'0.0')/(a.total_trips) as decimal(4,2)) 'Cancellation Rate'
       from
-		(select count(Client_Id) completed_trips
+			(select count(Client_Id) total_trips
 				, Request_at
 				  from trip t
 				  join users u
 				  on t.Client_Id=u.Users_Id 
 				  where u.Banned='No' and u.Role='client'
 				  group by Request_at) a
-		left outer join
-		(select count(Id) cancelled_trips
-			   , Request_at
+			left outer join
+			(select count(Id) cancelled_trips
+				 , Request_at
 				  from trip t
 				  join users u
 				  on t.Client_Id=u.Users_Id
 				  where u.Banned='No' and t.Status !='completed' and u.Role='client'
 				  group by Request_at) b
-		on a.Request_at=b.Request_at;
+			on a.Request_at=b.Request_at;
 			
      
    
