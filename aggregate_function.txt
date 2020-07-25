@@ -1,0 +1,120 @@
+DDL SCRIPTS
+	
+	create table employee(
+			  id int
+			  , name varchar(50)
+			  , gender varchar(10)
+			  , salary int
+			  );
+	insert into employee values (1,'Mark','M',5000);
+	insert into employee values (2,'John','M',4500);
+	insert into employee values (3,'Pam','F',5500);
+	insert into employee values (4,'Sara','F',4000);	
+	insert into employee values (5,'Todd','M',3500);
+	insert into employee values (6,'Mary','F',5000);
+	insert into employee values (7,'Ben','M',6500);
+	insert into employee values (8,'Jodi','F',7000);
+	insert into employee values (9,'Tom','M',5500);
+	insert into employee values (10,'Ron','M',5000);
+  
+DATA
+	------+------+--------+--------+
+	| id   | name | gender | salary |
+	+------+------+--------+--------+
+	|    1 | Mark | M      |   5000 |
+	|    2 | John | M      |   4500 |
+	|    3 | Pam  | F      |   5500 |
+	|    4 | Sara | F      |   4000 |
+	|    5 | Todd | M      |   3500 |
+	|    6 | Mary | F      |   5000 |
+	|    7 | Ben  | M      |   6500 |
+	|    8 | Jodi | F      |   7000 |
+	|    9 | Tom  | M      |   5500 |
+	|   10 | Ron  | M      |   5000 |
+	+------+------+--------+--------+
+	
+	1) GET THE GENDER TOTAL, AVERAGE SALARY , MINIMUM SALARY, MAXIMUM SALARY
+	AGGREGATED DATA
+ 	   select gender 
+	        , count(*) gender_total
+			, avg(salary) average_salary
+			, max(salary) max_salary
+			, min(salary) min_salary
+			 from employee
+			 group by gender;
+		+--------+--------------+----------------+------------+------------+
+		| gender | gender_total | average_salary | max_salary | min_salary |
+		+--------+--------------+----------------+------------+------------+
+		| M      |            6 |      5000.0000 |       6500 |       3500 |
+		| F      |            4 |      5375.0000 |       7000 |       4000 |
+		+--------+--------------+----------------+------------+------------+
+	
+	2) ALONG WITH AGGREGATED DATA WE NEED NON AGGREGATED DATA
+	  NAME, SALARY, GENDER TOTAL, AVERAGE SALARY , MINIMUM SALARY, MAXIMUM SALARY
+		select name
+			, salary
+			, a.gender
+			, a.gender_total
+			, a.average_salary
+			, a.max_salary
+			, a.min_salary
+			from
+			employee e 
+			join
+			 (select gender
+				  , count(*) gender_total
+				  , avg(salary)  average_salary
+				  , max(salary)  max_salary
+				  , min(salary)  min_salary
+				 from employee
+				group by gender)a
+		  on e.gender=e.gender;
+	  2a) We can solve this by using sub query
+		 
+		+------+--------+--------+--------------+----------------+------------+------------+
+		| name | salary | gender | gender_total | average_salary | max_salary | min_salary |
+		+------+--------+--------+--------------+----------------+------------+------------+
+		| Ron  |   5000 | M      |            6 |      5000.0000 |       6500 |       3500 |
+		| Tom  |   5500 | M      |            6 |      5000.0000 |       6500 |       3500 |
+		| Jodi |   7000 | M      |            6 |      5000.0000 |       6500 |       3500 |
+		| Ben  |   6500 | M      |            6 |      5000.0000 |       6500 |       3500 |
+		| Mary |   5000 | M      |            6 |      5000.0000 |       6500 |       3500 |
+		| Todd |   3500 | M      |            6 |      5000.0000 |       6500 |       3500 |
+		| Sara |   4000 | M      |            6 |      5000.0000 |       6500 |       3500 |
+		| Pam  |   5500 | M      |            6 |      5000.0000 |       6500 |       3500 |
+		| John |   4500 | M      |            6 |      5000.0000 |       6500 |       3500 |
+		| Mark |   5000 | M      |            6 |      5000.0000 |       6500 |       3500 |
+		| Ron  |   5000 | F      |            4 |      5375.0000 |       7000 |       4000 |
+		| Tom  |   5500 | F      |            4 |      5375.0000 |       7000 |       4000 |
+		| Jodi |   7000 | F      |            4 |      5375.0000 |       7000 |       4000 |
+		| Ben  |   6500 | F      |            4 |      5375.0000 |       7000 |       4000 |
+		| Mary |   5000 | F      |            4 |      5375.0000 |       7000 |       4000 |
+		| Todd |   3500 | F      |            4 |      5375.0000 |       7000 |       4000 |
+		| Sara |   4000 | F      |            4 |      5375.0000 |       7000 |       4000 |
+		| Pam  |   5500 | F      |            4 |      5375.0000 |       7000 |       4000 |
+		| John |   4500 | F      |            4 |      5375.0000 |       7000 |       4000 |
+		| Mark |   5000 | F      |            4 |      5375.0000 |       7000 |       4000 |
+		+------+--------+--------+--------------+----------------+------------+------------+
+	  
+	  2b) using over() clause and partition by
+	   select gender 
+          , count(gender) over(partition by gender) gender_total
+          , avg(salary) over(partition by gender) average_salary
+          , max(salary) over(partition by gender) max_salary
+          , min(salary) over(partition by gender) min_salary
+       from employee;
+	   
+	   +------+--------+--------+--------------+----------------+------------+------------+
+		| name | salary | gender | gender_total | average_salary | max_salary | min_salary |
+		+------+--------+--------+--------------+----------------+------------+------------+
+		| Pam  |   5500 | F      |            4 |      5375.0000 |       7000 |       4000 |
+		| Sara |   4000 | F      |            4 |      5375.0000 |       7000 |       4000 |
+		| Mary |   5000 | F      |            4 |      5375.0000 |       7000 |       4000 |
+		| Jodi |   7000 | F      |            4 |      5375.0000 |       7000 |       4000 |
+		| Mark |   5000 | M      |            6 |      5000.0000 |       6500 |       3500 |
+		| John |   4500 | M      |            6 |      5000.0000 |       6500 |       3500 |
+		| Todd |   3500 | M      |            6 |      5000.0000 |       6500 |       3500 |
+		| Ben  |   6500 | M      |            6 |      5000.0000 |       6500 |       3500 |
+		| Tom  |   5500 | M      |            6 |      5000.0000 |       6500 |       3500 |
+		| Ron  |   5000 | M      |            6 |      5000.0000 |       6500 |       3500 |
+		+------+--------+--------+--------------+----------------+------------+------------+
