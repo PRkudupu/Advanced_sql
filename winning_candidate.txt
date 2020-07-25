@@ -93,4 +93,34 @@
 			  group by a.name
 			  order by rnk desc
 			  limit 1;
-		
+	1d)USING COUNT AND OVER CLAUSE
+	   note: If over clause is empty it treats the entire set of query rows as single partition.
+	         This would produce a global sum, but does so for each row
+			 If over is specified with partition rows it would treat it would partition by that column
+		select a.id
+			from
+			(select c.id
+			   , count(v.candidate_id) cnt
+			   , max(count(v.candidate_id)) over() max_cnt
+			   from candidate c
+			   left join vote v
+			   on c.id=v.candidate_id
+			   group by c.id) a
+			where a.cnt=a.max_cnt;
+						   
+	2) # GET THE WINNING CANDIDATE VOTES AND TOTAL VOTES	   
+
+	select  a.id
+		, a.max_cnt votes
+		, a.total_cnt  total_votes
+		from
+		   ( select c.id
+				 , count(v.candidate_id) cnt
+				 , max(count(v.candidate_id)) over() max_cnt
+				 , sum(count(v.candidate_id)) over() total_cnt
+				 from candidate c
+				 left join vote v
+				 on c.id =v.candidate_id
+				 group by c.id
+		   )a
+		   where a.cnt=a.max_cnt;

@@ -1,0 +1,33 @@
+OVER CLAUSE:
+	Specifies how to partition query rows into groups for processing by the window function
+	1) If over clause is empty it treats the entire set of query rows as single partition.This would produce a global sum, but does so for each row
+	2) If over is specified with partition rows it would treat it would partition by that column.
+	3) windowing execution occurs before ORDER BY, LIMIT, and SELECT DISTINCT
+	4) Any of the window function can be used. COUNT(),AVG(),MIN(),MAX(),ROW_NUMBER(),RANK(),DENSE_RANK()
+	Ex:
+	SELECT
+         year, country, product, profit,
+         SUM(profit) OVER() AS total_profit,
+         SUM(profit) OVER(PARTITION BY country) AS country_profit
+       FROM sales
+       ORDER BY country, year, product, profit;
+		+------+---------+------------+--------+--------------+----------------+
+		| year | country | product    | profit | total_profit | country_profit |
+		+------+---------+------------+--------+--------------+----------------+
+		| 2000 | Finland | Computer   |   1500 |         7535 |           1610 |
+		| 2000 | Finland | Phone      |    100 |         7535 |           1610 |
+		| 2001 | Finland | Phone      |     10 |         7535 |           1610 |
+		| 2000 | India   | Calculator |     75 |         7535 |           1350 |
+		| 2000 | India   | Calculator |     75 |         7535 |           1350 |
+		| 2000 | India   | Computer   |   1200 |         7535 |           1350 |
+		| 2000 | USA     | Calculator |     75 |         7535 |           4575 |
+		| 2000 | USA     | Computer   |   1500 |         7535 |           4575 |
+		| 2001 | USA     | Calculator |     50 |         7535 |           4575 |
+		| 2001 | USA     | Computer   |   1200 |         7535 |           4575 |
+		| 2001 | USA     | Computer   |   1500 |         7535 |           4575 |
+		| 2001 | USA     | TV         |    100 |         7535 |           4575 |
+		| 2001 | USA     | TV         |    150 |         7535 |           4575 |
+		+------+---------+------------+--------+--------------+----------------+
+	
+ 
+ 
