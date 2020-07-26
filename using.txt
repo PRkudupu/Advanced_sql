@@ -1,0 +1,19 @@
+USING
+	The USING(join_column_list) clause names a list of columns that must exist in both tables. 
+	If tables a and b both contain columns c1, c2, and c3, the following join compares corresponding columns from the two tables.
+	Used if several columns share the same name but don't want to join using all these common columns.
+
+	a LEFT JOIN b USING (c1, c2, c3)
+	DDL
+		create table emp(id int,name varchar(20));
+		insert into emp values(1,'Prathap');
+		insert into emp values(2,'Sheetal');
+		insert into emp values(3,'Atharv');
+
+		create table emp_dep(dep_id int , id int);
+
+		insert into emp_dep values(1,1);
+		insert into emp_dep values(2,2); 
+
+		select * from emp 
+			join emp_dep using(id);
