@@ -1,17 +1,17 @@
 	
-       create table table1(time date,user_id int,app varchar(40),event varchar(40));
+    create table request_accepted(time date,user_id int,app varchar(40),event varchar(40));
 
-	insert into table1 values('2018-10-01',1,'facebook','processed');
-	insert into table1 values('2018-10-01',1,'facebook','sent');
-	insert into table1 values('2018-10-01',1,'facebook','accepted');
-	insert into table1 values('2018-10-01',2,'facebook','sent');
-	insert into table1 values('2018-10-02',2,'facebook','accepted');
-	insert into table1 values('2018-10-01',3,'facebook','sent');
-	insert into table1 values('2018-11-01',4,'facebook','sent');
-	insert into table1 values('2019-11-01',4,'facebook','sent');
+	insert into request_accepted values('2018-10-01',1,'facebook','processed');
+	insert into request_accepted values('2018-10-01',1,'facebook','sent');
+	insert into request_accepted values('2018-10-01',1,'facebook','accepted');
+	insert into request_accepted values('2018-10-01',2,'facebook','sent');
+	insert into request_accepted values('2018-10-02',2,'facebook','accepted');
+	insert into request_accepted values('2018-10-01',3,'facebook','sent');
+	insert into request_accepted values('2018-11-01',4,'facebook','sent');
+	insert into request_accepted values('2019-11-01',4,'facebook','sent');
 
 
-	select * from table1;
+	select * from request_accepted;
 	+------------+---------+----------+-----------+
 	| time       | user_id | app      | event     |
 	+------------+---------+----------+-----------+
@@ -25,7 +25,7 @@
     
 	1)SELECT DISTINCT EVENT IN THE TABLE
 	select distinct(event) 
-		from table1;
+		from request_accepted;
 		+-----------+
 		| event     |
 		+-----------+
@@ -37,7 +37,7 @@
 	Month of oct how many users who have sent messages;
                                                                         
         select count(user_id) 
-			from table1 
+			from request_accepted 
 			where event='sent' and time between '2018-10-01' and '2018-10-31';
 		+---------+
 		| user_id |
@@ -49,7 +49,7 @@
 	
 	3)GET THE DISTINCT COUNT OF USERS
 	select count(distinct user_id) as no_users 
-		from table1 
+		from request_accepted 
 		where timebetween '2018-10-01' and '2018-10-31';
 		+----------+
 		| no_users |
@@ -59,7 +59,7 @@
                                                                         
        4)GET THE DISTINCT COUNT OF USERS PER DAY
 	select time,count(distinct user_id) as no_users 
-		from table1 
+		from request_accepted 
 		where time between '2018-10-01' and '2018-10-31' 
 		group by time;
 		+------------+----------+
@@ -74,10 +74,10 @@
         
 	select a.total/b.sent as ratio 
 			from (select count(event) as total
-					from table1 
+					from request_accepted 
 					where event='accepted'
 				 ) a ,
-				 ( select count(event) as sent fromtable1 where event='sent')
+				 ( select count(event) as sent fromrequest_accepted where event='sent')
 				 b;
 		+--------+
 		| ratio  |
