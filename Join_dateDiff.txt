@@ -1,0 +1,49 @@
+DDL
+	Create table Weather (Id int, RecordDate date, Temperature int);
+	insert into Weather (Id, RecordDate, Temperature) values ('1', '2015-01-01', '10');
+	insert into Weather (Id, RecordDate, Temperature) values ('2', '2015-01-02', '25');
+	insert into Weather (Id, RecordDate, Temperature) values ('3', '2015-01-03', '20');
+	insert into Weather (Id, RecordDate, Temperature) values ('4', '2015-01-04', '30');
+		+------+------------+-------------+
+		| Id   | RecordDate | Temperature |
+		+------+------------+-------------+
+		|    1 | 2015-01-01 |          10 |
+		|    2 | 2015-01-02 |          25 |
+		|    3 | 2015-01-03 |          20 |
+		|    4 | 2015-01-04 |          30 |
+		+------+------------+-------------+
+	select * 
+		from Weather w1
+		join Weather w2
+		on datediff(w1.RecordDate,w2.RecordDate)=1;
+        
+		+------+------------+-------------+------+------------+-------------+
+		| Id   | RecordDate | Temperature | Id   | RecordDate | Temperature |
+		+------+------------+-------------+------+------------+-------------+
+		|    2 | 2015-01-02 |          25 |    1 | 2015-01-01 |          10 |
+		|    3 | 2015-01-03 |          20 |    2 | 2015-01-02 |          25 |
+		|    4 | 2015-01-04 |          30 |    3 | 2015-01-03 |          20 |
+		+------+------------+-------------+------+------------+-------------+ 
+
+	 select *  
+      from Weather w1
+      join Weather w2
+      on datediff(w1.RecordDate,w2.RecordDate)=1 and w1.Temperature > w2.Temperature;
+	    +------+------------+-------------+------+------------+-------------+
+		| Id   | RecordDate | Temperature | Id   | RecordDate | Temperature |
+		+------+------------+-------------+------+------------+-------------+
+		|    2 | 2015-01-02 |          25 |    1 | 2015-01-01 |          10 |
+		|    4 | 2015-01-04 |          30 |    3 | 2015-01-03 |          20 |
+		+------+------------+-------------+------+------------+-------------+
+		
+	 select w1.id  
+      from Weather w1
+      join Weather w2
+      on datediff(w1.RecordDate,w2.RecordDate)=1 and w1.Temperature > w2.Temperature;
+	   +------+
+		| id   |
+		+------+
+		|    2 |
+		|    4 |
+		+------+
+	   
