@@ -109,7 +109,7 @@ For the above tables, your SQL query should return the following rows with the c
 		+------------+-------------------+
     
 	POSTGRESQL
-    select a.client_id ,a.total_trip,b.cancelled_trip, (a.total_trip/b.cancelled_trip)::decimal(4,2) as ratio
+    select a.client_id ,a.total_trip,b.cancelled_trip, (b.cancelled_trip/a.total_trip)::decimal(4,2) as ratio
 		from
 		 (select t.client_id, count(id) as total_trip 
 			  from trip t
@@ -132,26 +132,27 @@ For the above tables, your SQL query should return the following rows with the c
 	 #syntax for converting to decimal 
 	 #select cast(9 as decimal(4,2)); 
 	 
-	 select a.Request_at Day
-     , cast(coalesce(b.cancelled_trips,'0.0')/(a.total_trips) as decimal(4,2)) 'Cancellation Rate'
-      from
-			(select count(Client_Id) total_trips
-				, Request_at
-				  from trip t
-				  join users u
-				  on t.Client_Id=u.Users_Id 
-				  where u.Banned='No' and u.Role='client'
-				  group by Request_at) a
-			left outer join
-			(select count(Id) cancelled_trips
-				 , Request_at
-				  from trip t
-				  join users u
-				  on t.Client_Id=u.Users_Id
-				  where u.Banned='No' and t.Status !='completed' and u.Role='client'
-				  group by Request_at) b
-			on a.Request_at=b.Request_at;
-			
+	 select a.request_at 'Date'
+             , cast(coalesce(b.cancelled_rides/a.rides,0) as decimal(4,2) ) 'Cancellation Rate'
+          from
+          (select t.request_at 
+             , count(client_id) rides
+             from trip t
+             join users u
+             on t.client_id=u.users_id
+             where u.banned='No' and u.role='client'
+             group by t.request_at) a
+
+           left join
+              (select t.request_at 
+               , count(client_id) cancelled_rides
+               from trip t
+               join users u
+               on t.client_id=u.users_id
+               where t.status!='completed' and u.banned='No' and u.role='client'
+               group by t.request_at) b
+            on a.request_at=b.request_at;
+
      
    
    
