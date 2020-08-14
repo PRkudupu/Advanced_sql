@@ -81,18 +81,18 @@
 			+-----+------+	
 	
 	1c) USING AGGREGATE FUNCTIONS
-		select max(a.rnk) rnk
-          , a.name
+		  select 
+			a.name
 			from
-			 (select row_number() over (partition by v.candidate_id order by candidate_id desc) rnk 
-				  ,c.name 
+			  (select c.name
+				  , row_number() over (partition by candidate_id ) rnk
 				  from candidate c
-				  join vote v
-				  on c.id=v.candidate_id
-			  )a
-			  group by a.name
-			  order by rnk desc
-			  limit 1;
+				  left join vote v
+				  on c.id = v.candidate_id
+				)a
+			order by rnk desc
+			limit 1;
+    
 	1d)USING COUNT AND OVER CLAUSE
 	   note: If over clause is empty it treats the entire set of query rows as single partition.
 	         This would produce a global sum, but does so for each row
