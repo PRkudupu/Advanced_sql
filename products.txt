@@ -28,18 +28,24 @@
 	insert into product_tbl values(20,'high chair','cherry',108.00);
 	insert into product_tbl values(30,'bar stool','black',200.00);
 
-	customer_id  product_id order_id  price  order_date
-	1              10          301    	121		01/01/2019
-	2			   10          302  	121 	01/02/2019
-	3              10          303		121		01/01/2019
-	2              20          304		110		01/03/2019
-	3              20          305		110		01/01/2019
-	3			   30          306		200		01/02/2019
+	+-------------+------------+----------+-------+------------+
+	| customer_id | product_id | order_id | price | order_date |
+	+-------------+------------+----------+-------+------------+
+	|           1 |         10 |      301 |   121 | 2019-01-01 |
+	|           2 |         10 |      302 |   111 | 2019-01-02 |
+	|           3 |         10 |      303 |   129 | 2019-01-01 |
+	|           2 |         20 |      304 |   110 | 2019-01-03 |
+	|           3 |         20 |      305 |   110 | 2019-01-01 |
+	|           3 |         20 |      306 |   200 | 2019-01-02 |
+	+-------------+------------+----------+-------+------------+
 
-	product_id	 product_name   prod_desc 	default_price
-	10			 chair          red        121    
-	20			 high chair     cherry     110
-	30           bar stool      black      200 
+	+------------+--------------+-----------+---------------+
+	| product_id | product_name | prod_desc | default_price |
+	+------------+--------------+-----------+---------------+
+	|         10 | chair        | red       |      121.0000 |
+	|         20 | high chair   | cherry    |      108.0000 |
+	|         30 | bar stool    | black     |      200.0000 |
+	+------------+--------------+-----------+---------------+
 
 	q1) Get the number of orders for each product_id by day
 	    
@@ -144,7 +150,7 @@
 			
 			
 	 q4) For each day, find the number new customers (customers who made their first transaction)  
-		  	   
+		 WRONG QUERY 	   
 		   select count(a.customer_id) as cnt,ord.order_date 
 				from order_tbl ord left join (
 				 select customer_id,min(order_date) min_date from order_tbl group by customer_id) a 
@@ -158,5 +164,34 @@
 		|   0 | 2019-01-03 |
 		+-----+------------+
 		
+		+------------+-------------+-------------+------------+
+		| order_date | customer_id | customer_id | first_day  |
+		+------------+-------------+-------------+------------+
+		| 2019-01-01 |           1 |           1 | 2019-01-01 |
+		| 2019-01-01 |           3 |           3 | 2019-01-01 |
+		| 2019-01-01 |           3 |           3 | 2019-01-01 |
+		| 2019-01-02 |           2 |           2 | 2019-01-02 |
+		| 2019-01-02 |        NULL |           3 | NULL       |
+		| 2019-01-03 |        NULL |           2 | NULL       |
+		+------------+-------------+-------------+------------+
+		NOTE: In the above query we are not taking distinct count hence if on the first day if the user does 2 transactions
+              then it would would not be accurate
 		
-		
+		select o.order_date
+            ,count(distinct(a.customer_id)) num
+            from order_tbl o
+			left join
+			 (select customer_id 
+			  , min(order_date) first_day
+			  from order_tbl
+			  group by customer_id)a
+		  on o.customer_id =a.customer_id and o.order_date=a.first_day
+			group by o.order_date
+			order by o.order_date;
+		+------------+-----+
+		| order_date | num |
+		+------------+-----+
+		| 2019-01-01 |   2 |
+		| 2019-01-02 |   1 |
+		| 2019-01-03 |   0 |
+		+------------+-----+
