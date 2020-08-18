@@ -234,4 +234,37 @@
 		)f
     group by f.school_id
 	  
-	  
+	
+	select cast(b.daily_att/a.total as decimal(4,2)) rate
+          , a.school_id 
+          , b.date 
+          , max(cast(b.daily_att/a.total as decimal(4,2)))  over() max_cnt
+          , min(cast(b.daily_att/a.total as decimal(4,2)))  over() min_cnt
+          , avg(cast(b.daily_att/a.total as decimal(4,2))) over() avg_att
+    from
+        (select  count(student_id) total
+                ,school_id
+               from student
+               group by school_id
+
+          )a
+         join
+         (select s.school_id
+                , count(a.student_id) daily_att
+                , a.date
+           from student s
+           join attendance a
+           on s.student_id= a.student_id
+           group by s.school_id,a.date
+          )b
+          on a.school_id=b.school_id
+      
+	+------+-----------+---------------------+---------+---------+----------+
+	| rate | school_id | date                | max_cnt | min_cnt | avg_att  |
+	+------+-----------+---------------------+---------+---------+----------+
+	| 0.43 |       100 | 2018-01-02 00:00:00 |    1.00 |    0.14 | 0.458000 |
+	| 0.14 |       100 | 2018-02-02 00:00:00 |    1.00 |    0.14 | 0.458000 |
+	| 0.43 |       100 | 2018-02-22 00:00:00 |    1.00 |    0.14 | 0.458000 |
+	| 0.29 |       100 | 2020-03-07 00:00:00 |    1.00 |    0.14 | 0.458000 |
+	| 1.00 |       200 | 2020-03-07 00:00:00 |    1.00 |    0.14 | 0.458000 |
+	+------+-----------+---------------------+---------+---------+----------+

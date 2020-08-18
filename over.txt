@@ -29,5 +29,14 @@ OVER CLAUSE:
 		| 2001 | USA     | TV         |    150 |         7535 |           4575 |
 		+------+---------+------------+--------+--------------+----------------+
 	
- 
+    select grade_level
+      from
+      (select grade_level 
+        , count(student_id)  cnt
+        , max(count(student_id)) over() max_cnt 
+        from 
+        student
+        group by grade_level)
+        a 
+    where a.cnt=a.max_cnt;
  
