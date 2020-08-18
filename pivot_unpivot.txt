@@ -51,17 +51,21 @@
 	   WRITE SQL CODE TO REFORMAT THE DATA AS SHOWN BELOW
 	   THE RESULTING DATA SHOULD BE IN 3 COLUMNS : {DATE,PRODUCT NAME, QUANTITY SOLD}
 	
-		select * from (
-			--convert column qty_prod_a into proudct a and sold
-			select date, 'a' as product,qty_prod_a as quantity_sold from products
-			union
-			--convert column qty_prod_b into proudct b and sold
-			select date, 'b' as product,qty_prod_b as quantity_sold from products
-			union
-			--convert column qty_prod_c into proudct c and sold
-			select date, 'c' as product,qty_prod_c as quantity_sold from products
-			)tmp
-		order by date, product;
+		select date
+			   , 'a' as product 
+			   , qty_prod_a    
+			   from products_p
+			   union
+		select date
+			   ,'b'as   product
+			   , qty_prod_b    
+			   from products_p
+			   union
+		select date
+			   , 'c' as  product 
+			   , qty_prod_c  
+			   from products_p
+			   order by date,product;
 	
 		+----------+---------+-------+
 		| date     | product | sales |
