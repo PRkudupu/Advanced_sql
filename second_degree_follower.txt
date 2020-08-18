@@ -35,7 +35,18 @@ Note:
 Followee would not follow himself/herself in all cases.
 Please display the result in follower's alphabet order.
 
+SOLUTION 1
 	select a.followee,count(a.followee) num 
 		from (select a.followee,a.follower 
 				from follow a join follow b on a.followee=b.follower)a 
 		group by a.followee;
+
+SOULTION WITHOUT USING SUB QUERY 2		
+	select a.followee
+       , count(a.follower) as num
+      from follow a
+    join follow b
+    on a.followee=b.follower
+    group by a.followee
+    order by a.followee;
+    
