@@ -52,6 +52,27 @@
 	|          6 |       100 |           3 | 1994-01-02 00:00:00 | LA       |
 	|          7 |       100 |           2 | 1994-01-02 00:00:00 | LA       |
 	+------------+-----------+-------------+---------------------+----------+
+	
+	+---------------------+------------+------------+
+	| date                | student_id | attendance |
+	+---------------------+------------+------------+
+	| 2018-01-02 00:00:00 |          2 |          1 |
+	| 2018-01-02 00:00:00 |          1 |          1 |
+	| 2018-01-02 00:00:00 |          4 |          1 |
+	| 2018-02-02 00:00:00 |          5 |          1 |
+	| 2018-02-22 00:00:00 |          1 |          1 |
+	| 2018-02-22 00:00:00 |          4 |          1 |
+	| 2018-02-22 00:00:00 |          5 |          1 |
+	| 2020-03-07 00:00:00 |          4 |          1 |
+	| 2020-03-07 00:00:00 |          5 |          1 |
+	| 2020-03-07 00:00:00 |          8 |          1 |
+	| 2020-03-07 00:00:00 |          9 |          1 |
+	+---------------------+------------+------------+
+	1) WHICH GRADE LEVEL CURRENTLY HAS THE MOST STUDENTS IN THIS SCHOOL DISTRICT?
+	2) What was the overall attendance rate for the school district yesterday?
+	3) Which school had the average highest attendance rate? the lowest?
+	
+	
 	1) WHICH GRADE LEVEL CURRENTLY HAS THE MOST STUDENTS IN THIS SCHOOL DISTRICT?
 	POSTGRESQL
 		select grade_level , count(student_id) as cnt 
@@ -91,6 +112,22 @@
 				a ) b
      where b.rnk=1;
 	 
+	using over 
+	 select grade_level
+		  from
+		  (select grade_level
+				, count(student_id)  cnt
+				, max(count(student_id)) over() max_cnt 
+				from 
+				student
+				group by grade_level)
+				a 
+    where a.cnt=a.max_cnt;
+	+-------------+
+	| grade_level |
+	+-------------+
+	|           4 |
+	+-------------+
 	2)What was the overall attendance rate for the school district yesterday?
 	#POSTGRESQL
 		select cast(a.cnt as float) / cast(b.total as float)  as attendance_rate,a.cnt,b.total
