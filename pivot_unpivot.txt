@@ -52,20 +52,20 @@
 	   THE RESULTING DATA SHOULD BE IN 3 COLUMNS : {DATE,PRODUCT NAME, QUANTITY SOLD}
 	
 		select date
-			   , 'a' as product 
-			   , qty_prod_a    
-			   from products_p
-			   union
+		   , 'a' as product 
+		   , qty_prod_a  'sales'
+		   from products_p
+        union
 		select date
-			   ,'b'as   product
-			   , qty_prod_b    
-			   from products_p
-			   union
+		   ,'b'as   product
+		   , qty_prod_b   'sales'  
+		   from products_p
+		union
 		select date
-			   , 'c' as  product 
-			   , qty_prod_c  
-			   from products_p
-			   order by date,product;
+		   , 'c' as  product 
+		   , qty_prod_c   'sales'
+		   from products_p
+		order by date,product;
 	
 		+----------+---------+-------+
 		| date     | product | sales |

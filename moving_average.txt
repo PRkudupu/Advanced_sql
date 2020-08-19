@@ -18,23 +18,33 @@
 
 
 CREATE TABLE 
-	create table sales (user_id integer,subscription_date varchar(50),revenue integer);
+	create table order_sales (user_id integer,subscription_date varchar(50),revenue integer);
 
-	insert into sales values(10,'1/1/2001',100);
-	insert into sales values(20,'9/9/2010',150);
-	insert into sales values(30,'2/1/2002',200);
-	insert into sales values(40,'5/3/2005',300);
-
+	insert into order_sales values(10,'1/1/2001',100);
+	insert into order_sales values(20,'9/9/2010',150);
+	insert into order_sales values(30,'2/1/2002',200);
+	insert into order_sales values(40,'5/3/2005',300);
+    
+	FIND THE ROLLING AVERAGE
+	+-------------------+-----------------+
+	| subscription_date | rolling_revenue |
+	+-------------------+-----------------+
+	| 1/1/2001          |             100 |
+	| 2/1/2002          |             300 |
+	| 5/3/2005          |             600 |
+	| 9/9/2010          |             750 |
+	+-------------------+-----------------+
+	
 	1 SIMPLE QUERY
-   select subscription_date
+    select subscription_date
        , sum(revenue) over (order by subscription_date asc) as rolling_sum
-       from sales;
+       from order_sales;
 
 	 NOTE:Here we are using rows preceding
 	 Using analytical function
 		select subscription_date
 			  , sum(revenue) over (order by subscription_date asc rows 10 preceding) as rolling_revenue 
-			from sales order by subscription_date;
+			from order_sales order by subscription_date;
 		+-------------------+-----------------+
 		| subscription_date | rolling_revenue |
 		+-------------------+-----------------+
@@ -44,22 +54,22 @@ CREATE TABLE
 		| 9/9/2010          |             750 |
 		+-------------------+-----------------+
 
-2 b) using self join
-    /*****
-	 Note:Group by 1 means : group by first column regardless of what it is called.
-	***/
-	
-	select sales.subscription_date
-	, sum(past_sales.revenue)
-    from sales
-    join sales as past_sales
-    on past_sales.subscription_date between sales.subscription_date -10 and sales.subscription_date
-    group by 1 order by sales.subscription_date;
-  
-  For each row in our sales table, we join every row that was within the past seven days 
+	2 b) using self join
+		/*****
+		 Note:Group by 1 means : group by first column regardless of what it is called.
+		***/
+		
+		select order_sales.subscription_date
+		, sum(past_order_sales.revenue)
+		from order_sales
+		join order_sales as past_order_sales
+		on past_order_sales.subscription_date between order_sales.subscription_date -10 and order_sales.subscription_date
+		group by 1 order by order_sales.subscription_date;
+	  
+  For each row in our order_sales table, we join every row that was within the past seven days 
   and take the sum for the past 10 days 
 	+-------------------+-------------------------+
-	| subscription_date | sum(past_sales.revenue) |
+	| subscription_date | sum(past_order_sales.revenue) |
 	+-------------------+-------------------------+
 	| 1/1/2001          |                     100 |
 	| 2/1/2002          |                     300 |
