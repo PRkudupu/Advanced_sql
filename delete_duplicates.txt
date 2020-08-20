@@ -172,14 +172,29 @@ CONTACTS
 			from contacts 
 			group by email 
 			having count(email) >1;
-			+--------------------------+-----------+
-			| email                    | dup_count |
-			+--------------------------+-----------+
-			| jean.king@me.com         |         2 |
-			| janine.labrune@aol.com   |         2 |
-			| susan.nelson@comcast.net |         2 |
-			| roland.keitel@yahoo.com  |         2 |
-			+--------------------------+-----------+
+			+----------------------------+-----------+
+			| email                      | dup_count |
+			+----------------------------+-----------+
+			| carine.schmitt@verizon.net |         2 |
+			| jean.king@me.com           |         3 |
+			| janine.labrune@aol.com     |         2 |
+			| susan.nelson@comcast.net   |         2 |
+			| roland.keitel@yahoo.com    |         2 |
+			+----------------------------+-----------+
+		select count(*), email
+		    from contacts
+		    group by email
+		    having count(*) >1;
+			+----------+----------------------------+
+			| count(*) | email                      |
+			+----------+----------------------------+
+			|        2 | carine.schmitt@verizon.net |
+			|        3 | jean.king@me.com           |
+			|        2 | janine.labrune@aol.com     |
+			|        2 | susan.nelson@comcast.net   |
+			|        2 | roland.keitel@yahoo.com    |
+			+----------+----------------------------+
+			
 	 5 B) FIND ALL THE ROWS WHICH HAS DUPLICATE EMAIL AND FIRST NAME
 		select email 
 			from contacts 
