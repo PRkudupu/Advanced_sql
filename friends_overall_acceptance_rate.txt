@@ -129,6 +129,13 @@
 		+-------------+
 		|        0.80 |
 		+-------------+
+		select cast(count(a.cnt) 
+			 / (select count(*) from friend_request) as decimal(4,2))   'conversion ratio'
+		from    
+		 (select count(*) cnt
+			 from request_accepted 
+			 group by requester_id,accepter_id)a;
+	  
 	2) ACCEPTANCE RATE FOR EVERY MONTH
 		
 		
