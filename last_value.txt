@@ -1,0 +1,86 @@
+LAST_VALUE FUNCTION
+	Retrieves the last value from a specified column
+	ORDER BY clause is required
+	PARTITION BY clause is optional
+	ROWS or RANGE clause is optional, for it to work correctly we have to explicitly specify a value.
+
+
+create table employee(employee_id integer,department_id integer,boss_id integer,name varchar(50),salary integer);
+  
+	  insert into employee values(1,1,2,'John Smith',20000);
+	  insert into employee values(2,5,4,'Ava Muffinson',10000);
+	  insert into employee values(3,2,5,'Cailin Ninson',30000);
+	  insert into employee values(4,2,5,'Mike Peterson',20000);
+	  insert into employee values(5,2,1,'Ian Peterson',80000);
+	  insert into employee values(6,3,null,'John Mills',50000);	
+	  
+	  +-------------+---------------+---------+---------------+--------+
+	  | employee_id | department_id | boss_id | name          | salary |
+	  +-------------+---------------+---------+---------------+--------+
+	  |           1 |             1 |       2 | John Smith    |  20000 |
+	  |           2 |             5 |       4 | Ava Muffinson |  10000 |
+	  |           3 |             2 |       5 | Cailin Ninson |  30000 |
+	  |           4 |             2 |       5 | Mike Peterson |  20000 |
+	  |           5 |             2 |       1 | Ian Peterson  |  80000 |
+	  |           6 |             3 |    NULL | John Mills    |  50000 |
+	  +-------------+---------------+---------+---------------+--------+
+	  
+	  QUESTION:
+	  GET THE NAME OF THE EMPLOYEE WHO HAS HIGHEST SALARY.
+	  
+	  
+	  1) USING LAST_VALUE WITH ORDER BY WITH( DEFAULT RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
+	    Note: In this example we are not getting the necesary results as it is using its default value for rows or range.
+		
+	     select   employee_id
+				, department_id 
+				, salary
+				, name
+				, last_value(name) OVER (order by salary ) last_val  
+				  from employee;
+		  
+		+-------------+---------------+--------+---------------+---------------+
+		| employee_id | department_id | salary | name          | last_val      |
+		+-------------+---------------+--------+---------------+---------------+
+		|           2 |             5 |  10000 | Ava Muffinson | Ava Muffinson |
+		|           1 |             1 |  20000 | John Smith    | Mike Peterson |
+		|           4 |             2 |  20000 | Mike Peterson | Mike Peterson |
+		|           3 |             2 |  30000 | Cailin Ninson | Cailin Ninson |
+		|           6 |             3 |  50000 | John Mills    | John Mills    |
+		|           5 |             2 |  80000 | Ian Peterson  | Ian Peterson  |
+		+-------------+---------------+--------+---------------+---------------+
+	2) USING LAST_VALUE WITH ORDER BY WITH( RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
+		select   employee_id
+				, department_id 
+				, salary
+				, name
+				, last_value(name) OVER (order by salary ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) last_val  
+				  from employee;
+			+-------------+---------------+--------+---------------+--------------+
+			| employee_id | department_id | salary | name          | last_val     |
+			+-------------+---------------+--------+---------------+--------------+
+			|           2 |             5 |  10000 | Ava Muffinson | Ian Peterson |
+			|           1 |             1 |  20000 | John Smith    | Ian Peterson |
+			|           4 |             2 |  20000 | Mike Peterson | Ian Peterson |
+			|           3 |             2 |  30000 | Cailin Ninson | Ian Peterson |
+			|           6 |             3 |  50000 | John Mills    | Ian Peterson |
+			|           5 |             2 |  80000 | Ian Peterson  | Ian Peterson |
+			+-------------+---------------+--------+---------------+--------------+
+	2) USING LAST_VALUE WITH ORDER BY AND PARTITION BY WITH (RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)		
+		select   employee_id
+				, department_id 
+				, salary
+				, name
+				, last_value(name) OVER (partition by department_id order by  salary ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) last_val  
+				  from employee;
+	      
+			 +-------------+---------------+--------+---------------+---------------+
+			| employee_id | department_id | salary | name          | last_val      |
+			+-------------+---------------+--------+---------------+---------------+
+			|           1 |             1 |  20000 | John Smith    | John Smith    |
+			|           4 |             2 |  20000 | Mike Peterson | Ian Peterson  |
+			|           3 |             2 |  30000 | Cailin Ninson | Ian Peterson  |
+			|           5 |             2 |  80000 | Ian Peterson  | Ian Peterson  |
+			|           6 |             3 |  50000 | John Mills    | John Mills    |
+			|           2 |             5 |  10000 | Ava Muffinson | Ava Muffinson |
+			+-------------+---------------+--------+---------------+---------------+
