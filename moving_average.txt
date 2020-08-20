@@ -40,8 +40,20 @@ CREATE TABLE
        , sum(revenue) over (order by subscription_date asc) as rolling_sum
        from order_sales;
 
-	 NOTE:Here we are using rows preceding
+	 NOTE:Here we are using aggregate function with default preceding (ROWS BETWEEN UNBOUNDED PRECENDING AND CURRENT ROW)
 	 Using analytical function
+		select subscription_date
+			 , sum(revenue) over(order by revenue) rolling_average
+		  from order_sales;
+		+-------------------+-----------------+
+		| subscription_date | rolling_average |
+		+-------------------+-----------------+
+		| 1/1/2001          |             100 |
+		| 9/9/2010          |             250 |
+		| 2/1/2002          |             450 |
+		| 5/3/2005          |             750 |
+		+-------------------+-----------------+  
+		 
 		select subscription_date
 			  , sum(revenue) over (order by subscription_date asc rows 10 preceding) as rolling_revenue 
 			from order_sales order by subscription_date;
@@ -59,20 +71,20 @@ CREATE TABLE
 		 Note:Group by 1 means : group by first column regardless of what it is called.
 		***/
 		
-		select order_sales.subscription_date
-		, sum(past_order_sales.revenue)
-		from order_sales
-		join order_sales as past_order_sales
-		on past_order_sales.subscription_date between order_sales.subscription_date -10 and order_sales.subscription_date
-		group by 1 order by order_sales.subscription_date;
+		select a.subscription_date
+        , sum(p.revenue)
+        from order_sales a 
+        join order_sales p
+        on p.subscription_date between a.subscription_date -10 and a.subscription_date
+        group by 1 order by a.subscription_date;
 	  
-  For each row in our order_sales table, we join every row that was within the past seven days 
-  and take the sum for the past 10 days 
-	+-------------------+-------------------------+
-	| subscription_date | sum(past_order_sales.revenue) |
-	+-------------------+-------------------------+
-	| 1/1/2001          |                     100 |
-	| 2/1/2002          |                     300 |
-	| 5/3/2005          |                     600 |
-	| 9/9/2010          |                     750 |
+	  For each row in our order_sales table, we join every row that was within the past seven days 
+	  and take the sum for the past 10 days 
+		+-------------------+-------------------------+
+		| subscription_date | sum(past_order_sales.revenue) |
+		+-------------------+-------------------------+
+		| 1/1/2001          |                     100 |
+		| 2/1/2002          |                     300 |
+		| 5/3/2005          |                     600 |
+		| 9/9/2010          |                     750 |
 

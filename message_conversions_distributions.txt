@@ -49,11 +49,13 @@
 	select sum(n_msg) as all_message,date 
 		from messages group by date;
 		
-    all_message |    date    
-	-------------+------------
-          10 | 10/01/2018
-          29 | 10/03/2018
-          41 | 10/02/2018
+    +-------------+------------+
+	| all_message | date       |
+	+-------------+------------+
+	|          14 | 10/01/2018 |
+	|          41 | 10/02/2018 |
+	|          54 | 10/03/2018 |
+	+-------------+------------+
 		  
 	2) SELECT DISTINCT CONVERSATIONS BY ALL USERS ON A PARTICULAR DAY
 	select u1, count(distinct u2) conversations 
@@ -123,7 +125,7 @@
 	    of messages to each user. 
 	   And then add a outer query to calculate the following ratio:
 	    
-            FROM THE ABOVE QUERY CALCULATE THE FOLLOWING QUERY:
+        FROM THE ABOVE QUERY CALCULATE THE FOLLOWING QUERY:
 		sum(n_msg_with_top_partners) / sum(n_msg_with_all_contacts)
 	    
 		select sum(tmp.sum_top)/(select sum(n_msg) 

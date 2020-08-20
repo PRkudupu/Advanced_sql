@@ -29,7 +29,7 @@ create table employee(employee_id integer,department_id integer,boss_id integer,
 	  GET THE NAME OF THE EMPLOYEE WHO HAS HIGHEST SALARY.
 	  
 	  
-	  1) USING LAST_VALUE WITH ORDER BY WITH( DEFAULT RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
+	  1) USING LAST_VALUE WITH ORDER BY WITH( DEFAULT ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
 	    Note: In this example we are not getting the necesary results as it is using its default value for rows or range.
 		
 	     select   employee_id
@@ -49,7 +49,7 @@ create table employee(employee_id integer,department_id integer,boss_id integer,
 		|           6 |             3 |  50000 | John Mills    | John Mills    |
 		|           5 |             2 |  80000 | Ian Peterson  | Ian Peterson  |
 		+-------------+---------------+--------+---------------+---------------+
-	2) USING LAST_VALUE WITH ORDER BY WITH( RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
+	2) USING LAST_VALUE WITH ORDER BY WITH( ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
 		select   employee_id
 				, department_id 
 				, salary

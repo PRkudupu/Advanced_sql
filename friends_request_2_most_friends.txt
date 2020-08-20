@@ -51,8 +51,54 @@
            order by num desc
            limit 1;
            
-	+------+-----+
-	| id   | num |
-	+------+-----+
-	|    3 |   3 |
-	+------+-----+	
+		+------+-----+
+		| id   | num |
+		+------+-----+
+		|    3 |   3 |
+		+------+-----+	
+	
+	     select id
+              ,b.sum_cnt
+            from
+             (select 
+                   sum(cnt) sum_cnt
+                   , id
+                   , max(sum(cnt)) over() max_cnt
+               from
+                  (select count(requester_id) cnt
+                         , accepter_id id
+                          from request_accepted
+                         group by accepter_id
+                         union
+                  select count(accepter_id) cnt
+                         , requester_id id
+                         from request_accepted
+                         group by requester_id)a
+                    group by a.id)b
+              where b.sum_cnt=b.max_cnt;
+		+------+-----+
+		| id   | num |
+		+------+-----+
+		|    3 |   3 |
+		+------+-----+	
+		  
+		select sum(a.cnt) 
+           ,a.id
+           from
+            (select count(requester_id) cnt
+                   , accepter_id id
+                    from request_accepted
+                   group by accepter_id
+                   union all
+             select count(accepter_id) cnt
+                   , requester_id id
+                   from request_accepted
+                   group by requester_id)a 
+            group by a.id
+            order by sum(a.cnt) desc limit 1;
+		+------+-----+
+		| id   | num |
+		+------+-----+
+		|    3 |   3 |
+		+------+-----+	
+	
