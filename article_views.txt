@@ -22,16 +22,9 @@
 		2017-08-01	789			457			789	
 	   
 	 1)HOW MANY ARTICLES AUTHORS HAVE NEVER VIEWED THIER OWN ARTICLE? (ID of authors)
-		select author_id from article_views
-			where author_id not 
-				in
-                  (select a.author_id from article_views a
-                    where a.author_id = a.viewer_id)
-  
-		author_id 
-		-----------
-        654
-        432
+		
+	select count(distinct(viewer_id)) no_authors
+		from article_views where viewer_id != author_id;
 		
 	2) How many article authors have never viewed their own article? (Total count of authors)
 		select count(distinct(author_id)) not_viewed from article_views
