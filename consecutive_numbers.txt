@@ -43,25 +43,48 @@ Then we can select any Num column from the above table to get the target data.
 However, we need to add a keyword DISTINCT because it will display a duplicated number if one number appears more than 3 times consecutively.	
 	
 #SOLUTION USING LEAD FUNCTION
-select b.id,b.num,b.num_1,b.num_2
-    from
-    (select a.id,a.num,a.num_1, lead(a.num_1) over (order by a.id) as num_2
-       
-      from
-          (
-          select id,num, lead(num) over (order by id) as num_1 from numbers
-   
-          )a
-     )b
-     where b.num=b.num_1 and b.num_1=b.num_2;
+   SOLUTION 1A)
+	select b.id,b.num,b.num_1,b.num_2
+		from
+		(select a.id,a.num,a.num_1, lead(a.num_1) over (order by a.id) as num_2
+		   
+		  from
+			  (
+			  select id,num, lead(num) over (order by id) as num_1 from numbers
+	   
+			  )a
+		 )b
+		 where b.num=b.num_1 and b.num_1=b.num_2;
     id | num | num_1 | num_2 
 	----+-----+-------+-------
 	 1 |   1 |     1 |     1
 	 
+	SOLUTION 1B)
 	select distinct(n1.num) consecutive_threes 
 		from numbers n1,numbers n2,numbers n3 
 		where n1.id=n2.id - 1 and n2.id=n3.id-1 
 		and n1.num = n2.num    
 		and n2.num = n3.num;
-		
+	
+	SOLUTION 1C)	
+		select * from
+		  (select 
+		   case when n1.num=n2.num and n2.num=n3.num 
+				  then n1.num else 0 end as id
+			 from numbers n1
+			  left join numbers n2
+			  on n1.id =n2.id-1
+			  left join numbers n3
+			  on n1.id =n3.id-2)a
+			  where a.id!=0;
+	
+	SOLUTION 1D)
+		select n1.num as consecutive_ones
+		 from numbers n1
+			left join numbers n2 on n1.id =n2.id-1
+			left join numbers n3 on n1.id =n3.id-2
+			where n1.num=n2.num and n2.num=n3.num;
+				  
+	
+			
     

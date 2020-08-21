@@ -16,17 +16,36 @@
 		INSERT INTO contents VALUES (4,'post',NULL);
 		INSERT INTO contents VALUES (5,'comment','u1');
 		INSERT INTO contents VALUES (6,'comment','u1');
-	        INSERT INTO contents VALUES (7,'comment','u3');
+	    INSERT INTO contents VALUES (7,'comment','u3');
 		INSERT INTO contents VALUES (8,'post',NULL);
 		INSERT INTO contents VALUES (9,'video','u1');
-	        INSERT INTO contents VALUES (10,'video','u3');
+	    INSERT INTO contents VALUES (10,'video','u3');
 		INSERT INTO contents VALUES (11,'post',NULL);
 		INSERT INTO contents VALUES (12,'photo','u1');
-	        INSERT INTO contents VALUES (13,'photo','u3');
+	    INSERT INTO contents VALUES (13,'photo','u3');
 		INSERT INTO contents VALUES (14,'photo','u1');
-	        INSERT INTO contents VALUES (15,'article','u3');
+	    INSERT INTO contents VALUES (15,'article','u3');
 		
-	
+		+------------+--------------+-----------+
+		| content_id | content_type | target_id |
+		+------------+--------------+-----------+
+		|          1 | comment      | u1        |
+		|          2 | post         | NULL      |
+		|          3 | comment      | u2        |
+		|          4 | post         | NULL      |
+		|          5 | comment      | u1        |
+		|          6 | comment      | u1        |
+		|          7 | comment      | u3        |
+		|          8 | post         | NULL      |
+		|          9 | video        | u1        |
+		|         10 | video        | u3        |
+		|         11 | post         | NULL      |
+		|         12 | photo        | u1        |
+		|         13 | photo        | u3        |
+		|         14 | photo        | u1        |
+		|         15 | article      | u3        |
+		+------------+--------------+-----------+
+		
 	1)WHAT IS THE DISTRIBUTION OF COMMENTS?
 	select a.cnt,count(a.cnt) as freq 
 		from (select content_id, count(target_id) as cnt 
@@ -56,6 +75,6 @@
 		|   0 | post         |    4 |
 		|   1 | video        |    2 |
 		|   1 | photo        |    3 |
-	        |   1 | article      |    1 |
-	        +-----+--------------+------+
+	    |   1 | article      |    1 |
+	    +-----+--------------+------+
 	
