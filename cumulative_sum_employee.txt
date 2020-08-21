@@ -15,21 +15,22 @@
 	insert into  employee values(1,4,60);
 	insert into  employee values(3,4,70);
 			
-	| id | month | salary |
-	|----|-------|--------|
-	| 1  | 1     | 20     |
-	| 2  | 1     | 20     |
-	| 1  | 2     | 30     |
-	| 2  | 2     | 30     |
-	| 3  | 2     | 40     |
-	| 1  | 3     | 40     |
-	| 3  | 3     | 60     |
-	| 1  | 4     | 60     |
-	| 3  | 4     | 70     |
+	+------+-------+--------+
+	| id   | month | salary |
+	+------+-------+--------+
+	|    1 |     1 |     20 |
+	|    1 |     2 |     30 |
+	|    1 |     3 |     40 |
+	|    1 |     4 |     60 |
+	|    2 |     1 |     20 |
+	|    2 |     2 |     30 |
+	|    3 |     2 |     40 |
+	|    3 |     3 |     60 |
+	|    3 |     4 |     70 |
 	
 	1) WRITE A SQL TO GET THE CUMULATIVE SUM OF AN EMPLOYEE SALARY OVER A PERIOD OF 3 MONTHS BUT EXCLUDE THE MOST RECENT MONTH.
 	Output
-
+	
 	| id | month | salary |
 	|----|-------|--------|
 	| 1  | 3     | 90     |
@@ -38,7 +39,7 @@
 	| 2  | 1     | 20     |
 	| 3  | 3     | 100    |
 	| 3  | 2     | 40     |
-
+	
      
 	EXPLANTATION
 		employee '1' has 3 salary records for the following 3 months except the most recent month '4': salary 40 for month '3', 30 for month '2' and 20 for month '1'
@@ -60,8 +61,31 @@
 		| 3  | 2     | 40     |
    
 	SOLUTION
-		We can solve this using cumulative sum of an employees salary over a period of 3 months and then exclude the most recent month from the result.
+		USING AGGREGATE FUNCTIONS
+		select e.id
+		   , e.month
+		   , sum(e.salary) over(partition by e.id order by e.salary) sum_salary
+		   from 
+		   employee e
+		   join (select id 
+					 , max(month) max_month
+					 from employee
+					 group by id) m
+		  on e.id=m.id  and e.month!=m.max_month  
+		   order by  id ,month desc;
 	
+		+------+-------+------------+
+		| id   | month | sum_salary |
+		+------+-------+------------+
+		|    1 |     3 |         90 |
+		|    1 |     2 |         50 |
+		|    1 |     1 |         20 |
+		|    2 |     1 |         20 |
+		|    3 |     3 |        100 |
+		|    3 |     2 |         40 |
+		+------+-------+------------+
+		
+		We can solve this using cumulative sum of an employees salary over a period of 3 months and then exclude the most recent month from the result.
 		Think about 2 months as a start. By joining this Employee table with itself, you can get salary information for one more month.
 		
 		JOIN 2 TABLES FOR 2 MONTHS
@@ -96,19 +120,19 @@
 				 on (e2.id=e1.id  and e2.month=e1.month -1)
 				 order by e1.id asc,e1.month desc;
 				 
-				 +------+-------+-------+
-				| id   | month | total |
-				+------+-------+-------+
-				|    1 |     4 |   100 |
-				|    1 |     3 |    70 |
-				|    1 |     2 |    50 |
-				|    1 |     1 |    20 |
-				|    2 |     2 |    50 |
-				|    2 |     1 |    20 |
-				|    3 |     4 |   130 |
-				|    3 |     3 |   100 |
-				|    3 |     2 |    40 |
-				+------+-------+-------+
+					 +------+-------+-------+
+					| id   | month | total |
+					+------+-------+-------+
+					|    1 |     4 |   100 |
+					|    1 |     3 |    70 |
+					|    1 |     2 |    50 |
+					|    1 |     1 |    20 |
+					|    2 |     2 |    50 |
+					|    2 |     1 |    20 |
+					|    3 |     4 |   130 |
+					|    3 |     3 |   100 |
+					|    3 |     2 |    40 |
+					+------+-------+-------+
 				 
 		WE CAN JOIN MORE TABLES TO GET CUMULATIVE SUM HERE WE ARE JOINING THE SAM TABLE THRICE
 			 select  e1.id
@@ -139,8 +163,7 @@
          (select id
                  , max(month) as months
                   from employee
-                  group by id
-                  having count(*) >1) as maxmonth
+                  group by id) as maxmonth
                     left join
                   employee e1
                   on maxmonth.id=e1.id
@@ -158,23 +181,19 @@
 		+------+-------+------+-------+--------+			
 					
 		FINAL ANSWER
-			select  e1.id
-            , e1.month 
-            , (ifnull(e1.salary,0) +ifnull(e2.salary,0)+ifnull(e3.salary,0)) total
-              from 
-              ( select id
-                 ,max(month) as month
-                  from employee
-                  group by id
-                  having count(*) >1) as maxmonth
-                    left join
-                  employee e1
-                  on maxmonth.id=e1.id
-                    and maxmonth.month >e1.month
+			select e1.id
+             , e1.month
+             , ifnull(e1.salary,0) + ifnull(e2.salary,0) +ifnull(e3.salary,0) total 
+           from
+               (select id, max(month) as month from employee group by id  ) as m
+                    left join employee e1
+                      on m.id=e1.id and m.month >e1.month
                     left join employee e2
-                      on (e2.id=e1.id  and e2.month=e1.month -1)
+                      on e2.id=e1.id and e2.month=e1.month-1
                     left join employee e3
-                      on (e3.id=e2.id  and e3.month=e1.month -2)
-                    order by e1.id asc,e1.month desc;
+                      on e3.id=e2.id and e3.month=e1.month-2
+                  order by e1.id,e1.month desc;
+
+
 					
 		
