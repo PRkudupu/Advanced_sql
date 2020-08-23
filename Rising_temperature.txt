@@ -26,3 +26,16 @@ DDL
 				join Weather w2
 					on datediff(w1.RecordDate,w2.RecordDate)=1 
 						and w1.Temperature > w2.Temperature;
+						
+	select w2.Id
+       from Weather w1
+       left join Weather w2
+       on w1.RecordDate=w2.RecordDate-1
+       where w2.Temperature >w1.Temperature;
+	   
+	+------+
+	| Id   |
+	+------+
+	|    2 |
+	|    4 |
+	+------+  
