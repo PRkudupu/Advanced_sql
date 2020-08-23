@@ -116,8 +116,6 @@ Ads
 		|            11 |   100 |                0.21 |
 		|            13 |   400 | 0.20333333333333334 |
 		+---------------+-------+---------------------+
-		
-		
 		select tmp1.advertiser_id,tmp1.ad_id,(tmp2.sum_rev/tmp1.sum_spend)as ROI 
 			from (select advertiser_id,ad_id,sum(spend) as sum_spend 
 					from adv_info 
@@ -136,3 +134,27 @@ Ads
 		|            11 |   100 |                0.21 |
 		|            13 |   400 | 0.20333333333333334 |
 		+---------------+-------+---------------------+
+		
+		CAST TO DECIMAL
+		select a.advertiser_id 
+			   , a.ad_id
+			   , cast(b.ad_spend/a.spend as decimal(4,2)) ROI
+			   from
+		 
+			  (select advertiser_id 
+			  ,ad_id
+			  ,spend
+			   from adv_info) a
+			 
+			  join (select ad_id
+				   , sum(price) ad_spend
+				from ad_info
+				group by ad_id)b
+			 on a.ad_id=b.ad_id
+		+---------------+-------+------+
+		| advertiser_id | ad_id | ROI  |
+		+---------------+-------+------+
+		|            10 |   200 | 0.20 |
+		|            11 |   100 | 0.21 |
+		|            13 |   400 | 0.20 |
+		+---------------+-------+------+
