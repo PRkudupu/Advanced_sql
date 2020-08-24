@@ -4,6 +4,7 @@ OVER CLAUSE:
 	2) If over is specified with partition rows it would treat it would partition by that column.
 	3) windowing execution occurs before ORDER BY, LIMIT, and SELECT DISTINCT
 	4) Any of the window function can be used. COUNT(),AVG(),MIN(),MAX(),ROW_NUMBER(),RANK(),DENSE_RANK()
+		
 	Ex:
 	SELECT
          year, country, product, profit,
@@ -39,4 +40,36 @@ OVER CLAUSE:
         group by grade_level)
         a 
     where a.cnt=a.max_cnt;
- 
+	
+	EX 2 WITH SAMPLE DATA
+			create table employee
+		  (
+			id int,
+			name varchar(50),
+			salary int,
+			department_id int
+		  );
+
+		  insert into employee values
+		  (1,'Joe',70000,1),
+		  (2,'Henry',80000,2),
+		  (3,'Sam',60000,2),
+		  (4,'Max',90000,1),
+		  (5,'Janet',69000,1),
+		  (6,'Randy',85000,1);
+    
+	
+	select name
+       ,  min(salary) over() min_salary
+       from employee;
+       
+		+-------+------------+
+		| name  | min_salary |
+		+-------+------------+
+		| Joe   |      60000 |
+		| Henry |      60000 |
+		| Sam   |      60000 |
+		| Max   |      60000 |
+		| Janet |      60000 |
+		| Randy |      60000 |
+		+-------+------------+
