@@ -1,0 +1,48 @@
+/*
+ _________________                      _________________
+|Customer         |                    |Product          |
+|=================|                    |=================|
+|customer_id (PK) |                    |product_id (PK)  |
+|customer_number  |                    |product_number   |
+|customer_name    |                    |product_name     |
+|address1         |                    |product_size     |
+|address2         |                    |unit_price       |
+|city             |                    |                 |
+|state            |                    |                 |
+|zip              |                    |                 |
+|_________________|                    |_________________|
+        ^                                        ^
+        |           __________________           |
+        |          |Sales             |          |
+        |          |==================|          |
+        -----------|customer_id (FK)  |          |
+                   |product_id (FK)   |-----------
+                   |purchase_date     |
+                   |purchase_year     |
+                   |purchase_quantity |
+                   |purchase_amount   |
+                   |__________________|
+				   
+
+Given the tables represented above, write a SQL query to return:
+
+ - customer_id, customer_name, total (sum of) purchase_amount
+ - for purchases made in the year 2016
+ - order the results by customer_name 
+
+select a.customer_id
+      ,c.customer_name
+ from Customer  as c
+  join
+     (select customer_id 
+           , sum(purchase_amount) as total_amount 
+ 
+          from Sales 
+           where purchase_year =2016
+           group by customer_id) a
+ on a.customer_id=c.customer_id
+ order by c.customer_name 
+ 
+
+
+ 

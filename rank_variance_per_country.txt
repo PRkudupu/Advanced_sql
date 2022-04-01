@@ -1,0 +1,174 @@
+ RANK VARIANCE PER COIUNTRY
+ 
+ Which countries have risen in the rankings based on the number of comments between Dec 2019 vs Jan 2020? 
+ Hint : avoid gaps between ranks when ranking countries
+        (It is saying that do not use rank as it would provide gaps while ranking)
+
+ fb_comments_count
+ 	user_id               int
+ 	created_at            datetime
+ 	number_of_comments    int
+ 
+ fb_active_users    
+ 	user_id   int
+      name      varchar
+      status    varchar
+      country   varchar
+
+
+IDENTIFY THE COLUMNS WHAT WE NEED
+    country : 
+    user_id : 
+    number_of_comments : where we get the comments 
+    created_at : between dec 2019 to Jan 2020
+
+    Note: 
+	    1)Every user in the table might not have commented
+           fb_comments_count would be the subset of fb_active_users
+           we can use left_join from fb_active_users table to fb_comments_count table
+          2)Rankings : If we do not have comments then we are rising in ranking.
+APPROACH
+    1) JOIN the 2 tables on user_id (left join because not all users would have made comments)
+    2) Filter out table for Dec 2019 and Jan 2020 (Create 2 sub queries)
+    3) Exclude rows where country is empty
+    4) Sum the number of comments per country
+    5) Use FULL join to compare DEC 19 and JAN 20 comments
+    6) Rank 2019 comment counts and 2020 comment
+    7) Apply final filter to fetch only countries with raking decline (Jan rank < Dec rank)
+
+    
+   1)
+     SELECT act.user_id
+     JOIN  fb_active_users act
+     LEFT JOIN fb_comments_count cnt
+     ON  act.user_id =cnt.user_id
+
+    
+    2,3) 
+    --Note in this case I am fetching data for both dec 2019 and jan 2020
+	SELECT *
+      JOIN  fb_active_users act
+      LEFT JOIN fb_comments_count cnt
+      ON  act.user_id =cnt.user_id
+     	WHERE cnt.created_dt between '2019-12-01' and '2020-01-31' AND country IS NOT NULL
+
+      or
+     --Note in this case I am fetching data for both dec 2019 
+     SELECT *
+      JOIN  fb_active_users act
+      LEFT JOIN fb_comments_count cnt
+      ON  act.user_id =cnt.user_id
+     WHERE cnt.created_dt  <='2019-12-31' AND cnt.created_dt  >='2019-12-01' AND country IS NOT NULL
+
+     4)
+    -- CHANGE  the query into cte
+
+     WITH dec_summary as
+        (  	SELECT
+			country
+			, SUM(cnt.number_of_comments) total_comments_dec
+      	JOIN  fb_active_users act
+      	LEFT JOIN fb_comments_count cnt
+      	ON  act.user_id =cnt.user_id
+     		WHERE cnt.created_dt  <='2019-12-31' AND cnt.created_dt  >='2019-12-01' AND country IS NOT NULL
+		GROUP BY act.country
+	), 
+       jan_summary as
+        (
+ 		SELECT 
+			country
+			, SUM(cnt.number_of_comments) total_comments_jan
+      	JOIN  fb_active_users act
+      	LEFT JOIN fb_comments_count cnt
+      	ON  act.user_id =cnt.user_id
+     		WHERE cnt.created_dt  <='2020-01-31' AND cnt.created_dt  >='2020-01-01' AND country IS NOT NULL
+            GROUP BY act.country
+	   )
+
+       SELECT * 
+ 	 	FROM  dec_summary d
+       LEFT JOIN jan_summary j
+         d.country =j.country
+       
+
+    	  output
+     	 ******************************************************************************
+	country        number_ofcomments_dec  country 		number_of_comments_jan
+     	 ******************************************************************************
+      USA            3  				USA  			4			
+      Australia      9     				Australia         8                     
+
+   	5) 
+       Note : full join is need as shown below in the below edge case the countyr had comments in dec however did not have any comments in Jan
+              and vice versa
+
+	SELECT * 
+ 		FROM  dec_summary d
+      	FULL JOIN jan_summary j
+         		d.country =j.country
+	
+	********************************************************************************
+	country        number_ofcomments_dec  country 		number_of_comments_jan
+     	********************************************************************************
+      USA            3  				USA  			4			
+      Australia      6     				Australia         6     
+								India 		3
+      Canada         2  
+
+      *******
+      Note if we does not have comments in january then there is no way that we can incease in ranking.We need to use left join
+	 we can use the left join however keep jan on the left
+	SELECT * 
+ 		FROM  jan_summary d
+      	LEFT JOIN dec_summary j
+         		d.country =j.country
+
+
+
+    6) 
+	WITH dec_summary as
+        (  	SELECT
+			country
+			, sum(cnt.number_of_comments) total_comments_dec
+                  , dense_rank() over(sum(cnt.number_of_comments) DESC )
+      	JOIN  fb_active_users act
+      	LEFT JOIN fb_comments_count cnt
+      		on act.user_id =cnt.user_id
+     		WHERE cnt.created_dt  <='2019-12-31' AND cnt.created_dt  >='2019-12-01' AND country IS NOT NULL
+		GROUP BY act.country
+	), 
+       jan_summary as
+        (
+ 		SELECT 
+			country
+			, sum(cnt.number_of_comments) total_comments_jan
+                  , dense_rank() over(sum(cnt.number_of_comments) DESC )
+      	JOIN  fb_active_users act
+      	LEFT JOIN fb_comments_count cnt
+      		on  act.user_id =cnt.user_id
+     		WHERE cnt.created_dt  <='2020-01-31' AND cnt.created_dt  >='2020-01-01' 
+			AND country IS NOT NULL
+            GROUP BY act.country
+	   )
+
+		SELECT * 
+ 			FROM  jan_summary d
+      		LEFT JOIN dec_summary j
+         			on d.country =j.country
+                	WHERE  (j.country_rank) < d.country_rank) OR d.country_rank  is null
+
+
+	********************************************************************************
+	country        number_ofcomments_jan  country_rank  country        number_ofcomments_jan  country_rank
+     	********************************************************************************
+      USA            4					1	    USA  			   3                    3			
+      Australia      6      				3	    Australia              6                    4     
+      India          3                          6
+    
+           
+
+ 
+
+
+       				
+ 

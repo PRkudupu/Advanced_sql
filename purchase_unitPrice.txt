@@ -1,0 +1,63 @@
+/*
+ _________________                      _________________
+|Customer         |                    |Product          |
+|=================|                    |=================|
+|customer_id (PK) |                    |product_id (PK)  |
+|customer_number  |                    |product_number   |
+|customer_name    |                    |product_name     |
+|address1         |                    |product_size     |
+|address2         |                    |unit_price       |
+|city             |                    |                 |
+|state            |                    |                 |
+|zip              |                    |                 |
+|_________________|                    |_________________|
+        ^                                        ^
+        |           __________________           |
+        |          |Sales             |          |
+        |          |==================|          |
+        -----------|customer_id (FK)  |          |
+                   |product_id (FK)   |-----------
+                   |purchase_date     |
+                   |purchase_year     |
+                   |purchase_quantity |
+                   |purchase_amount   |
+                   |__________________|
+
+Given the tables above, complete the following SQL query as follows:
+
+ - include product_name in the output
+ - limit the query to only include products with a unit_price > 10.00
+
+
+select op.customer_id
+      , sum(op.total_amount) over(product_id) ordery desc op_pd
+      , op.customer_name
+((select product_id 
+       , unit_price 
+       , customer_id
+       , total_amount
+from product p
+join sales s
+on p.product_id= s.product_id) p
+
+join
+ (select a.customer_id
+      ,c.customer_name
+ from Customer  as c
+  join
+     (select customer_id 
+           , sum(purchase_amount) as total_amount 
+ 
+          from Sales 
+           where purchase_year =2016
+           group by customer_id) a
+ on a.customer_id=c.customer_id
+ order by c.customer_name
+ ) b
+
+on p.customer_id = b.customer_id
+where unit_price  > 10.00 ) op
+
+
+*/
+
