@@ -1,0 +1,17 @@
+Actors
+name	           		country	salary	role
+Vivien Leigh		IN	150000	leading
+Clark Gable	        	USA	120000	leading
+Olivia de Havilland	Japan	30000	leading
+Hattie McDaniel		USA	45000	supporting
+Leslie Howard		UK	50000	leading
+Alicia Rhett		USA	97000	supporting
+Lillian Kemble-Cooper	UK	95000	supporting
+
+1) Use the GROUP BY clause to write a query that returns the country name and total salary paid to actors for each country.
+2) Now use the HAVING clause to add a filter so that only countries with more than 1 actor are returned from our SQL query.
+3) Lastly, let’s add a condition to filter only actors with a supporting role. This condition will need to be run before the grouping of records happen
+select country,sum(salary) from Actors
+where role='supporting'
+group by country
+having count(*) >1;
