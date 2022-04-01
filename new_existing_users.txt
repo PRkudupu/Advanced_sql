@@ -1,0 +1,140 @@
+New and Existing Users
+ Calcualate the share of new and existing users.
+ Output the month, share of new users, and share of existing users as ratio.
+ New users: Defined as users who started using services in the current month
+ Existing users : Existing users are users who started services in the current month and used services in the previous month.
+ Assume that the dates are all from the year 2020
+
+ STRATEGY
+ 
+  1) Explore the data
+  2) List assumptions
+  3) Outline approach
+  4) Code in increments
+  5) Optimize the code
+
+DATA
+	  id  int
+      , time_id datetime
+      , user_id
+      , customer_id
+      , client_id
+      , event_type
+      , event_id
+
+ ASSUMPTIONS
+	time_id :indicates when the user is using the service. 
+         All data is from 2020
+         This column can be used to identify new and existing users
+
+	user_id : identify the user
+	evetnt_type: is a service 
+		Note : each time an user uses a service, it's logged in the table so users are listed multiple times in the table
+     
+ APPROACH
+    1) We can use the min to find the first date a user used a service
+    2) Calculate all users that have services by month. This would give existing users once we subtract out the new users 
+    3) join new users and all users table by month
+    4) Calculate new users by dividing the count of new users by the count of all users. 
+    5) Calculating the share of exsting uers is merley the difference between 1 and share of new users.
+
+ CODE 
+   1) We can use the min to find the first date a user used a service
+      --first transaction       
+	 SELECT user_id
+             , min(time_id) first_transaction 
+       FROM fact_events
+       GROUP BY user_id
+
+      --extract month, get distinct user(same user could come multiple time)
+      SELECT date_part('month', a.first_transaction) as month
+            , count( a.user_id) as new_users
+      (SELECT user_id
+             , min(time_id) first_transaction 
+       FROM fact_events
+       GROUP BY by user_id) a
+       GROUP BY month
+
+   *****************************
+    month   new_users
+   *****************************
+      2       13
+      3       5
+      4       2 
+    
+2) Calculate all users that have services by month. This would give existing users once we subtract out the new users
+    SELECT date_part('month',time_id) as month
+            , count( DISTINCT user_id) as all_users
+    FROM fact_events
+     GROUP BY month
+
+3) join new users and all users table by month
+
+   with new_users as 
+    (
+     SELECT date_part('month', a.first_transaction) as month
+            , count( a.user_id) as new_users
+      (SELECT user_id
+             , min(time_id) first_transaction 
+       FROM fact_events
+       GROUP BY by user_id) a
+       GROUP BY month
+    ),
+   all_users as 
+   (
+     SELECT date_part('month',time_id) as month
+            , count( DISTINCT user_id) as all_users
+     FROM fact_events
+     GROUP BY month
+   )
+
+   -- join by month
+    SELECT  
+      * 
+     FROM all_users au
+     JOIN new_users nu on au.month=nu.month
+
+    *************************************
+    month   all_users   month  new_users
+    **************************************
+      2       13        2      13
+      3       17        3      5
+      4       14        4      2
+      
+
+ 4) Calculate new users by dividing the count of new users by the count of all users. 
+    with new_users as 
+    (
+     SELECT date_part('month', a.first_transaction) as month
+            , count( a.user_id) as new_users
+      (SELECT user_id
+             , min(time_id) first_transaction 
+       FROM fact_events
+       GROUP BY by user_id) a
+       GROUP BY month
+    ),
+   all_users as 
+   (
+     SELECT date_part('month',time_id) as month
+            , count( DISTINCT user_id) as all_users
+     FROM fact_events
+     GROUP BY month
+   )
+
+   -- join by month
+   -- share of existing users : difference between share of new users and 
+    SELECT  
+      au.month
+      new_users / all_users::decimal as share_new_users and 100 percentage
+      1- ( new_users / all_users ::decimal ) as share_existing_users
+     FROM all_users au
+     JOIN new_users nu on au.month=nu.month
+
+
+    ***********************************************
+    month     share_new_users   share_existing_users
+    ************************************************
+    2          1                  0
+    3          0.294             0.706
+    4          0.143             0.857
+
