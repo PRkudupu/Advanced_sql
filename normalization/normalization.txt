@@ -1,0 +1,22 @@
+Normalization: 
+Is the process of reducing duplicates in the table.
+ 
+FIRST NORMAL FORM
+ 	Tables must not contain repeating groups of data in 1 column
+
+ SECOND NORMAL FORM
+	Tables must not contain redundancy (unnecessary repeating information)
+
+•	After applying first normal form
+
+ 
+Note  : when we update a movies duration we have to update every duplicate row.
+
+•	After applying second normal form
+     
+•	We need to have the mapping table
+ 
+
+ 
+
+

@@ -1,0 +1,6 @@
+CORELATED SUB-QUERY
+Supplying data from the man query back into the subquery is called a correlated subquery.
+ 
+
+
+ 
