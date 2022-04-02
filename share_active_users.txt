@@ -1,0 +1,73 @@
+  SHARE OF ACTIVE USERS
+    Return the share of monthly active users in the United States (US) .
+    Active are the users with ones with "open" status in the table
+   
+    user_id  int
+    , name   varchar
+    , status  varchar
+    , country varchar
+
+
+    ASSUMPTIONS
+    	 user_id  	: count of user_id would give the users 
+       country 	: column which is used to group by
+       status     : Provides status
+
+    1) output ratio (active users /all users)
+    2) Filter for us users only
+    3) Count the number of users with status = 'open'
+   
+   
+	TABLE GENERATTION
+	/*
+		create table fb_active_users
+			(user_id int
+			 , name varchar(50)
+			 , status varchar(20)
+			 , country varchar(50)
+			); 
+		insert into  fb_active_users values (1,'Prathap Kudupu','open','India');
+		insert into  fb_active_users values (2,'Bob Leon','open','USA');
+		insert into  fb_active_users values (3,'Jessica Farrell','closed','USA');
+		insert into  fb_active_users values (4,'Sam dsouza','open','India');
+		insert into  fb_active_users values (5,'Roy Jomes','open','USA');
+	*/
+
+    /*
+  select * from fb_active_users;
+  select    b.active_user_count
+          , a.total_users
+          , b.country
+          , cast(b.active_user_count::float/a.total_users::float as decimal(4,2)) shared_active_users
+         from
+        (SELECT count(DISTINCT(user_id)) active_user_count
+                , country
+             FROM fb_active_users
+             WHERE status='open' and country='USA'
+             GROUP BY country
+            ) b,
+         (SELECT count(DISTINCT(user_id)) total_users
+                , country
+             FROM fb_active_users
+             WHERE country='USA'
+             GROUP BY country) a;
+	
+*********************************************************	
+	active_user_count   total_users country  shared_active_users	
+            2                3        USA     0.67  	
+*********************************************************		 
+	
+   WITHOUT USING 2 SELECT (
+						   note 1 in this query we are assuming that there are no duplicates
+						   note 2 all columns are not needed as shown above)
+        
+    
+    SELECT cast((a.active_users::float/a.total_users::float) as decimal(4,2)) shared_active_users
+    FROM
+     (SELECT 
+       count(case when status ='open' then user_id else null end) as active_users
+       , count(*) as total_users
+    FROM 
+       fb_active_users
+    WHERE  
+       country='USA') a
