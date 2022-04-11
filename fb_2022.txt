@@ -1,0 +1,63 @@
+    1. What percent of all products in the grocery chain's catalog are both low fat and recyclable?
+    2. What are the top five (ranked in decreasing order) single-channel media types that correspond to the most money the grocery chain had spent on its promotional campaigns?
+    3. % Of sales that had a valid promotion, the VP of marketing wants to know what % of transactions occur on either the very first day or the very last day of a promotion campaign.
+	    with cte (promotion_id,first_day,last_day)
+			as (
+			select promotion_id, first_day= min(transaction_date)
+			last_day = max(transaction_date)
+			from sales
+			where promotion_id is not null
+			group by promotion_id
+			)
+			Select count(
+			case when transaction_date = cte.first_day or transaction_date = cte.last_day then 1 else 0 end )/count(*) *100
+        from sales s inner join cte on cte.promotion_id = s.promotion_id
+        
+		SELECT count(case when A.promotion > 0 THEN store_sales END) as valid_transction*100/
+			(select count(A.store_sales) FROM sales) total
+			from SALES A
+			JOIN
+			PROMOTION B
+			ON A.promotion_id = B.promotion_id
+		where (A.trasanction_id= start_date AND A.trasanction_id= end_date )
+
+		select
+		sum(case when transaction_date = (select min(transaction_date) from sales) then 1 else 0)/count(*) as first_day_sales,
+		sum(case when transaction_date = (select max(transaction_date) from sales) then 1 else 0)/count(*) as last_day_sales
+		from sales
+		
+	4. What brands have an average price above $3 and contain at least 2 different products?
+    5. To improve sales, the marketing department runs various types of promotions.
+    The marketing manager would like to analyze the effectiveness of these promotion campaigns.
+    In particular, what percent of our sales transactions had a valid promotion applied?
+    6. We want to run a new promotion for our most successful category of products
+    (we call these categories “product classes”).
+    Can you find out what are the top 3 selling product classes by total sales?
+    7. We are considering running a promo across brands. We want to target
+    customers who have bought products from two specific brands.
+    Can you find out which customers have bought products from both the
+    “Fort West" and the "Golden" brands?
+    8. what %age of products have both non fat and trans fat.
+    9. find top 5 sales products having promotions
+    10. what %age of sales happened on first and last day of the promotion
+    11. Which product had the highest sales with promotions and sales ( basically a where clause on 2 flags)
+    12. Manager want to analyze the how the promotions on certain products are performing.find how the the percent of promoted sales?
+    13. get the top3 product class_id by the total sales.
+    14. Percentage increase in revenue compared to promoted and non-promoted products.
+    15. Products classes that has the highest transactions
+    16. Count of Customers who bought 2 items type (A,B)
+	17. Write a query that returns product_family, units_sold, percentage of promoted.
+	    select product_family, sum(units_sold),
+		sum(case when s.promotion_id != 0 then 1 else 0 end)*100.0/count(1) as prct_promoted
+		from sales s left join products p on s.product_id = p.product_id
+		left join product_classes pc on p.product_class_id = ps.product_class_id
+		join promotions prm on s.promotion_id = prm.promotion_id
+		group by product_family;
+		
+	18. Write a query that returns percentage of unsold product_category
+	19. 2)top 5 single channel companies that spent max amount on promotion. take into account of the ones that have only single entry
+		company , channel;
+		1 food, water
+		2 food
+	20. 3) percentage of sales on first day and last day
+       python: occurrences of a letter in a string, replace none with previous value in a list, from a dictionary get the keys corresponding to nth highest value.

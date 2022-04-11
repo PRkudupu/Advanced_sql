@@ -1,3 +1,13 @@
+  1) DATE DIFFERENCE :We need to use date_part (convert it into day,month,week,year)
+  
+       SELECT DATE_PART('day','2012-01-03'::date)-DATE_PART('day','2012-01-03'::date) as date_diff,
+       DATE_PART('month','2012-02-03'::date)-DATE_PART('month','2012-01-03'::date) as month_diff,
+       DATE_PART('week','2012-02-03'::date)-DATE_PART('week','2012-01-03'::date) as date_diff,
+       DATE_PART('year','2014-01-03'::date)-DATE_PART('year','2012-01-03'::date) as year_diff;
+	   
+		
+ 
+ 
  1) LIST DATABASE
 	postgres=# \l
  	 Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   

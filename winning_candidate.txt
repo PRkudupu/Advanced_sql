@@ -108,7 +108,7 @@
 			   group by c.id) a
 			where a.cnt=a.max_cnt;
 						   
-	2) # GET THE WINNING CANDIDATE VOTES AND TOTAL VOTES	   
+	2) # GET THE WINNING CANDIDATE VOTES AND TOTAL VOTES	                                  
 
 	select  a.id
 		, a.max_cnt votes
@@ -124,3 +124,17 @@
 				 group by c.id
 		   )a
 		   where a.cnt=a.max_cnt;
+	  # USING CTE TABLE
+           WITH  cte 
+  		AS
+  		(
+	    		SELECT  count(v.id) as count_votes
+        			, max(count(v.id)) over() max_cnt
+			        , sum(count(v.id)) over() total_cnt
+			        , c.name as candidate_name
+			 FROM vote as v 
+			 JOIN candidate as c 
+		         ON c.id=v.candidate_id
+		         group by c.name
+	        ) 
+		SELECT * from cte where count_votes=max_cnt;

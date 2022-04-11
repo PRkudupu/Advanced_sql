@@ -1,0 +1,53 @@
+sales
++------------------+---------
+| product_id | INTEGER
+| store_id | INTEGER |
+| customer_id | INTEGER |
+| promotion_id | INTEGER |
+| store_sales | DECIMAL |
+| store_cost | DECIMAL |
+| units_sold | DECIMAL |
+| transaction_date | DATE |
+
+products
++------------------+---------
+| product_id | INTEGER |
+| product_class_id | INTEGER |
+| brand_name | VARCHAR |
+| product_name | VARCHAR |
+| is_low_fat_flg | TINYINT |
+| is_recyclable_flg | TINYINT |
+| gross_weight | DECIMAL |
+| net_weight | DECIMAL |
+
+promotions |
++------------------+---------+
+| promotion_id | INTEGER|
+| promotion_name | VARCHAR |
+| media_type | VARCHAR |
+| cost | DECIMAL |
+| start_date | DATE |
+| end_date | DATE |
+
+product_classes
++------------------+---------+
+| product_class_id | INTEGER |
+| product_subcategory | VARCHAR |
+| product_category | VARCHAR |
+| product_department | VARCHAR |
+| product_family | VARCHAR |
+
+
+1) what is the percentage of products which has low fat and recycle
+   with flag_total as (
+    Select 
+        SUM (CASE when is_low_fat_flg =1 and is_recyclable_flg =1 then 1 else 0 end) as flag_count,
+        count(distinct product_id) as prod_count
+   from products
+ )
+  select 
+      flag_count/ prod_count * 100 as percent
+ from flag_total
+ 
+ 2) what %age of sales happened on first and last day of the promotion 
+   
