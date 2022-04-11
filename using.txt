@@ -2,6 +2,13 @@ USING
 	The USING(join_column_list) clause names a list of columns that must exist in both tables. 
 	If tables a and b both contain columns c1, c2, and c3, the following join compares corresponding columns from the two tables.
 	Used if several columns share the same name but don't want to join using all these common columns.
+	
+	NOTE :
+		Join condition must have the same name
+		A subset of common attributes common attributes can be specified in using <attribute list>
+		Only equality will be checked
+		
+	 
 
 	a LEFT JOIN b USING (c1, c2, c3)
 	DDL
