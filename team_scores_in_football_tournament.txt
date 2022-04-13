@@ -86,4 +86,34 @@ DDL
 		|        20 |         30 |          1 |           0 |        4 |           3 |            0 |
 		|        50 |         30 |          1 |           0 |        5 |           3 |            0 |
 		+-----------+------------+------------+-------------+----------+-------------+--------------+
+		
+		with cte
+		as  (select  host_team
+			  , case when host_goals > guest_goals then 3
+					 when host_goals = guest_goals then 1
+					 else  0 end host_points
+			  , guest_team
+			  , case when host_goals < guest_goals then 3
+					 when host_goals = guest_goals then 1
+					 else  0 end guest_points
+				from matches
+			   )
+
+		 select  b.team_id
+			   , t.team_name
+			   , b.total_points
+		   from (select  a.team_id
+			  , sum(a.num_points) total_points
+			  from 
+			   ( select host_team team_id
+					  , host_points num_points
+					  from cte 
+				UNION all
+				select guest_team team_id
+					  , guest_points  num_points 
+				   from cte ) a
+				group by a.team_id) b
+			join teams t 
+			on b.team_id=t.team_id;
+
 				
