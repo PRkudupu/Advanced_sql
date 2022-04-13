@@ -5,18 +5,18 @@ create table team(leader_id int,name varchar(64));
 create table team_member(member_id int,supervisor_id int,distance int);
 
 
-insert into member values ("Zeus","Titano","Chief Executive officer",1);
-insert into member values ("Hera","Titania","Chief Operation officer",2);
-insert into member values ("Apollo","olymplades","sales and marketing",3);
-insert into member values ("Hephaestus","olymplades","Manufacturing,Vice president",4);
-insert into member values ("Hestia","Titania","Facilities Sr Director",9);
-insert into member values ("Heracles","olymplades","Janitorial Service D",10);
+insert into member values ('Zeus','Titano','Chief Executive officer',1);
+insert into member values ('Hera','Titania','Chief Operation officer',2);
+insert into member values ('Apollo','olymplades','sales and marketing',3);
+insert into member values ('Hephaestus','olymplades','Manufacturing,Vice president',4);
+insert into member values ('Hestia','Titania','Facilities Sr Director',9);
+insert into member values ('Heracles','olymplades','Janitorial Service D',10);
 
 
-insert into team values (1,"ceo");
-insert into team values (2,"opeartions");
-insert into team values (3,"manufacturing");
-insert into team values (9,"facility");
+insert into team values (1,'ceo');
+insert into team values (2,'opeartions');
+insert into team values (3,'manufacturing');
+insert into team values (9,'facility');
 
 
 insert into team_member values (1,1,0);
@@ -68,13 +68,13 @@ team_member
        ceo, Zeus Titanuo
        
 
-   select t.name as team_name,concat(m.firstname," ",m.lastname) leader_name  
+   select t.name as team_name,concat(m.firstname,' ',m.lastname) leader_name  
             from team t join 
             member m on m.id=t.leader_id;
    
 3. Write a query to extract all current member of the facility team.
         
-        select concat(m.firstname," ",m.lastname) as members from team t 
+        select concat(m.firstname,' ',m.lastname) as members from team t 
               join team_member tm
               on t.leader_id=tm.supervisor_id
               join member m
@@ -88,7 +88,7 @@ team_member
 5. (Bonus) Draw an organisational chart based on the data. 
      
 6. (Bonus) Write a query to insert a new employee named 'Daedalus Metiades' in the manufacturing team, reporting to Hephaestus.
-    insert into member values ("Daedalus","Metiades","new employee",11);
+    insert into member values ('Daedalus','Metiades','new employee',11);
     insert into team_member values (11,4,1);
 
 7. (Bonus) Heracles has decided to leave Olympus, LLC. Write a query to cleanly update the personnel database.
