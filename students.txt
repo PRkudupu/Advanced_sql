@@ -128,6 +128,16 @@
 	+-------------+
 	|           4 |
 	+-------------+
+	SELECT grade_level
+      , student_count
+	FROM 
+		(SELECT grade_level 
+		  , count(student_id) student_count
+		  , max(count(student_id)) over()
+		  FROM student
+		  GROUP BY grade_level)a
+    WHERE a.student_count=max;
+	 
 	2)What was the overall attendance rate for the school district yesterday?
 	#POSTGRESQL
 		select cast(a.cnt as float) / cast(b.total as float)  as attendance_rate,a.cnt,b.total
