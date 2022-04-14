@@ -38,16 +38,100 @@ product_classes
 | product_family | VARCHAR |
 
 
+DATA GENERATION
+drop table products;
+
+--table creation
+create table products(product_id int,product_class_id int ,brand_name varchar(50),product_name varchar(50) ,is_low_fat_flg int, is_recyclable_flg int, gross_weight decimal, net_weight decimal);
+
+--insert records into table
+insert into products values ( 1, 2001,'spencers', 'Olive oil',1,1,100.0 ,250.00);
+insert into products values ( 2, 2001,'spencers', 'Coconut oil',1,0,100.0 ,150.00);
+insert into products values ( 3, 2002,'lucifer', 'cod liver oil',0,1,150.0 ,100.00);
+insert into products values ( 4, 2002,'lucifer', 'Fish oil',0,0,100.0 ,150.00);
+insert into products values ( 5, 2003,'colgate', 'avocado oil',0,1,150.0 ,200.00);
+insert into products values ( 6, 2003,'colgate', 'vegetable oil',1,1,100.0 ,150.00);
+select * from products;
+
+
+drop table sales;
+create table sales (product_id int, store_id  int, customer_id  int, promotion_id  int, store_sales  decimal, store_cost  decimal, units_sold  decimal, transaction_date  date);
+ insert into sales values ( 1, 100, 10, 1,100.00,150.00,20.00,'2022/04/14');
+ insert into sales values ( 1, 200, 10, 2,100.00,160.00,20.00,'2022/04/14');
+ insert into sales values ( 2, 101, 20, 1,150.00,250.00,20.00,'2022/05/14');
+ insert into sales values ( 2, 100, 10, 3,100.00,350.00,10.00,'2022/04/16');
+ insert into sales values ( 3, 100, 11, 2,100.00,150.00,20.00,'2022/04/14');5
+ insert into sales values ( 3, 200, 11, ,100.00,350.00,20.00,'2022/04/14');
+ insert into sales values ( 4, 101, 12, ,150.00,250.00,20.00,'2022/05/14');
+ insert into sales values ( 2, 100, 12, 1,100.00,150.00,10.00,'2022/04/15');
+ insert into sales values ( 4, 101, 10, ,150.00,255.00,20.00,'2022/05/16');
+ insert into sales values ( 2, 100, 13, 1,100.00,140.00,10.00,'2022/04/15');
+select * from sales;
+
+drop table promotions;
+create table promotions (promotion_id integer, promotion_name  VARCHAR , media_type  VARCHAR , cost  DECIMAL 
+, start_date  DATE , end_date  DATE );
+insert into promotions values ( 1, 'Top', 'offline', 200.00,'2022/04/14','2022/05/14');
+insert into promotions values ( 2, 'regular', 'online', 100.00,'2022/04/14','2022/05/14');
+insert into promotions values ( 3, 'executive', 'tv', 100.00,'2022/03/14','2022/05/14' );
+insert into promotions values ( 4, 'basic', 'oline', 100.00,'2022/05/14','2022/06/14');
+
+
 1) what is the percentage of products which has low fat and recycle
-   with flag_total as (
-    Select 
-        SUM (CASE when is_low_fat_flg =1 and is_recyclable_flg =1 then 1 else 0 end) as flag_count,
-        count(distinct product_id) as prod_count
-   from products
- )
-  select 
-      flag_count/ prod_count * 100 as percent
- from flag_total
+    SELECT  (sum(case when is_low_fat_flg =1 and is_recyclable_flg =1 then 1 else 0 end)  * 100 / count(product_id)::float)::decimal(4,2) 
+      FROM products;
+	
+	 WITH flag_total as (
+    SELECT 
+      SUM (CASE when is_low_fat_flg =1 and is_recyclable_flg =1 then 1 else 0 end) as flag_count,
+      count(distinct product_id) as prod_count
+     FROM products
+   )
+    SELECT  
+      (flag_count/ prod_count::float * 100)::decimal(4,2) as percent
+    FROM flag_total;
  
  2) what %age of sales happened on first and last day of the promotion 
-   
+   SELECT * 
+	FROM 
+		  (SELECT product_id
+				, (store_cost * units_sold) store_profit
+		   FROM sales
+		   WHERE promotion_id is not null)a
+		   ORDER BY a.store_profit desc
+		   LIMIT 5;
+	   
+ SELECT *
+ FROM
+  (SELECT  a.product_id
+        , dense_rank() over(order by a.store_profit desc) rnk
+        , a.store_profit
+  FROM 
+        (SELECT product_id
+              , (store_cost * units_sold) store_profit
+        FROM sales
+        WHERE promotion_id is not null)a) b
+  WHERE b.rnk <=5;
+  
+  3) what %age of sales happened on first and last day of the promotion
+  
+  SELECT a.transaction_date
+      , a.promotion_id
+      , (a.total_sales_per_promotion/a.total_sales::float)::decimal(4,2)*100 as Per_first_lastday
+  FROM
+  ( SELECT transaction_date
+       , promotion_id
+       , sum(store_sales) over (partition by transaction_date) total_sales
+       , sum(store_sales) over (partition by promotion_id,transaction_date) total_sales_per_promotion
+       , rank() over (partition by promotion_id order by transaction_date ) first_day
+       , rank() over (partition by promotion_id order by transaction_date desc) last_day
+
+	FROM sales)a
+	WHERE first_day=1 or last_day=1;
+
+
+Q4. Which product had the highest sales with promotions and sales ( basically a where clause on 2 flags)
+q5. What are the top five (ranked in decreasing order) single-channel media types that correspond to the most money the grocery chain had spent on its promotional campaigns?
+Q6. the proportion of valid sales that occurred on certain dates.
+Q7. Manager want to analyze the how the promotions on certain products are performing.find how the the percent of promoted sales?
+count of promoted sales* 100 /total sale
