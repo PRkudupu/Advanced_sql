@@ -40,3 +40,14 @@ DDL
 	
 	Note: 
 	Each day only have one row record, and the dates are increasing with id increasing.
+	SELECT (day1.id + 1) 
+	FROM  stadium day1 , stadium day2, stadium day3;
+	SELECT distinct day1.* 
+	FROM 
+		stadium day1, stadium day2, stadium day3
+	WHERE 
+	  day1.people >= 100 and day2.people >= 100 and day3.people >= 100 and
+	  ((day1.id + 1 =  day2.id and day1.id + 2 = day3.id) or 
+	  (day1.id - 1 = day2.id and day1.id + 1 = day3.id) or 
+	  (day1.id - 2 = day2.id and day1.id - 1 = day3.id)) 
+	ORDER BY day1.id; 
