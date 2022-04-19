@@ -183,3 +183,29 @@ The 'user1' and 'user2' column are pairs of friends.
 	7		0.111
 	1		0.556
 	8		0.111  
+	
+	
+   SOLUTION WITHOUT USING JOIN
+    
+	      
+   SELECT  b.users
+          , cast(count(*) /(SELECT count(distinct(a.users)) total_users
+              FROM 
+                (SELECT distinct(user1) users
+                 FROM facebook_friends u1
+                 UNION 
+                SELECT distinct(user2) users
+                FROM facebook_friends u2
+                )a)::float as decimal(4,2)) total_users
+      FROM
+        (SELECT user1 as users
+              , user2 as followers
+            FROM facebook_friends
+         UNION  
+         SELECT user2 as users
+              , user2 as followers
+            FROM facebook_friends
+        )b 
+        GROUP BY b.users;
+      
+	
