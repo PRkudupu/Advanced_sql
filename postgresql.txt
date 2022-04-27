@@ -5,31 +5,32 @@
        DATE_PART('week','2012-02-03'::date)-DATE_PART('week','2012-01-03'::date) as date_diff,
        DATE_PART('year','2014-01-03'::date)-DATE_PART('year','2012-01-03'::date) as year_diff;
 	   
-		
+	   GET MONTH BASED ON DATE COLUMN
+        SELECT date_part('month',time) FROM request_accepted;
  
  
- 1) LIST DATABASE
+  2) LIST DATABASE
 	postgres=# \l
  	 Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   
       -----------+----------+----------+-------------+-------------+-----------------------
        coderpad  | coderpad | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
   
- 2) CREATE DATABASE
+  3) CREATE DATABASE
 	create database testing;
 
 	  Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   
 	-----------+----------+----------+-------------+-------------+-----------------------
  	testing   | coderpad | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
-  3) SWITCHING DATABASE
+  4) SWITCHING DATABASE
          \c testing
 	
 	coderpad=# \c testing
 	testing=# 
-  4)SELECT column FROM table
+  5)SELECT column FROM table
 	LIMIT 10
 	
 
-  5)PostgreSQL and MySQL have a cool feature that will let you return an arbitrary range of rows (eg return rows 10-20). This is very handy for displaying pages of records:
+  6)PostgreSQL and MySQL have a cool feature that will let you return an arbitrary range of rows (eg return rows 10-20). This is very handy for displaying pages of records:
 
 	SELECT column FROM table
 	LIMIT 10 OFFSET 20

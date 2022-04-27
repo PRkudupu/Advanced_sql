@@ -64,18 +64,25 @@
 		+----------+
 		|        3 |
 		+----------+  
+	
+	POST GRE SQL	
+	select count(distinct(user_id)) as no_of_user_mess_oct
+        from request_accepted
+        where event='sent' and date_part('month',time)=10;
 		
                                                                         
        4)GET THE DISTINCT COUNT OF USERS PER DAY
-	select time,count(distinct user_id) as no_users 
-		from request_accepted 
-		where time between '2018-10-01' and '2018-10-31' 
-		group by time;
+	SELECT time
+        , count(distinct(user_id)) users_per_day
+    FROM request_accepted 
+    GROUP BY time;
 		+------------+----------+
 		| time       | no_users |
 		+------------+----------+
 		| 2018-10-01 |        3 |
 		| 2018-10-02 |        1 |
+		| 2018-11-01 |        1 |
+		| 2018-11-02 |        1 |
 		+------------+----------+
 	5)PERCENTAGE OF USER ACCEPTED THE FRIENDS REQUEST 
 	Total of sent
