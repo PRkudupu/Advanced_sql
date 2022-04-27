@@ -87,7 +87,7 @@ create to
 sub queries one finding the min page_exit per day for each user
 4) find the average
 
-
+QUERY
 WITH all_session AS
 (
   SELECT t1.user_id

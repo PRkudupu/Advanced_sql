@@ -1,0 +1,50 @@
+QUESTION
+	What percentage of all products are bot low fat and recyclables.
+	
+EXPECTED OUTPUT
+	percentage
+	9.091
+	
+SCRIPTS
+	DROP TABLE facebook_products;
+	CREATE TABLE facebook_products (product_id int, product_class varchar(50), brand_name varchar(50), is_low_fat boolean, is_recyclable boolean);
+
+	insert into facebook_products values(1,'ACCESSORIES','Fort West','N','N');
+	insert into facebook_products values(2,'DRINK','Fort West','N','Y');
+	insert into facebook_products values(3,'FOOD','Fort West','Y','N');
+	insert into facebook_products values(4,'DRINK','Golden','Y','Y');
+	insert into facebook_products values(5,'FOOD','Golden','Y','N');
+	insert into facebook_products values(6,'FOOD','Lucky Joe','N','Y');
+	insert into facebook_products values(7,'ELECTRONICS','Lucky Joe','N','Y');
+	insert into facebook_products values(8,'FURNITURE','Lucky Joe','N','Y');
+	insert into facebook_products values(9,'ELECTRONICS','Lucky Joe','N','Y');
+	insert into facebook_products values(10,'FURNITURE','American Home','N','Y');
+	insert into facebook_products values(11,'FURNITURE','American Home','N','Y');
+
+	
+DATA
+	
+	product_id	product_class	brand_name	is_low_fat	is_recyclable
+	1			ACCESSORIES		Fort West		N			N
+	2			DRINK			Fort West		N			Y
+	3			FOOD			Fort West		Y			N
+	4			DRINK			Golden			Y			Y
+	5			FOOD			Golden			Y			N	
+	6			FOOD			Lucky Joe		N			Y
+	7			ELECTRONICS		Lucky Joe		N			Y
+	8			FURNITURE		Lucky Joe		N			Y
+	9			ELECTRONICS		Lucky Joe		N			Y
+	10			FURNITURE		American Home	N			Y
+	11			FURNITURE		American Home	N			Y
+
+ASSUMPTIONS
+--convert the product where they are is_low_fat and recyclables to 1 
+-- sum them and divide by the total_count to get the percentage
+	
+FINAL QUERY
+
+SELECT SUM(case  
+       when is_low_fat ='Y' and is_recyclable='Y' THEN 1 ELSE 0 end 
+      ) /count(*)::float  * 100.0 as percentage 
+ FROM facebook_products;
+ 
