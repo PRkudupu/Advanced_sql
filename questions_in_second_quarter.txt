@@ -1,0 +1,11 @@
+QUESTION
+	How many searches were there in the second quarter of 2021?
+EXPECTED OUTPUT
+	38
+	
+QUERY
+	SELECT count(*) searches
+	FROM fb_searches
+	WHERE date_part('year',date)=2021 and date_part('quarter',date)=2;
+	
+		
