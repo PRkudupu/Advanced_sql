@@ -1,0 +1,34 @@
+QUESTION
+	Find the overall friend acceptance count for a given date.
+	Assume the date is 2nd of January 2019
+EXPECTED OUTPUT
+	n_accepted_requests
+    2
+DATA
+	drop table facebook_friendship_requests;
+	  create table facebook_friendship_requests(sender int,receiver int,date_sent timestamp,date_approved timestamp);
+	  insert into facebook_friendship_requests values(0,1,'2019-01-01');
+	  insert into facebook_friendship_requests values(0,2,'2019-01-02','2019-02-02');
+	  insert into facebook_friendship_requests values(0,3,'2019-01-03','2019-03-02');
+	  insert into facebook_friendship_requests values(4,5,'2019-01-01','2019-01-02');
+	  insert into facebook_friendship_requests values(4,6,'2019-01-01','2019-01-02');
+	  insert into facebook_friendship_requests values(4,7,'2019-01-01');
+	  
+	  sender	receiver	date_sent	date_approved
+		0		1			2019-01-01	
+		0		2			2019-01-02	2019-02-02
+		0		3			2019-01-03	2019-03-02
+		4		5			2019-01-01	2019-01-02
+		4		6			2019-01-01	2019-01-02
+		4		7			2019-01-01	
+
+
+QUERY
+	SELECT 
+		count(*) n_accepted_requests
+    FROM facebook_friendship_requests
+    WHERE date_approved='2019-01-02'
+	
+		
+
+
