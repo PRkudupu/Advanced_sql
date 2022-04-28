@@ -1,0 +1,28 @@
+QUESTION
+	How many searches were there in the second quarter of 2021?
+EXPECTED OUTPUT
+	38
+DATA
+	drop table facebook_user_interactions;
+	create table facebook_user_interactions(day int,user1 int,user2 int);
+	insert into facebook_user_interactions values(0,0,1);
+	insert into facebook_user_interactions values(0,1,0);
+	insert into facebook_user_interactions values(0,2,1);
+	insert into facebook_user_interactions values(0,2,3);
+	insert into facebook_user_interactions values(1,2,0);
+	insert into facebook_user_interactions values(1,2,1);
+	insert into facebook_user_interactions values(0,2,1);
+	insert into facebook_user_interactions values(1,2,3);
+	insert into facebook_user_interactions values(2,4,1);
+	insert into facebook_user_interactions values(2,4,2);
+	insert into facebook_user_interactions values(2,4,0);
+
+
+QUERY
+	SELECT day 
+      , count(*) n_interactions
+    FROM facebook_user_interactions
+    WHERE day in (0,2)
+    GROUP BY day;
+	
+		
