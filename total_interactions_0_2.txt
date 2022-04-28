@@ -1,5 +1,6 @@
 QUESTION
-	How many searches were there in the second quarter of 2021?
+	1) How many searches were there in the second quarter of 2021?
+	2) List all interactions of user wth id 4 on either day 0 or 2
 EXPECTED OUTPUT
 	38
 DATA
@@ -19,10 +20,13 @@ DATA
 
 
 QUERY
-	SELECT day 
+1)	SELECT day 
       , count(*) n_interactions
     FROM facebook_user_interactions
     WHERE day in (0,2)
     GROUP BY day;
+	
+2)  SELECT day, user1,user2  from facebook_user_interactions
+	WHERE user1=4;
 	
 		
