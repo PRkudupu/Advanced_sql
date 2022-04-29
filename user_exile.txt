@@ -29,5 +29,5 @@ DATA
 		3	9
 		
 SELECT 
-	SUM (case when user1 <> 1 or user2 <> 1 then 1 else 0 end)  user1_not_in_relationship
+	SUM (case when user1 <> 1 and user2 <> 1 then 1 else 0 end)  user1_not_in_relationship
 FROM facebook_friends;

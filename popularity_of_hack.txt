@@ -1,0 +1,49 @@
+QUESTION
+	Meta/Facebook has developed a new programing language called Hack.To measure the popularity of Hack they ran a survey with their employees. The survey included data on previous programing familiarity as well as the number of years of experience, age, gender and most importantly satisfaction with Hack. Due to an error location data was not collected, but your supervisor demands a report showing average popularity of Hack by office location. Luckily the user IDs of employees completing the surveys were stored.
+	Based on the above, find the average popularity of the Hack per office location.
+	Output the location along with the average popularity.
+EXPECTED OUTPUT
+	location	avg_popularity
+	UK	4.333
+	USA	4.6
+	India	7.5
+	Switzerland	1
+DATA
+	drop table facebook_employees;
+	  create table facebook_employees(id int,location varchar(50),age int,gender varchar(5),is_senior Boolean);
+	  insert into facebook_employees values(0,'USA',24,'M','FALSE');
+	  insert into facebook_employees values(1,'USA',31,'F','TRUE');
+	  insert into facebook_employees values(2,'USA',29,'F','FALSE');
+	  insert into facebook_employees values(3,'USA',33,'M','FALSE');
+	  insert into facebook_employees values(4,'USA',36,'F','TRUE');
+	  insert into facebook_employees values(5,'India',41,'F','TRUE');
+	  insert into facebook_employees values(6,'India',44,'F','TRUE');
+	  insert into facebook_employees values(7,'India',28,'F','FALSE');
+	  insert into facebook_employees values(8,'India',24,'M','FALSE');
+	  insert into facebook_employees values(9,'UK',18,'M','FALSE');
+	  insert into facebook_employees values(10,'UK',21,'M','FALSE');
+	  insert into facebook_employees values(11,'UK',23,'F','TRUE');
+	  insert into facebook_employees values(12,'Switzerland',30,'F','TRUE');
+	  insert into facebook_employees values(13,'Switzerland',31,'M','TRUE');
+
+	  id	location	age	gender	is_senior
+		0	USA			24	M	FALSE
+		1	USA			31	F	TRUE
+		2	USA			29	F	FALSE
+		3	USA			33	M	FALSE
+		4	USA			36	F	TRUE
+		5	India		41	F	TRUE
+		6	India		44	F	TRUE
+		7	India		28	F	FALSE
+		8	India		24	M	FALSE
+		9	UK			18	M	FALSE
+		10	UK			21	M	FALSE
+		11	UK			23	F	TRUE
+		12	Switzerland	30	F	TRUE
+		13	Switzerland	31	M	TRUE
+
+
+QUERY
+	SELECT *  
+	FROM facebook_posts
+	WHERE post_keywords like '%nba%'

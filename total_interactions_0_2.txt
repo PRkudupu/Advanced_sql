@@ -2,31 +2,36 @@ QUESTION
 	1) How many searches were there in the second quarter of 2021?
 	2) List all interactions of user wth id 4 on either day 0 or 2
 EXPECTED OUTPUT
-	38
+	1) 38
+	2) day	user1	user2
+		2	4		1
+		2	4		2
+		2	4		0
 DATA
 	drop table facebook_user_interactions;
-	create table facebook_user_interactions(day int,user1 int,user2 int);
-	insert into facebook_user_interactions values(0,0,1);
-	insert into facebook_user_interactions values(0,1,0);
-	insert into facebook_user_interactions values(0,2,1);
-	insert into facebook_user_interactions values(0,2,3);
-	insert into facebook_user_interactions values(1,2,0);
-	insert into facebook_user_interactions values(1,2,1);
-	insert into facebook_user_interactions values(0,2,1);
-	insert into facebook_user_interactions values(1,2,3);
-	insert into facebook_user_interactions values(2,4,1);
-	insert into facebook_user_interactions values(2,4,2);
-	insert into facebook_user_interactions values(2,4,0);
+		create table facebook_user_interactions(day int,user1 int,user2 int);
+		insert into facebook_user_interactions values(0,0,1);
+		insert into facebook_user_interactions values(0,1,0);
+		insert into facebook_user_interactions values(0,2,1);
+		insert into facebook_user_interactions values(0,2,3);
+		insert into facebook_user_interactions values(1,2,0);
+		insert into facebook_user_interactions values(1,2,1);
+		insert into facebook_user_interactions values(0,2,1);
+		insert into facebook_user_interactions values(1,2,3);
+		insert into facebook_user_interactions values(2,4,1);
+		insert into facebook_user_interactions values(2,4,2);
+		insert into facebook_user_interactions values(2,4,0);
 
 
 QUERY
-1)	SELECT day 
-      , count(*) n_interactions
-    FROM facebook_user_interactions
-    WHERE day in (0,2)
-    GROUP BY day;
-	
-2)  SELECT day, user1,user2  from facebook_user_interactions
-	WHERE user1=4;
+	1)	SELECT day 
+		  , count(*) n_interactions
+		FROM facebook_user_interactions
+		WHERE day in (0,2)
+		GROUP BY day;
+		
+	2)  SELECT * 
+		FROM facebook_user_interactions
+		WHERE (day =0 or day =2) and (user1=4 or user2=4)
 	
 		
