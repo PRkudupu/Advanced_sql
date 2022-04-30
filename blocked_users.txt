@@ -1,0 +1,59 @@
+QUESTION
+	You are given a table of users who have been blocked from Facebook, 
+	together with the date, duration, and the reason for the blocking. 
+	The duration is expressed as the number of days after blocking date and if this field is empty, this means that a user is blocked permanently. 
+    For each blocking reason, count how many users were blocked in December 2021. 
+	Include both the users who were blocked in December 2021 and those who 
+	were blocked before but remained blocked for at least a part of December 2021.
+	
+EXPECTED OUTPUT
+	block_reason	n_users
+	Fake Account	    4
+	Inappropriate Posts	2
+	Spreading Fakenews	3
+	
+DATA
+	drop table fb_blocked_users;
+	create table fb_blocked_users(user_id int ,block_reason varchar(50), block_date timestamp,block_duration int);
+
+
+	insert into fb_blocked_users values(3642,'Fake Account','2021/12/12',15);
+	insert into fb_blocked_users values(2847,'Fake Account','2021/12/12',120);
+	insert into fb_blocked_users values(1239,'Fake Account','2021/11/11',11);
+	insert into fb_blocked_users values(3642,'Fake Account','2021/12/12',15);
+	insert into fb_blocked_users values(2134,'Fake Account','2021/11/11');
+	insert into fb_blocked_users values(1309,'Fake Account','2021/11/11',14);
+	insert into fb_blocked_users values(2049,'Spreading Fakenews','2022/01/01');
+	insert into fb_blocked_users values(1382,'Spreading Fakenews','2021/12/12',2);
+	insert into fb_blocked_users values(4295,'Spreading Fakenews','2020/12/12');
+	insert into fb_blocked_users values(3598,'Spreading Fakenews','2021/10/10',90);
+	insert into fb_blocked_users values(9285,'Inappropriate Posts','2021/12/12');
+	insert into fb_blocked_users values(4833,'Inappropriate Posts','2021/07/07',30);
+	insert into fb_blocked_users values(2348,'Inappropriate Posts','2020/11/11',15);
+	insert into fb_blocked_users values(1387,'Inappropriate Posts','2021/12/12',25);
+	
+	user_id					block_reason		block_date			block_duration
+		3642				Fake Account		2021-12-03				15
+		2847				Fake Account		2021-12-15				120
+		1239				Fake Account		2021-11-19				11
+		3642				Fake Account		2021-12-23				15
+		2134				Fake Account		2021-11-03	
+		1309				Fake Account		2021-11-29				14
+		2049				Spreading Fakenews	2022-01-12	
+		1382				Spreading Fakenews	2021-12-31				2
+		4295				Spreading Fakenews	2020-12-14	
+		3598				Spreading Fakenews	2021-10-15				90
+		9285				Inappropriate Posts	2021-12-01	
+		4833				Inappropriate Posts	2021-07-14				30
+		2348				Inappropriate Posts	2020-11-25				15
+		1387				Inappropriate Posts	2021-12-26				25
+
+QUERY
+   SELECT 
+          block_reason
+        , count(*) n_users
+    FROM fb_blocked_users 
+    where block_date <= DATE('2021-12-31')
+    AND (block_duration IS NULL OR block_date + CAST(block_duration AS INTEGER) >= DATE('2021-12-01')
+  )
+  GROUP BY block_reason;
