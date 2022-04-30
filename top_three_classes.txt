@@ -1,0 +1,76 @@
+QUESTION
+	The marketing department wants to launch a new promotion for the most successful product classes. 
+	What are the top 3 product classes by number of sales?
+	
+EXPECTED OUTPUT
+	product_class
+	FOOD
+	DRINK
+	ACCESSORIES
+	FURNITURE
+	
+DATA
+	product_id	product_class	brand_name	is_low_fat	is_recyclable
+		1		ACCESSORIES		Fort West		N			N
+		2		DRINK			Fort West		N			Y
+		3		FOOD			Fort West		Y			N
+		4		DRINK			Golden			Y			Y
+		5		FOOD			Golden			Y			N
+		6		FOOD			Lucky Joe		N			Y
+		7		ELECTRONICS		Lucky Joe		N			Y
+		8		FURNITURE		Lucky Joe		N			Y
+		9		ELECTRONICS		Lucky Joe		N			Y
+		10		FURNITURE		American Home	N			Y
+		11		FURNITURE		American Home	N			Y
+		
+	product_id	promotion_id	cost_in_dollars	customer_id
+		1	1	2	1
+		3	3	6	3
+		1	2	2	10
+		1	2	3	2
+		2	2	10	2
+		9	3	1	2
+		6	1	4	1
+		6	2	2	1
+		3	3	5	1
+		3	3	6	2
+		3	3	7	3
+		2	2	12	3
+		8	2	4	3
+		9	1	1	10
+		9	1	2	3
+		10	1	3	2
+		10	1	3	1
+		3	1	6	1
+		2	1	10	10
+		2	1	11	3
+		4	2	2	2
+		5	2	8	1
+		2	3	13	1
+		1	1	2	2
+		10	2	2	3
+		11	1	5	1
+		5	1	7	10
+		5	2	8	1
+		1	1	2	2
+		5	2	8	15
+
+APPROACH
+	join products table with the sales table
+	count the number of sales and group it by the product class
+	rank the table in descending order
+	return top 3 product_classes
+
+QUERY
+    WITH CTE 
+	as (
+		 select  product_class
+				, rank() over (order by count(*) desc) rnk
+		FROM  facebook_sales s 
+		JOIN  facebook_products p
+		ON s.product_id=p.product_id
+		GROUP BY 1
+	 )
+	SELECT product_class
+	FROM cte
+	WHERE rnk <=3
