@@ -1,0 +1,90 @@
+QUESTION
+	Calculate the percentage of spam posts in all viewed posts by day. 
+	A post is considered a spam if a string "spam" is inside keywords of the post. 
+	Note that the facebook_posts table stores all posts posted by users. 
+	The facebook_post_views table is an action table denoting if a user has viewed a post.
+	
+EXPECTED OUTPUT
+	post_date	spam_share
+	2019-01-02	50
+	2019-01-01	100
+	
+DATA
+	1)Table 1 facebook_posts
+	    drop table facebook_posts;
+		  create table facebook_posts(post_id int,poster int,post_text varchar(50),post_keywords varchar(50),post_date timestamp);
+		  insert into facebook_posts values(0,2,'The Lakers game from last night was great.','[basketball,lakers,nba]','2019-01-01');
+		  insert into facebook_posts values(1,1,'Lebron James is top class.','[basketball,lebron_james,nba]','2019-01-02');
+		  insert into facebook_posts values(2,2,'Asparagus tastes OK.','[asparagus,food]','2019-01-01');
+		  insert into facebook_posts values(3,1,'Spaghetti is an Italian food.','[spaghetti,food]','2019-01-02');
+		  insert into facebook_posts values(4,3,'User 3 is not sharing interests','[#spam#]','2019-01-01');
+		  insert into facebook_posts values(5,3,'User 3 posts SPAM content a lot','[#spam#]','2019-01-02');
+  
+		 post_id	poster	post_text									 post_keywords					post_date
+			0		2		The Lakers game from last night was great.	[basketball,lakers,nba]			2019-01-01
+			1		1		Lebron James is top class.					[basketball,lebron_james,nba]	2019-01-02
+			2		2		Asparagus tastes OK.						[asparagus,food]				2019-01-01
+			3		1		Spaghetti is an Italian food.				[spaghetti,food]				2019-01-02
+			4		3		User 3 is not sharing interests				[#spam#]						2019-01-01
+			5		3		User 3 posts SPAM content a lot				[#spam#]						2019-01-02
+	
+	
+	2)Table2 facebook_post_views
+		drop table facebook_post_views;
+			create table facebook_post_views(post_id int, viewer_id int);
+			insert into facebook_post_views values(4,0);
+			insert into facebook_post_views values(4,1);
+			insert into facebook_post_views values(4,2);
+			insert into facebook_post_views values(5,0);
+			insert into facebook_post_views values(5,1);
+			insert into facebook_post_views values(5,2);
+			insert into facebook_post_views values(3,1);
+			insert into facebook_post_views values(3,2);
+			insert into facebook_post_views values(3,3);
+		
+		post_id	viewer_id
+			4		0
+			4		1
+			4		2
+			5		0
+			5		1
+			5		2
+			3		1
+			3		2
+			3		3
+QUERY
+	SELECT distinct a.post_date 
+      , b.span_no / a.total_posts::float * 100 spam_share
+	FROM
+	(SELECT post_date
+		  , sum (case when v.viewer_id =1 then 1 else 0 end) total_posts
+	FROM  facebook_posts p 
+	JOIN  facebook_post_views v on p.post_id= v.post_id
+	GROUP BY post_date) a
+	LEFT JOIN
+	(SELECT post_date
+		  , sum (case when v.viewer_id =1 then 1 else 0 end) span_no
+	FROM  facebook_posts p 
+	JOIN  facebook_post_views v on p.post_id= v.post_id
+	WHERE p.post_keywords like '%spam%'
+	GROUP BY post_date) b 
+	ON a.post_date=b.post_date
+	order by a.post_date desc;
+
+	SELECT distinct a.post_date 
+      , b.span_no / a.total_posts::float * 100 spam_share
+	FROM
+	(SELECT post_date
+		  , sum (case when v.viewer_id =1 then 1 else 0 end) total_posts
+	FROM  facebook_posts p 
+	JOIN  facebook_post_views v on p.post_id= v.post_id
+	GROUP BY post_date) a
+	,
+	(SELECT post_date
+		  , sum (case when v.viewer_id =1 then 1 else 0 end) span_no
+	FROM  facebook_posts p 
+	JOIN  facebook_post_views v on p.post_id= v.post_id
+	WHERE p.post_keywords like '%spam%'
+	GROUP BY post_date) b 
+	order by a.post_date desc;
+	
