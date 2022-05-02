@@ -66,7 +66,7 @@ For the above tables, your SQL query should return the following rows with the c
 	insert into users values (    12    ,   'No'   , 'driver' );
 	insert into users values (    13    ,   'No'   , 'driver' );
   
-  1) GET COUNT OF TRIPS FOR UNBANNED USERS FOR ALL RIDES
+  1) GET COUNT OF TRIPS FOR UNBANNED USERS FOR ALL RIDES ( Only users who have taken a ride)
  	select  u.users_Id
 		,count(t.id) as trip_cnts
         from trip t join users u
@@ -74,7 +74,16 @@ For the above tables, your SQL query should return the following rows with the c
             where u.banned ="no"
             group by u.users_id;
   
-  2) GET COUNT OF TRIPS FOR UNBANNED USERS FOR CANCELLED RIDES
+   2)GET COUNT OF TRIPS FOR UNBANNED USERS FOR ALL RIDES  ALL USERS
+    SELECT  u.users_id
+       , count(t.client_id) cnt_all_rides
+	FROM trip t 
+	RIGHT JOIN users u 
+	ON t.client_id=u.users_id
+	WHERE u.banned='No'
+	GROUP BY u.users_id;
+  
+  3) GET COUNT OF TRIPS FOR UNBANNED USERS FOR CANCELLED RIDES
     select t.client_id
        , count(t.id) 
 			from trip t
@@ -83,7 +92,7 @@ For the above tables, your SQL query should return the following rows with the c
 			where u.banned='No' and t.status !='completed' and u.role='client'
 		group by t.client_id;
   
-  3) CANCELLATION RATE = COUNT OF CANCELLED TRIP /COUNT OF ALL RIDES
+  4) CANCELLATION RATE = COUNT OF CANCELLED TRIP /COUNT OF ALL RIDES
   	COMPLETED TRIPS
 		+-----------------+------------+
 		| completed_trips | Request_at |
