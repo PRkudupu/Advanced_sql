@@ -3,6 +3,8 @@ QUESTION
 EXPECTED OUTPUT
 	user1_not_in_relationship
     4
+HINT
+	Use a CASE WHEN clause to filter out relationships with user id 1.
 DATA
 	drop table facebook_friends;
 	  create table facebook_friends(user1 int,user2 int);
