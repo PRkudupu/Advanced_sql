@@ -80,10 +80,10 @@ For the above tables, your SQL query should return the following rows with the c
 	FROM trip t 
 	RIGHT JOIN users u 
 	ON t.client_id=u.users_id
-	WHERE u.banned='No'
+	WHERE u.banned='No' and role='client'
 	GROUP BY u.users_id;
   
-  3) GET COUNT OF TRIPS FOR UNBANNED USERS FOR CANCELLED RIDES
+   3)GET COUNT OF TRIPS FOR UNBANNED USERS FOR CANCELLED RIDES
     select t.client_id
        , count(t.id) 
 			from trip t
@@ -118,24 +118,27 @@ For the above tables, your SQL query should return the following rows with the c
 		+------------+-------------------+
     
 	POSTGRESQL
-    select a.client_id ,a.total_trip,b.cancelled_trip, (b.cancelled_trip/a.total_trip)::decimal(4,2) as ratio
-		from
-		 (select t.client_id, count(id) as total_trip 
-			  from trip t
-			  right outer join users u
-			  on t.client_id =u.users_id
-			  where  u.banned ='No' and role='client'
-			  group by client_id,status) a
-      
-		join
-		 (select t.client_id, count(id) as cancelled_trip 
-			from trip t
-			  right outer join users u
-			  on t.client_id =u.users_id
-			  where t.status !='completed' and u.banned ='No' and role='client'
-			  group by client_id,status) b
-		on
-		a.client_id=b.client_id;
+    SELECT  b.request_at 
+      , cast(coalesce(a.cancelled_rides /b.total_rides::float,'0.0') as decimal(4,2) ) cancelation_rates
+		FROM 
+		(SELECT  request_at
+			  , count(*) cancelled_rides
+		FROM  trip t
+		LEFT JOIN users u
+		on t.client_Id =u.users_id
+		WHERE u.banned='No' and t.status <> 'completed'
+		GROUP BY request_at
+		ORDER BY request_at) a
+		RIGHT JOIN
+			(SELECT  request_at
+				  , count(*) total_rides
+			FROM  trip t
+			LEFT JOIN users u
+			on t.client_Id =u.users_id
+			WHERE u.banned='No' 
+			GROUP BY request_at
+			ORDER BY request_at) b
+		ON a.request_at= b.request_at;
      
 	MY SQL
 	 #syntax for converting to decimal 
