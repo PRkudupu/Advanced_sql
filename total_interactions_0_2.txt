@@ -1,9 +1,8 @@
 QUESTION
-	1) How many searches were there in the second quarter of 2021?
-	2) List all interactions of user wth id 4 on either day 0 or 2
+	 List all interactions of user wth id 4 on either day 0 or 2
 EXPECTED OUTPUT
-	1) 38
-	2) day	user1	user2
+	
+	   day	user1	user2
 		2	4		1
 		2	4		2
 		2	4		0
