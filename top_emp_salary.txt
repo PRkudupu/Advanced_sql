@@ -22,7 +22,10 @@
 
 	insert into department values
 	(1,'IT'),
-	(2,'Sales');
+	(2,'Sales')
+	(3,'Marketing'),
+    (4,'Quality'),
+    (5,'HR')
 
 	SELECT EMPLOYEE TOP 3 EMPLOYEE SALARIES IN EACH DEPARTMENT
 		select d.name ,
@@ -50,3 +53,10 @@
 		| Sales | Henry |  80000 |                         0 |
 		| Sales | Sam   |  60000 |                         1 |
 		+-------+-------+--------+---------------------------+
+		
+	SELECT * FROM 
+	(SELECT id 
+		   , rank() over (partition by department_id order by salary desc) rnk
+		   , department_id
+		   from employees)a 
+	  WHERE rnk <=3
