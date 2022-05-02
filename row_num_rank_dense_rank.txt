@@ -1,0 +1,25 @@
+
+CREATE TABLE rank_tb(MainID     int           NOT NULL,
+                    Component  varchar(10)   NOT NULL,
+                    Value      decimal(12,2) NOT NULL,
+                    PRIMARY KEY (MainID, Component)
+ );
+
+ INSERT INTO rank_tb (MainID, Component, Value)
+   VALUES(1, 'ALPHA', 12),
+         (1, 'BETA', 12),
+         (1, 'GAMMA', 13),
+         (1, 'DELTA', 12.23),
+         (1, 'EPSILON', 11.1),
+         (2, 'London', 9.12),
+         (2, 'New York', 8.11),
+         (2, 'Mumbai',  9.12);
+
+ SELECT MainID
+       , Component
+       , Value
+       ,  row_number() OVER(PARTITION BY MainID ORDER BY Value) row_num
+       ,  rank() OVER(PARTITION BY MainID ORDER BY Value) rnk
+       ,  dense_rank() OVER(PARTITION BY MainID ORDER BY Value) dense_rnk
+ FROM  rank_tb 
+ ORDER BY MainID, Value;
