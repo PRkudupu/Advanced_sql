@@ -138,3 +138,21 @@
 		         group by c.name
 	        ) 
 		SELECT * from cte where count_votes=max_cnt;
+	
+	WITH CTE
+	  as 
+	  ( SELECT   count(v.candidate_id) as vote_counts
+			   , max(count(candidate_id)) over() max_cnt
+			   , (select count(*) from vote) total_votes
+			   , c.Name
+			   FROM vote v 
+			   JOIN candidate c 
+			   ON v.candidate_id=c.id 
+			   GROUP BY
+			   c.Name
+			)
+	  SELECT * 
+			FROM
+		    CTE
+			WHERE vote_counts=max_cnt;
+ 

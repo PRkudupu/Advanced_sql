@@ -1,13 +1,12 @@
 QUESTION
-	The marketing department wants to launch a new promotion for the most successful product classes. 
-	What are the top 3 product classes by number of sales?
+	In the latest promotion, the marketing department wants to target customers who have bought products from two specific brands. 
+	Prepare a list of customers who purchased products from both the "Fort West" and the "Golden" brands.
 	
 EXPECTED OUTPUT
-	product_class
-	FOOD
-	DRINK
-	ACCESSORIES
-	FURNITURE
+	customer_id
+		1
+		2
+		10
 	
 DATA
     facebook_products
@@ -24,7 +23,7 @@ DATA
 		10		FURNITURE		American Home	N			Y
 		11		FURNITURE		American Home	N			Y
 	
-	facebook_sales	
+	facebook_sales
 	product_id	promotion_id	cost_in_dollars	customer_id
 		1	1	2	1
 		3	3	6	3
