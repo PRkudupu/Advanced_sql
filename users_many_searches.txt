@@ -1,9 +1,13 @@
 QUESTION
-	Find the overall friend acceptance count for a given date.
-	Assume the date is 2nd of January 2019
+	Count the number of users who made more than 5 searches in August 2021
 EXPECTED OUTPUT
-	n_accepted_requests
-    2
+	result
+	2
+HINT
+	filter the dataset to only leave August 2021 dates
+	count the number of searches by each user
+	only leave users who had more than 5 searches
+	count the number of remaining users
 DATA
 	DATA
 	drop table fb_searches;
