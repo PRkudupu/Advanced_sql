@@ -1,0 +1,40 @@
+employees                             projects
++---------------+---------+           +---------------+---------+
+| id            | int     |<----+  +->| id            | int     |
+| first_name    | varchar |     |  |  | title         | varchar |
+| last_name     | varchar |     |  |  | start_date    | date    |
+| salary        | int     |     |  |  | end_date      | date    |
+| department_id | int     |--+  |  |  | budget        | int     |
++---------------+---------+  |  |  |  +---------------+---------+
+                             |  |  |
+departments                  |  |  |  employees_projects
++---------------+---------+  |  |  |  +---------------+---------+
+| id            | int     |<-+  |  +--| project_id    | int     |
+| name          | varchar |     +-----| employee_id   | int     |
++---------------+---------+           +---------------+---------+
+
+1) GET THE EMPLOYEE WITH MAX SALARY
+    select id from employees where salary =
+		(select max(salary) as max_salary from employees)
+
+2) GET DENSE_RANK, RANK , ROW_NUMBER FOR ALL EMPLOYEES BASED ON MAX SALARY
+   OR
+   RANK EMPLOYESS BASED ON MAX SALARY
+	select id 
+			, dense_rank() over (order by salary desc) dense_rnk 
+			, rank() over (order by salary desc) rnk 
+			, row_number() over (order by salary desc) row_num 
+			, salary from employees e join departments d
+			on e.department_id= d.department_id;
+
+3) GET DENSE_RANK, RANK , ROW_NUMBER FOR ALL EMPLOYEES FOR EACH DEPARTMENT BASED ON MAX SALARY
+   OR
+   RANK EMPLOYESS BASED ON MAX SALARY FOR EACH DEPARTMENT			
+	select e.id as emp_id
+		    , d.id as dep_id
+			, dense_rank() over (partition by d.id order by salary desc  ) dense_rnk 
+			, rank() over (partition by d.id order by salary desc  ) rnk 
+			, row_number() over (order by salary desc ) row_num 
+			, salary from employees e join departments d
+			on e.department_id= d.id
+			order by d.id;
