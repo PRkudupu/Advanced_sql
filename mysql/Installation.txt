@@ -1,0 +1,18 @@
+SUDO APT UPDATE
+	sudo apt update && sudo apt upgrade
+
+INSTALL MYSQL SERVER
+	sudo apt install mysql-server
+
+CONFIRM INSTALLATION
+	mysql --version
+
+START SERVER	
+	sudo /etc/init.d/mysql start
+
+RUN SECURITY SCRIPT
+	sudo /etc/init.d/mysql start
+
+VERIFY MYSQL IS RUNNING
+	sudo mysql
+	SHOW DATABASES
