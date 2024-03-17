@@ -64,7 +64,17 @@
 			|            1 | 2019-01-01 |         20 |
 			|            1 | 2019-01-02 |         20 |
 			+--------------+------------+------------+
-
+           Get the number of orders till date
+                select product_id, count(*) as orders 
+                        from order_tbl group by product_id;
+                        +------------+--------+
+			| product_id | orders |
+			+------------+--------+
+			|         10 |      3 |
+			|         20 |      3 |
+			+------------+--------+
+                 
+		
 	q2) Get the list of customers that have orders on 2 consecutive days 
 	    MY SQL
 		
