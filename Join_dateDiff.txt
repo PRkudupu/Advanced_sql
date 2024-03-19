@@ -4,6 +4,8 @@ DDL
 	insert into Weather (Id, RecordDate, Temperature) values ('2', '2015-01-02', '25');
 	insert into Weather (Id, RecordDate, Temperature) values ('3', '2015-01-03', '20');
 	insert into Weather (Id, RecordDate, Temperature) values ('4', '2015-01-04', '30');
+	insert into Weather (Id, RecordDate, Temperature) values ('5', '2015-02-04', '60');
+	insert into Weather (Id, RecordDate, Temperature) values ('6', '2015-02-05', '50');
 		+------+------------+-------------+
 		| Id   | RecordDate | Temperature |
 		+------+------------+-------------+
@@ -11,7 +13,11 @@ DDL
 		|    2 | 2015-01-02 |          25 |
 		|    3 | 2015-01-03 |          20 |
 		|    4 | 2015-01-04 |          30 |
+		|    5 | 2015-02-04 |          60 |
+		|    6 | 2015-02-05 |          50 |
 		+------+------------+-------------+
+		
+	1)JOINING THE ROWS WITH CONSECUTIVE DATE DIFFERENCE
 	select * 
 		from Weather w1
 		join Weather w2
@@ -23,12 +29,15 @@ DDL
 		|    2 | 2015-01-02 |          25 |    1 | 2015-01-01 |          10 |
 		|    3 | 2015-01-03 |          20 |    2 | 2015-01-02 |          25 |
 		|    4 | 2015-01-04 |          30 |    3 | 2015-01-03 |          20 |
-		+------+------------+-------------+------+------------+-------------+ 
-
+		|    6 | 2015-02-05 |          50 |    5 | 2015-02-04 |          60 |
+		+------+------------+-------------+------+------------+-------------+
+	
+	2)JOINING THE ROWS WITH CONSECUTIVE DATE DIFFERENCE AND NEXT DAY TEMPERATURE IS HIGHER
 	 select *  
-      from Weather w1
-      join Weather w2
-      on datediff(w1.RecordDate,w2.RecordDate)=1 and w1.Temperature > w2.Temperature;
+		from Weather w1
+		join Weather w2
+		on datediff(w1.RecordDate,w2.RecordDate)=1 
+		and w1.Temperature > w2.Temperature;
 	    +------+------------+-------------+------+------------+-------------+
 		| Id   | RecordDate | Temperature | Id   | RecordDate | Temperature |
 		+------+------------+-------------+------+------------+-------------+
