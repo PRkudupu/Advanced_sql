@@ -181,11 +181,16 @@ EMPLOYEES
 		|   1 |    2 | Mary       | Lambeth   | Female |  30000 |
 		|   1 |    3 | Ben        | Hoskins   | Male   |  70000 |
 		+-----+------+------------+-----------+--------+--------+
-CONTACTS
+
+***************************
+	CONTACTS
+
+***************************
 	DROP TABLE IF EXISTS contacts;
  
+		#POSTGRESQL
 		CREATE TABLE contacts (
-			id INT PRIMARY KEY AUTO_INCREMENT,
+			id SERIAL PRIMARY KEY ,
 			first_name VARCHAR(50) NOT NULL,
 			last_name VARCHAR(50) NOT NULL, 
 			email VARCHAR(255) NOT NULL
@@ -209,13 +214,7 @@ CONTACTS
 			   ('Susan','Nelson','susan.nelson@comcast.net'),
 			   ('Roland','Keitel','roland.keitel@yahoo.com')
 			   ;
-		#POSTGRESQL
-		CREATE TABLE contacts (
-			id SERIAL PRIMARY KEY ,
-			first_name VARCHAR(50) NOT NULL,
-			last_name VARCHAR(50) NOT NULL, 
-			email VARCHAR(255) NOT NULL
-		);
+		
 	 5 A) FIND THE DUPLICATE EMAILS IN THE TABLE
 		select email,count(email) as dup_count 
 			from contacts 
@@ -244,11 +243,40 @@ CONTACTS
 			|        2 | roland.keitel@yahoo.com    |
 			+----------+----------------------------+
 			
+		select * from (
+						select id
+							  , first_name
+							  , last_name
+							  , email, row_number() 
+						over (partition by email) as rnk from contacts)a 
+						where a.rnk=1 order by id;
+				+----+------------+-----------------+---------------------------------+-----+
+				| id | first_name | last_name       | email                           | rnk |
+				+----+------------+-----------------+---------------------------------+-----+
+				|  1 | Carine     | Schmitt         | carine.schmitt@verizon.net      |   1 |
+				|  3 | Jean       | King            | jean.king@me.com                |   1 |
+				|  5 | Peter      | Ferguson        | peter.ferguson@google.com       |   1 |
+				|  6 | Janine     | Labrune         | janine.labrune@aol.com          |   1 |
+				|  7 | Jonas      | Bergulfsen      | jonas.bergulfsen@mac.com        |   1 |
+				|  9 | Susan      | Nelson          | susan.nelson@comcast.net        |   1 |
+				| 10 | Zbyszek    | Piestrzeniewicz | zbyszek.piestrzeniewicz@att.net |   1 |
+				| 11 | Roland     | Keitel          | roland.keitel@yahoo.com         |   1 |
+				| 12 | Julie      | Murphy          | julie.murphy@yahoo.com          |   1 |
+				| 13 | Kwai       | Lee             | kwai.lee@google.com             |   1 |
+				+----+------------+-----------------+---------------------------------+-----+
 	 5 B) FIND ALL THE ROWS WHICH HAS DUPLICATE EMAIL AND FIRST NAME
 		select email 
 			from contacts 
 			group by email,first_name
 			having count(email) > 1;
+				+------------+
+				| first_name |
+				+------------+
+				| Jean       |
+				| Janine     |
+				| Susan      |
+				| Roland     |
+				+------------+
 			
 		Note: In the example below where condition is responsible for filtering duplicates
 		* self join based on the common data
