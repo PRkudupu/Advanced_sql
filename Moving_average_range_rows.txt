@@ -48,44 +48,49 @@ OVER
 	THIS IS THE EXAMPLE FOR ROLLING AVERAGE 
 	1) USE AGGREGATE FUNCTIONS ON ALL THE DATASET	
 		select avg(salary) from employee;
-	    +-------------+
-		| avg(salary) |
-		+-------------+
-		|  35000.0000 |
-		+-------------+
+			+-------------+
+			| avg(salary) |
+			+-------------+
+			|  35000.0000 |
+			+-------------+
 		
-	2) USE OVER AND ORDER BY WITH ( DEFAULT FOR ROWS OR RANGE CLAUSE)
+	2) GET TOTAL AVERAGE, SUM AND COUNT BASED EMPLOYEE
+	USE OVER AND ORDER BY WITH ( DEFAULT FOR ROWS OR RANGE CLAUSE)
 		RANGE BETWEEN UNBOUNDED PRECENDING AND CURRENT ROW. 
 		Note:* UNBOUDED PRECEDING IS THE LAST ROW IN THE TABLE
 		     * Average is calculated based on the current row and the preceding row till the end of the table
 			 * Order by clause is imposed on the rows that is salary
 			 * In the result below what we can see that cnt is same(2nd row and 3rd row) as the salary is same for 2nd and 3rd row. 
-			 select   employee_id
-				  , department_id 
-				  , salary
-				  , avg(salary) OVER (order by salary) average  
-				  , count(salary) OVER (order by salary) cnt 
-				  , sum(salary) OVER (order by salary) total 
-				   from employee;
-				+-------------+---------------+--------+------------+-----+--------+
-				| employee_id | department_id | salary | average    | cnt | total  |
-				+-------------+---------------+--------+------------+-----+--------+
-				|           2 |             5 |  10000 | 10000.0000 |   1 |  10000 |
-				|           1 |             1 |  20000 | 16666.6667 |   3 |  50000 |
-				|           4 |             2 |  20000 | 16666.6667 |   3 |  50000 |
-				|           3 |             2 |  30000 | 20000.0000 |   4 |  80000 |
-				|           6 |             3 |  50000 | 26000.0000 |   5 | 130000 |
-				|           5 |             2 |  80000 | 35000.0000 |   6 | 210000 |
-				+-------------+---------------+--------+------------+-----+--------+
+			 select 
+				employee_id
+				, Department_id
+				, boss_id
+				, name 
+				, salary
+				, avg(salary) over (order by employee_id) as avg
+				, sum(salary) over (order by employee_id) as total_sum
+				, count(salary) over (order by employee_id) count
+			from employee
+			order by employee_id;
+				+-------------+---------------+---------+---------------+--------+------------+-----------+-------+
+				| employee_id | Department_id | boss_id | name          | salary | avg        | total_sum | count |
+				+-------------+---------------+---------+---------------+--------+------------+-----------+-------+
+				|           1 |             1 |       2 | John Smith    |  20000 | 20000.0000 |     20000 |     1 |
+				|           2 |             5 |       4 | Ava Muffinson |  10000 | 15000.0000 |     30000 |     2 |
+				|           3 |             2 |       5 | Cailin Ninson |  30000 | 20000.0000 |     60000 |     3 |
+				|           4 |             2 |       5 | Mike Peterson |  20000 | 20000.0000 |     80000 |     4 |
+				|           5 |             2 |       1 | Ian Peterson  |  80000 | 32000.0000 |    160000 |     5 |
+				|           6 |             3 |    NULL | John Mills    |  50000 | 35000.0000 |    210000 |     6 |
+				+-------------+---------------+---------+---------------+--------+------------+-----------+-------+
 	3) 	USE OVER AND ORDER BY WITH ( ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
-		Note: This filter is not useful unless you use partition clause.
+		Note: This filter is useful if we want the total in each rows
 	    select   employee_id
-          , department_id 
-          , salary
-          , avg(salary) OVER (order by salary ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) average  
-          , count(salary) OVER (order by salary ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) cnt 
-          , sum(salary) OVER (order by salary ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) total 
-           from employee;
+			  , department_id 
+			  , salary
+			  , avg(salary) OVER (order by employee_id ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) average  
+			  , sum(salary) OVER (order by employee_id ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) total_sum 
+			  , count(salary) OVER (order by employee_id ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) cnt 
+			from employee;
 		+-------------+---------------+--------+------------+-----+--------+
 		| employee_id | department_id | salary | average    | cnt | total  |
 		+-------------+---------------+--------+------------+-----+--------+
@@ -100,24 +105,24 @@ OVER
 		Note: This filter is not useful unless you use partition clause.
 		aggregate function is applied based on the partition.
 		
-	    select   employee_id
-        , department_id 
-        , salary
-        , avg(salary) OVER (partition by department_id order by salary ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) average  
-        , count(salary) OVER (partition by department_id order by salary ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) cnt 
-        , sum(salary) OVER (partition by department_id order by salary ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) total 
-         from employee;
+	    select employee_id
+			, department_id 
+			, salary
+			, avg(salary) OVER (partition by department_id order by salary ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) average  
+			, sum(salary) OVER (partition by department_id order by salary ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) total_sum 
+			, count(salary) OVER (partition by department_id order by salary ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) cnt 
+		  from employee;
 		
-		+-------------+---------------+--------+------------+-----+--------+
-		| employee_id | department_id | salary | average    | cnt | total  |
-		+-------------+---------------+--------+------------+-----+--------+
-		|           1 |             1 |  20000 | 20000.0000 |   1 |  20000 |
-		|           4 |             2 |  20000 | 43333.3333 |   3 | 130000 |
-		|           3 |             2 |  30000 | 43333.3333 |   3 | 130000 |
-		|           5 |             2 |  80000 | 43333.3333 |   3 | 130000 |
-		|           6 |             3 |  50000 | 50000.0000 |   1 |  50000 |
-		|           2 |             5 |  10000 | 10000.0000 |   1 |  10000 |
-		+-------------+---------------+--------+------------+-----+--------+
+		+-------------+---------------+--------+------------+-----------+-----+
+		| employee_id | department_id | salary | average    | total_sum | cnt |
+		+-------------+---------------+--------+------------+-----------+-----+
+		|           1 |             1 |  20000 | 20000.0000 |     20000 |   1 |
+		|           4 |             2 |  20000 | 43333.3333 |    130000 |   3 |
+		|           3 |             2 |  30000 | 43333.3333 |    130000 |   3 |
+		|           5 |             2 |  80000 | 43333.3333 |    130000 |   3 |
+		|           6 |             3 |  50000 | 50000.0000 |     50000 |   1 |
+		|           2 |             5 |  10000 | 10000.0000 |     10000 |   1 |
+		+-------------+---------------+--------+------------+-----------+-----+
 	5) 	USE OVER AND ORDER BY  ( ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING) 
 	    Note:This would take values from the previous row and the next row.
 		
@@ -161,4 +166,104 @@ OVER
 		|           5 |             2 |  80000 | 35000.0000 |   6 | 210000 |
 		+-------------+---------------+--------+------------+-----+--------+
 		
+	6) USING UNBOUDED PRECEDING AND FOLLOWING :Gives total sum for all the rows
+		select employee_id
+				, name
+				, salary
+				, sum(salary) over (order by employee_id rows between unbounded preceding and unbounded following) as sum 
+				from employee;
+			+-------------+---------------+--------+--------+
+			| employee_id | name          | salary | sum    |
+			+-------------+---------------+--------+--------+
+			|           1 | John Smith    |  20000 | 210000 |
+			|           2 | Ava Muffinson |  10000 | 210000 |
+			|           3 | Cailin Ninson |  30000 | 210000 |
+			|           4 | Mike Peterson |  20000 | 210000 |
+			|           5 | Ian Peterson  |  80000 | 210000 |
+			|           6 | John Mills    |  50000 | 210000 |
+			+-------------+---------------+--------+--------+
+	7) ONLY UNBOUDED PRECEDING : used for cumulative sum or running total	
+		select employee_id
+				, name
+				, salary
+				, sum(salary) over (order by employee_id rows unbounded preceding ) as cumulative_sum 
+				from employee;
+			+-------------+---------------+--------+----------------+
+			| employee_id | name          | salary | cumulative_sum |
+			+-------------+---------------+--------+----------------+
+			|           1 | John Smith    |  20000 |          20000 |
+			|           2 | Ava Muffinson |  10000 |          30000 |
+			|           3 | Cailin Ninson |  30000 |          60000 |
+			|           4 | Mike Peterson |  20000 |          80000 |
+			|           5 | Ian Peterson  |  80000 |         160000 |
+			|           6 | John Mills    |  50000 |         210000 |
+			+-------------+---------------+--------+----------------+
+	
+	8) CENTERED MOVING AVERAGE ( 3 day sum)
+		Useful for smoothing the time series data when we want the average to be centered on the current row.
+		In this example it calculates 3-day centered moving average for the salary.
+		select employee_id 
+				, name 
+				, salary 
+				, sum(salary) over (order by employee_id rows between 1 preceding and 1 following) as 3_day_sum  
+			from employee;
+			+-------------+---------------+--------+--------+
+			| employee_id | name          | salary | sum    |
+			+-------------+---------------+--------+--------+
+			|           1 | John Smith    |  20000 |  30000 |
+			|           2 | Ava Muffinson |  10000 |  60000 |
+			|           3 | Cailin Ninson |  30000 |  60000 |
+			|           4 | Mike Peterson |  20000 | 130000 |
+			|           5 | Ian Peterson  |  80000 | 150000 |
+			|           6 | John Mills    |  50000 | 130000 |
+			+-------------+---------------+--------+--------+
 		
+		
+	9) CENTERED MOVING AVERAGE ( 4 day sum)
+		select employee_id 
+				, name 
+				, salary 
+				, sum(salary) over (order by employee_id rows between 2 preceding and 2 following) as sum  
+			from employee;
+			+-------------+---------------+--------+--------+
+			| employee_id | name          | salary | sum    |
+			+-------------+---------------+--------+--------+
+			|           1 | John Smith    |  20000 |  60000 |
+			|           2 | Ava Muffinson |  10000 |  80000 |
+			|           3 | Cailin Ninson |  30000 | 160000 |
+			|           4 | Mike Peterson |  20000 | 190000 |
+			|           5 | Ian Peterson  |  80000 | 180000 |
+			|           6 | John Mills    |  50000 | 150000 |
+			+-------------+---------------+--------+--------+
+	10) EXPANDING WINDOW WITH FIXED FUTURE RANGE
+		want to calculate an that includes all previous data up to the current row and a fixed number of rows ahead 
+		In the example below calculates the sum from the start to a fixed next 2 days
+		select employee_id , name , salary , sum(salary) over (order by employee_id rows between unbounded preceding and 2 following) as sum  from employee;
+			+-------------+---------------+--------+--------+
+			| employee_id | name          | salary | sum    |
+			+-------------+---------------+--------+--------+
+			|           1 | John Smith    |  20000 |  60000 |
+			|           2 | Ava Muffinson |  10000 |  80000 |
+			|           3 | Cailin Ninson |  30000 | 160000 |
+			|           4 | Mike Peterson |  20000 | 210000 |
+			|           5 | Ian Peterson  |  80000 | 210000 |
+			|           6 | John Mills    |  50000 | 210000 |
+			+-------------+---------------+--------+--------+
+	11) FIXED SIZE SLIDING WINDOW WITH MORE FUTURE DATA
+		We want a sliding window that is skewed towards future data
+		To sum 5 day average the window includes the current day ,1 preceding and 3 days following.
+		select employee_id 
+				, name 
+				, salary 
+				, sum(salary) over (order by employee_id rows between 1 preceding and 3 following) as sum  
+			from employee;
+			+-------------+---------------+--------+--------+
+			| employee_id | name          | salary | sum    |
+			+-------------+---------------+--------+--------+
+			|           1 | John Smith    |  20000 |  80000 |
+			|           2 | Ava Muffinson |  10000 | 160000 |
+			|           3 | Cailin Ninson |  30000 | 190000 |
+			|           4 | Mike Peterson |  20000 | 180000 |
+			|           5 | Ian Peterson  |  80000 | 150000 |
+			|           6 | John Mills    |  50000 | 130000 |
+			+-------------+---------------+--------+--------+
