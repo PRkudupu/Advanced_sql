@@ -267,3 +267,47 @@ OVER
 			|           5 | Ian Peterson  |  80000 | 150000 |
 			|           6 | John Mills    |  50000 | 130000 |
 			+-------------+---------------+--------+--------+
+    
+	LEAD USING MOVINGE AVERAGE
+	Create table Weather (Id int, RecordDate date, Temperature int);
+	insert into Weather (Id, RecordDate, Temperature) values ('1', '2015-01-01', '10');
+	insert into Weather (Id, RecordDate, Temperature) values ('2', '2015-01-02', '25');
+	insert into Weather (Id, RecordDate, Temperature) values ('3', '2015-01-03', '20');
+	insert into Weather (Id, RecordDate, Temperature) values ('4', '2015-01-04', '30');
+			+------+------------+-------------+
+			| Id   | RecordDate | Temperature |
+			+------+------------+-------------+
+			|    1 | 2015-01-01 |          10 |
+			|    2 | 2015-01-02 |          25 |
+			|    3 | 2015-01-03 |          20 |
+			|    4 | 2015-01-04 |          30 |
+			+------+------------+-------------+
+	
+	1) FIND ALL DATES IDS WITH LOWER TEMPEARATURE COMPARED TO ITS PREVIOUS DATES.
+		select * from(select Id
+					, RecordDate 
+					, Temperature 
+					, lead(Temperature) over (order by RecordDate) as lead_temp 
+					from Weather)a 
+					where a.lead_temp > a.Temperature;
+			+------+------------+-------------+-----------+
+			| Id   | RecordDate | Temperature | lead_temp |
+			+------+------------+-------------+-----------+
+			|    1 | 2015-01-01 |          10 |        25 |
+			|    3 | 2015-01-03 |          20 |        30 |
+			+------+------------+-------------+-----------+
+	
+	2) FIND ALL DATES IDS WITH HIGHER TEMPEARATURE COMPARED TO ITS PREVIOUS DATES.
+		 select * from(select Id
+						, RecordDate 
+						, Temperature 
+						, lag(Temperature) over (order by RecordDate) as lag_temp 
+						from Weather)a 
+						where a.Temperature > a.lag_temp;
+			+------+------------+-------------+----------+
+			| Id   | RecordDate | Temperature | lag_temp |
+			+------+------------+-------------+----------+
+			|    2 | 2015-01-02 |          25 |       10 |
+			|    4 | 2015-01-04 |          30 |       20 |
+			+------+------------+-------------+----------+
+

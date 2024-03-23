@@ -40,17 +40,30 @@ DDL
 			|    2 |
 			|    4 |
 			+------+  
-	2)USING AGGREGATE FUNCTIONS
-	 select a.Id
-      from
-        (select Id
-             , Temperature
-             , lag(Temperature) over(order by RecordDate)  n_prev
-             from Weather)a
-             where a.Temperature > n_prev;
-			+------+
-			| Id   |
-			+------+
-			|    2 |
-			|    4 |
-			+------+  
+	2)FIND ALL DATES IDS WITH HIGHER TEMPEARATURE COMPARED TO ITS PREVIOUS DATES.
+		 select * from(select Id
+						, RecordDate 
+						, Temperature 
+						, lag(Temperature) over (order by RecordDate) as lag_temp 
+						from Weather)a 
+						where a.Temperature > a.lag_temp;
+			+------+------------+-------------+----------+
+			| Id   | RecordDate | Temperature | lag_temp |
+			+------+------------+-------------+----------+
+			|    2 | 2015-01-02 |          25 |       10 |
+			|    4 | 2015-01-04 |          30 |       20 |
+			+------+------------+-------------+----------+
+			
+	3) FIND ALL DATES IDS WITH LOWER TEMPEARATURE COMPARED TO ITS PREVIOUS DATES.
+		select * from(select Id
+					, RecordDate 
+					, Temperature 
+					, lead(Temperature) over (order by RecordDate) as lead_temp 
+					from Weather)a 
+					where a.lead_temp > a.Temperature;
+			+------+------------+-------------+-----------+
+			| Id   | RecordDate | Temperature | lead_temp |
+			+------+------------+-------------+-----------+
+			|    1 | 2015-01-01 |          10 |        25 |
+			|    3 | 2015-01-03 |          20 |        30 |
+			+------+------------+-------------+-----------+
